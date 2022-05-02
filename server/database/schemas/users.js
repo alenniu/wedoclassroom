@@ -44,10 +44,10 @@ const user_schema = new schema({
         type: String,
         default: ""
     },
-    addresses: [{
-        type: schema.Types.ObjectId,
-        ref: "address"
-    }],
+    // address: {
+    //     type: schema.Types.ObjectId,
+    //     ref: "address"
+    // },
     activated: { //basically verify the email used is real and is owned by the person who signed up. this will be set to true when the activation link in the email is clicked/visited
         type: Boolean,
         default: false
