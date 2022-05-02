@@ -15,7 +15,7 @@ const user_schema = new schema({
             required: false
         }
     },
-    type: { // type of account e.g customer/admin etc...
+    type: { // type of account e.g student/teacher/admin etc...
         type: String,
         default: "student",
         enum: ["admin", "teacher", "student"],
@@ -60,6 +60,9 @@ const user_schema = new schema({
     role: { // for admin panel user this specifies their role
         type: String,
         default: ""
+    },
+    invoices: {
+
     }
 }, {timestamps: true});
 
