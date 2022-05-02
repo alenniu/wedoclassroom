@@ -1,0 +1,12 @@
+module.exports = {
+    KEY: "dev-key",
+    SECRET: "dev-secret",
+    DB_HOST: "",
+    DB_USER: "",
+    DB_PASS: "",
+    APP_EMAIL: "classroom@email.com",
+    IS_PRODUCTION: false,
+    COOKIE_KEY: "jsadasudkbdcajhcbahwh",
+    WEB_ADDRESS: "http://localhost:3000",
+    STRIPE_SECRET_KEY: "",
+}
