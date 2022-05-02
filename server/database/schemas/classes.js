@@ -19,6 +19,9 @@ const class_schema = new schema({
         ref: "user"
     }],
     tags: [String],
+    meeting_link: { //this maybe could've been an attachment
+        type: String,
+    },
     attachments: [{
         type: schema.Types.ObjectId,
         ref: "attachment"
