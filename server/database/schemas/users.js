@@ -61,8 +61,17 @@ const user_schema = new schema({
         type: String,
         default: ""
     },
-    invoices: {
-
+    invoices: [{
+        type: schema.Types.ObjectId,
+        ref: "invoice"
+    }],
+    schedule: {
+        type: schema.Types.ObjectId,
+        ref: "schedule"
+    },
+    created_by: {
+        type: schema.Types.ObjectId,
+        ref: "user"
     }
 }, {timestamps: true});
 

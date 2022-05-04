@@ -20,5 +20,8 @@ module.exports = {
         loader: "ignore-loader"
       }
     ]
+  },
+  watchOptions: {
+    ignored: ["**/node_modules", "**/uploads"],
   }
 };
