@@ -1,3 +1,13 @@
+const fs = require("fs");
+const http = require("http");
+const https = require("https");
+const {exec, execSync, spawn, spawnSync} = require("child_process");
+const config = require("../config");
+
+const escapeRegex = function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
 const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 const password_regex = /^.*(?=.{5,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!#$%&? "]).*$/;
@@ -7,6 +17,12 @@ module.exports.password_requirements = "Password must be have at least 1 upperca
 const url_regex = new RegExp("((https://([a-z]+)([\.]{1,1})([a-z]+))|(http://([a-z]+)([\.]{1,1})([a-z]+))|(^([a-z]+)([\.]{1,1})([a-z]+))|(^([a-z 0-9]+)([\.]{1,1})([a-z]+)))", "i");
 
 const phone_regex = /^[\+]{1,1}[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/i;
+
+module.exports.is_full_url = (s) => {
+    const url_regex = /(^https?:\/\/)/i;
+
+    return url_regex.test(s);
+}
 
 module.exports.validate_phone = (phone="") => {
     if(phone_regex.test(phone)){
@@ -83,4 +99,85 @@ module.exports.get_filename_without_extension = (filename) => {
     }
 
     return null;
+}
+
+module.exports.sanitize_file_path_component = (f) => {
+    return f.replace(/[:()\s\/]/g, "-");
+}
+
+module.exports.sanitize_file_name = (f) => {
+    return f.replace(/[:()\s\/]/g, "-");
+}
+
+module.exports.file_exists = (file) => {
+    return fs.existsSync(file);
+}
+
+module.exports.create_directory = (dir) => {
+    if(fs.existsSync(dir)){
+        return true;
+    }else{
+        fs.mkdirSync(dir, {recursive: true});
+        return true;
+    }
+}
+
+module.exports.read_directory = (dir) => {
+    return fs.readdirSync(dir, {withFileTypes: true, encoding: "utf8"}).filter((f) => f.isFile() || f.isDirectory()).map((f) => ({...f, type: f.isFile()?"file":f.isDirectory()?"folder":"unknown"}));
+}
+
+module.exports.delete_directory = (dir) => {
+    fs.rmdirSync(dir, {recursive: true});
+}
+
+module.exports.delete_file = (file) => {
+    fs.unlinkSync(file);
+}
+
+module.exports.remove_server_prefix_from_file = (filename) => {
+    if(filename && typeof(filename) === "string"){
+        if((filename.indexOf("server/") === 0) || (filename.indexOf("./server/") === 0)){
+            return filename.replace("server/", "").replace(/\/\//g, "/");
+        }
+
+        return filename;
+    }
+}
+
+module.exports.open_file = (file) => {
+    fs.readFileSync(file);
+    
+    return xlsx_file;
+}
+
+module.exports.open_text_file = (file) => {
+    try{
+        const text = fs.readFileSync(file, "utf-8");
+        
+        return text;
+    }catch(e){
+        throw e;
+    }
+}
+
+module.exports.open_json_file = (file) => {
+    try{
+        const raw_json = fs.readFileSync(file, "utf-8");
+        
+        return JSON.parse(raw_json);
+    }catch(e){
+        throw e;
+    }
+}
+
+module.exports.get_full_image_url = (img, web_address=config.WEB_ADDRESS) => {
+    return this.is_full_url(img)?img:`${web_address}/${img}`;
+}
+
+module.exports.escape_regex = (str="") => {
+    try{
+        return escapeRegex(str.toString());
+    }catch(e){
+        return "";
+    }
 }

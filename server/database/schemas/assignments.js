@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
 const assignment_schema = new schema({
-    class: {
+    _class: {
         type: schema.Types.ObjectId,
         ref: "class"
     },

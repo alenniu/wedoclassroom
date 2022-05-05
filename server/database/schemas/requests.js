@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
 const request_schema = new schema({
-    class: {
+    _class: {
         type: schema.Types.ObjectId,
         ref: "class"
     },
@@ -11,6 +11,10 @@ const request_schema = new schema({
         ref: "user"
     },
     accepted: {
+        type: Boolean,
+        default: false
+    },
+    declined: {
         type: Boolean,
         default: false
     },

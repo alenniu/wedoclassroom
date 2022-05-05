@@ -16,7 +16,7 @@ const schedule_schema = new schema({
         Date: {
             type: Date
         },
-        class: {
+        _class: {
             type: schema.Types.ObjectId,
             ref: "class"
         },

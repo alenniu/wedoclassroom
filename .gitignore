@@ -25,3 +25,5 @@ yarn-error.log*
 /src/Config/index.js
 server/config/keys.js
 /server-build
+
+**/uploads
