@@ -13,7 +13,7 @@ const db = db_init();
 
 require("./database/schemas/users");
 require("./database/schemas/classes");
-require("./database/schemas/attachment");
+require("./database/schemas/attachments");
 require("./database/schemas/assignments");
 require("./database/schemas/requests");
 require("./database/schemas/schedule");

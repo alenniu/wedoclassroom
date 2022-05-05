@@ -6,6 +6,14 @@ const Class = Classes;
 const Requests = mongoose.model("request");
 const Request = Requests;
 
+async function get_class(class_id){
+    try{
+        return Classes.findOne({_id: class_id});
+    }catch(e){
+        throw e;
+    }
+}
+
 async function create_class({subject, teacher=null, tags=[]}, creator){
     try{
         if(subject){
@@ -28,6 +36,20 @@ async function add_student_to_class({student_id, class_id}){
             return updated_class;
         }else{
             throw new Error("student_id and class_id must be provided")
+        }
+    }catch(e){
+        throw e;
+    }
+}
+
+async function add_teacher_to_class({teacher_id, class_id}){
+    try{
+        if(teacher_id && class_id){
+            const updated_class = await Classes.findOneAndUpdate({_id: class_id}, {$set: {teacher: teacher_id}}, {new: true, upsert: false});
+
+            return updated_class;
+        }else{
+            throw new Error("teacher_id and class_id must be provided")
         }
     }catch(e){
         throw e;
@@ -92,8 +114,10 @@ async function add_attachment_to_class({attachment, class_id}){
     }
 }
 
+module.exports.get_class = get_class;
 module.exports.create_class = create_class;
 module.exports.request_class = request_class;
 module.exports.accept_request = accept_request;
 module.exports.decline_request = decline_request;
+module.exports.add_teacher_to_class = add_teacher_to_class;
 module.exports.add_attachment_to_class = add_attachment_to_class;
