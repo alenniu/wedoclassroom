@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import { get_admins, get_students, get_teachers } from "../functions/admin";
-import { add_teacher_to_class } from "../functions/class";
+import { add_teacher_to_class, get_classes } from "../functions/class";
 
 const { create_user } = require("../functions/user");
 
@@ -22,11 +22,11 @@ export const get_students_handler = async (req: Request, res: Response, next: Ne
         let {limit=20, offset=0, search=""} = req.query;
 
         limit = Number(limit) || 20;
-        limit = Number(offset) || 0;
+        offset = Number(offset) || 0;
     
-        const students = await get_students(limit, offset, search);
+        const {students, total} = await get_students(limit, offset, search);
 
-        return res.json({students, success: true});
+        return res.json({students, total, success: true});
     }catch(e){
         return res.status(400).json({success: true, msg: e.message});
     }
@@ -37,26 +37,26 @@ export const get_teachers_handler = async (req: Request, res: Response, next: Ne
         let {limit=20, offset=0, search=""} = req.query;
 
         limit = Number(limit) || 20;
-        limit = Number(offset) || 0;
+        offset = Number(offset) || 0;
     
-        const teachers = await get_teachers(limit, offset, search);
+        const {teachers, total} = await get_teachers(limit, offset, search);
 
-        return res.json({teachers, success: true});
+        return res.json({teachers, total, success: true});
     }catch(e){
         return res.status(400).json({success: true, msg: e.message});
     }
 }
 
-export const get_admin_handler = async (req: Request, res: Response, next: NextFunction) => {
+export const get_admins_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
         let {limit=20, offset=0, search=""} = req.query;
 
         limit = Number(limit) || 20;
-        limit = Number(offset) || 0;
+        offset = Number(offset) || 0;
     
-        const admins = await get_admins(limit, offset, search);
+        const {admins, total} = await get_admins(limit, offset, search);
 
-        return res.json({admins, success: true});
+        return res.json({admins, total, success: true});
     }catch(e){
         return res.status(400).json({success: true, msg: e.message});
     }
@@ -74,3 +74,16 @@ export const set_class_teacher = async (req: Request, res: Response, next: NextF
     }
 }
 
+export const admin_get_classes = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        let {limit=20, offset=0, search=""} = req.query;
+        limit = Number(limit) || 20;
+        offset = Number(offset) || 0;
+
+        const {classes, total} = await get_classes(limit, offset, search);
+
+        res.json({classes, total, success: true});
+    }catch(e){
+        res.status(400).json({success: false, msg: e.message});
+    }
+}

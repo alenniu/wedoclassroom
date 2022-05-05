@@ -40,3 +40,13 @@ export const login_handler = async (req: Request, res: Response, next: NextFunct
         return res.status(400).json({success: false, msg: e.message});
     }
 }
+
+export const logout_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        req.session.AUTH = "";
+        res.cookie("AUTH", "");
+        res.json({success: true});
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}

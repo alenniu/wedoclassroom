@@ -7,17 +7,27 @@ const User = Users;
 async function get_teachers(limit=20, offset=0, search=""){
     try{
         let teachers = [];
+        let total = 0;
+
         if(search){
             const escaped_search = escape_regex(search);
 
             const search_regex = new RegExp(`${escaped_search}`, "i");
 
-            teachers = await Users.find({$and: [{type: "teachers"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}).limit(limit).skip(offset).lean(true);
+            total = await Users.count({$and: [{type: "teacher"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]});
+
+            if(total){
+                teachers = await Users.find({$and: [{type: "teacher"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}).limit(limit).skip(offset).lean(true);
+            }
         }else{
-            teachers = await Users.find({type: "teachers"}).limit(limit).skip(offset).lean(true);
+            total = await Users.count({type: "teacher"});
+
+            if(total){
+                teachers = await Users.find({type: "teacher"}).limit(limit).skip(offset).lean(true);
+            }
         }
 
-        return teachers;
+        return {total, teachers};
     }catch(e){
         throw e;
     }
@@ -26,17 +36,27 @@ async function get_teachers(limit=20, offset=0, search=""){
 async function get_students(limit=20, offset=0, search=""){
     try{
         let students = [];
+        let total = 0;
+
         if(search){
             let escaped_search = escape_regex(search);
 
             const search_regex = new RegExp(`${escaped_search}`, "i");
 
-            students = await Users.find({$and: [{type: "student"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}).limit(limit).skip(offset).lean(true);
+            total = await Users.count({$and: [{type: "student"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]});
+
+            if(total){
+                students = await Users.find({$and: [{type: "student"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}).limit(limit).skip(offset).lean(true);
+            }
         }else{
-            students = await Users.find({type: "student"}).limit(limit).skip(offset).lean(true);
+            total = await Users.count({type: "student"});
+
+            if(total){
+                students = await Users.find({type: "student"}).limit(limit).skip(offset).lean(true);
+            }
         }
 
-        return students;
+        return {students, total};
     }catch(e){
         throw e;
     }
@@ -45,17 +65,27 @@ async function get_students(limit=20, offset=0, search=""){
 async function get_admins(limit=20, offset=0, search=""){
     try{
         let admins = [];
+        let total = 0;
+
         if(search){
             const escaped_search = escape_regex(search);
 
             const search_regex = new RegExp(`${escaped_search}`, "i");
 
-            admins = await Users.find({$and: [{type: "admin"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}).limit(limit).skip(offset).lean(true);
+            total = await Users.count({$and: [{type: "admin"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]});
+
+            if(total){
+                admins = await Users.find({$and: [{type: "admin"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}).limit(limit).skip(offset).lean(true);
+            }
         }else{
-            admins = await Users.find({type: "admin"}).limit(limit).skip(offset).lean(true);
+            total = await Users.count({type: "admin"});
+
+            if(total){
+                admins = await Users.find({type: "admin"}).limit(limit).skip(offset).lean(true);
+            }
         }
 
-        return admins;
+        return {admins, total};
     }catch(e){
         throw e;
     }

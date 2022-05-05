@@ -7,6 +7,9 @@ const { validate_email, validate_password, password_requirements } = require("./
 const Users = mongoose.model("user");
 const User = Users;
 
+const Requests = mongoose.model("request");
+const Request = Requests;
+
 function get_user_token({name, phone, email, activated, _id, type, role, birth}){
     return jwt.sign({name, phone, email, activated, _id, type, role, birth}, SECRET);
 }
@@ -63,7 +66,29 @@ async function update_user(user, existing_user){
     }
 }
 
+async function get_requests(user_or_class_id, limit=20, offset=0){
+    try{
+        if(mongoose.isValidObjectId(user_or_class_id)){
+            let requests = [];
+            let total = 0;
+
+            total = await Requests.count({$or: [{student: user_or_class_id}, {_class: user_or_class_id}, {handled_by: user_or_class_id}]});
+
+            if(total){
+                requests = await Requests.find({$or: [{student: user_or_class_id}, {_class: user_or_class_id}, {handled_by: user_or_class_id}]}).limit(limit).skip(offset).lean(true);
+            }
+
+            return {requests, total};
+        }else{
+            throw new Error("no valid user id or class id provided");
+        }
+    }catch(e){
+        throw e;
+    }
+}
+
 module.exports.create_user = create_user;
 module.exports.update_user = update_user;
 module.exports.user_exists = user_exists;
+module.exports.get_requests = get_requests;
 module.exports.get_user_token = get_user_token;
