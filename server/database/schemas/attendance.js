@@ -17,6 +17,10 @@ const attendance_schema = new schema({
         type: Boolean,
         default: false,
     },
+    present: {
+        type: Boolean,
+        default: false
+    }
 }, {timestamps: true});
 
 mongoose.model("attendance", attendance_schema, "attendance");

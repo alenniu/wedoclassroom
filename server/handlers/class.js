@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import { electron } from "webpack";
-import { accept_request, create_class, decline_request, get_class, get_user_classes, request_class } from "../functions/class";
+import { accept_request, create_class, decline_request, get_class, get_class_attendance, get_user_classes, request_class, update_attendance } from "../functions/class";
 import { get_request } from "../functions/request";
 
 
@@ -113,6 +113,44 @@ export const get_classes_handler = async (req: Request, res: Response, next: Nex
         const {classes, total} = await get_user_classes(user, limit, offset, search);
 
         return res.json({classes, total, success: true})
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const get_class_attendance_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {class_id} = req.query;
+
+        const current_class = await get_class(class_id);
+
+        if(current_class.teacher._id.toString() === user._id.toString()){
+            const class_attendance = await get_class_attendance(current_class);
+
+            return res.json({success: true, class_attendance});
+        }else{
+            return res.status(400).json({success: false, msg: "Only the class teacher can get class attendance"})
+        }
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const update_student_attendance_handle = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {_class, student, remarks="", early, present} = req.body;
+
+        const current_class = await get_class(_class._id);
+
+        if(current_class.teacher._id.toString() === user._id.toString()){
+            const student_attendance = await update_attendance({_class: current_class, student, remarks, early, present});
+
+            return res.json({success: true, attendance: student_attendance});
+        }else{
+            return res.status(400).json({success: false, msg: "Only the class teacher can update student attendance"})
+        }
     }catch(e){
         return res.status(400).json({success: false, msg: e.message});
     }

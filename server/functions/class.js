@@ -7,6 +7,9 @@ const Class = Classes;
 const Requests = mongoose.model("request");
 const Request = Requests;
 
+const Attendances = mongoose.model("attendance");
+const Attendance = Attendances;
+
 async function get_class(class_id){
     try{
         return Classes.findOne({_id: class_id});
@@ -160,6 +163,24 @@ async function decline_request({request_id}, handler){ //handler is the user acc
     }
 }
 
+async function get_class_attendance(_class){
+    try{
+        return await Attendances.find({_class: _class._id}).lean(true);
+    }catch(e){
+        throw e;
+    }
+}
+
+async function update_attendance({_class, student, remarks="", early, present}){
+    try{
+        const student_attendance = await Attendances.findOneAndUpdate({_class: _class._id, student: student._id}, {$set: {remarks, early, present}}, {upsert: true, new: true});
+
+        return student_attendance;
+    }catch(e){
+        throw e;
+    }
+}
+
 async function add_attachment_to_class({attachment, class_id}){
     try{
         if(attachment && class_id){
@@ -181,5 +202,7 @@ module.exports.request_class = request_class;
 module.exports.accept_request = accept_request;
 module.exports.decline_request = decline_request;
 module.exports.get_user_classes = get_user_classes;
+module.exports.update_attendance = update_attendance;
 module.exports.add_teacher_to_class = add_teacher_to_class;
+module.exports.get_class_attendance = get_class_attendance;
 module.exports.add_attachment_to_class = add_attachment_to_class;

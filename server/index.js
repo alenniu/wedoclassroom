@@ -59,6 +59,7 @@ app.get("*", async(req, res, next) => {
 })
 
 app.use(express.static("./build"));
+app.use("/uploads", express.static("./uploads"));
 
 server.listen(config.PORT, "0.0.0.0", () => {
     require("dns").lookup(require("os").hostname(), (err, add, fam) => {

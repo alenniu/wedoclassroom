@@ -15,6 +15,14 @@ const attachment_schema = new schema({
         type: Boolean,
         default: false
     },
+    deleted: {
+        type: Boolean,
+        default: false
+    },
+    _class: {
+        type: schema.Types.ObjectId,
+        ref: "class"
+    },
     owner: {
         type: schema.Types.ObjectId,
         ref: "user"

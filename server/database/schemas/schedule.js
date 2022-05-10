@@ -13,16 +13,23 @@ const schedule_schema = new schema({
         description: {
             type: String,
         },
-        Date: {
-            type: Date
+        start_date: {
+            type: Date,
+            required: true
+        },
+        duration: {
+            type: Number,
+        },
+        end_date: {
+            type: Date,
         },
         _class: {
             type: schema.Types.ObjectId,
             ref: "class"
         },
         created: {
-            type: Number,
-            default: () => Date.now()
+            type: Date,
+            default: () => new Date()
         }
     }]
 }, {timestamps: true});
