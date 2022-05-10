@@ -1,6 +1,7 @@
 import {Request, Response, NextFunction} from "express";
 import { create_attachment, get_attachments } from "../functions/attachment";
 import { get_class } from "../functions/class";
+import { add_item_to_schedule, get_schedule, remove_item_from_schedule, update_schedule_item } from "../functions/schedule";
 import { get_requests } from "../functions/user";
 import { delete_file } from "../functions/utils";
 
@@ -72,5 +73,54 @@ export const upload_attachment_handler = async (req: Request, res: Response, nex
         delete_file(url);
         res.status(400).json({success: false, msg: e.message})
     }
+}
 
+export const get_schedule_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const schedule = await get_schedule(user);
+
+        return res.json({success: true, schedule});
+    }catch(e){
+        res.status(400).json({success: true, msg: e.message});
+    }
+}
+
+export const add_item_to_schedule_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {name, description, start_date, duration, end_date, _class} = req.body;
+
+        const schedule = await add_item_to_schedule({name, description, start_date, duration, end_date, _class}, user);
+
+        return res.json({success: true, schedule});
+    }catch(e){
+        res.status(400).json({success: true, msg: e.message});
+    }
+}
+
+export const update_schedule_item_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {item} = req.body;
+        
+        const schedule = await update_schedule_item(item, user);
+
+        return res.json({success: true, schedule});
+    }catch(e){
+        res.status(400).json({success: true, msg: e.message});
+    }
+}
+
+export const remove_item_from_schedule_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {item_id} = req.query;
+        
+        const schedule = await remove_item_from_schedule(item_id, user);
+
+        return res.json({success: true, schedule});
+    }catch(e){
+        res.status(400).json({success: true, msg: e.message});
+    }
 }

@@ -181,3 +181,7 @@ module.exports.escape_regex = (str="") => {
         return "";
     }
 }
+
+module.exports.ranges_overlaps = (r1, r2) => {
+    return r1.min <= r2.max && r2.min <= r1.max
+}

@@ -6,7 +6,7 @@ const schedule_schema = new schema({
         type: schema.Types.ObjectId,
         ref: "user"
     },
-    items: [{
+    items: [new schema({
         name: {
             type: String,
         },
@@ -30,8 +30,12 @@ const schedule_schema = new schema({
         created: {
             type: Date,
             default: () => new Date()
+        },
+        missed: {
+            type: Boolean,
+            default: false,
         }
-    }]
+    })]
 }, {timestamps: true});
 
 mongoose.model("schedule", schedule_schema, "schedules");
