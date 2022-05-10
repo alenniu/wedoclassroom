@@ -72,7 +72,7 @@ async function get_user_classes(user, limit=20, offset=0, search=""){
 
         return {classes, total};
     }catch(e){
-        console.log(e);
+        console.error(e);
         throw e;
     }
 }

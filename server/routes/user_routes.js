@@ -6,7 +6,7 @@ const verify_user = require("../middleware/verify_user");
 const router = require("express").Router();
 
 const attachment_upload = multer({storage: attachment_storage, fileFilter: (req, file, cb) => {
-    console.log(file);
+    // console.log(file);
     if(true || file.size <= (MB * 10)){
         cb(null, true);
     }else{

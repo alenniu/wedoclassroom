@@ -50,10 +50,7 @@ export const upload_attachment_handler = async (req: Request, res: Response, nex
             
             const current_class = await get_class(_class._id);
 
-            console.log(current_class);
-
             const can_add_attachment = (current_class.teacher._id.toString() === user._id.toString()) || (current_class.students.findIndex((s) => s.toString() === user._id.toString()) !== -1) || (user.type === "admin");
-            
 
             if(can_add_attachment){
                 const attachment = await create_attachment({name, url, is_link: !!is_link, _class, filetype: file.mimetype}, user);
@@ -71,7 +68,7 @@ export const upload_attachment_handler = async (req: Request, res: Response, nex
             return res.status(400).json({success: false, msg: "No file uploaded and not a link"})
         }
     }catch(e){
-        console.log(e);
+        console.error(e);
         delete_file(url);
         res.status(400).json({success: false, msg: e.message})
     }

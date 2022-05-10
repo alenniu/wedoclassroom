@@ -19,7 +19,7 @@ async function user_exists(prop="email", value, projection={password: 0}){
 
     q[prop] = value;
     return await Users.findOne(q, projection).catch((e) => {
-        console.log(e);
+        console.error(e);
         return null;
     });
 }

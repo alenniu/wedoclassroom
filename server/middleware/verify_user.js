@@ -12,7 +12,7 @@ module.exports = async (req, res, next) => {
         const data = await jwt.verify(req.session.AUTH || req.query.token || req.cookies["AUTH"], SECRET);
 
         if(!data._id){
-            console.log(data);
+            // console.log(data);
            return res.status(401).send("Invalid Token");
         }
 
