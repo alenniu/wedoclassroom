@@ -1,10 +1,197 @@
 .App {
-  text-align: center;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+.page{
+  position: relative;
+  width: 95%;
+  max-width: 1290px;
+  min-height: 100vh;
+  margin: 0 auto;
+  color: #3F3F44;
+}
+
+.circle{
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.absolute-fill{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.highlight{
+  color: #FDCB9E;
+}
+
+.input-container{
+  vertical-align: top;
+  position: relative;
+  margin: 15px 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  transform: translateY(0);
+  transition: transform .300s, margin .300s, max-height .300s, opacity .300s;
+  max-height: 200px;
+}
+
+.input-container.fullheight{
+  max-height: unset;
+}
+
+.input-container.hide{
+  margin: 0;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-100px);
+}
+
+.fullwidth{
+  width: 100%!important;
+}
+
+.input-container label{
+  margin-bottom: 10px;
+}
+
+.input-container > input, .input-container > select, .input-container > textarea, .input-container .MuiSelect-select{
+  padding: 10px;
+  border-radius: 8px;
+  height: 56px;
+  width: 100%;
+  border: none;
+  background-color: #F6F6F6;
+}
+
+.input-container .input-adornment{
+  position: absolute;
+  top: 0;
+  height: 100%;
+  max-height: 56px;
+  width: 40px;
+  background-color: #efefef;
+}
+
+.input-adornment.start{
+  left: 0;
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+}
+
+.input-adornment.end{
+  right: 0;
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+}
+
+.button{
+  text-transform: uppercase;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  /* font-size: 15px; */
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button.clear{
+  border: 2px solid #3F3F44;
+  color: #3F3F44;
+  background-color: transparent;
+}
+
+.button.primary{
+  background-color: #FDCB9E;
+  color: #3F3F44;
+}
+
+.button.primary:hover{
+  background-color: #FDCB9E;
+}
+
+.button.clear:hover{
+  background-color: rgba(255,255,255,0.2);
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 35px;
+  /* margin-bottom: 12px; */
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+.checkbox-container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkbox-container input:checked ~ .checkmark {
+  background-color: #2196F3;
+  box-sizing: content-box;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkbox-container .checkmark:after {
+  left: 7px;
+  top: 2.5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -13,26 +200,26 @@
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media print{
+  @page { margin: 0; }
+
+  body { margin: 1.6cm; }
+
+  input, .MuiTextField-root{
+    border: none!important;
+    box-shadow: none!important;
+  }
+
+  button, .button, .MuiButton-root{
+    display: none!important;
   }
 }
