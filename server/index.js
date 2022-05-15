@@ -47,6 +47,7 @@ require("./routes/auth_routes")(app);
 require("./routes/user_routes")(app);
 require("./routes/admin_routes")(app);
 require("./routes/class_routes")(app);
+require("./routes/stripe_routes")(app);
 
 app.get("*", async(req, res, next) => {
     const url_path = req.url.split("?")[0];

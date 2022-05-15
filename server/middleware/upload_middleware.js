@@ -27,7 +27,7 @@ module.exports.attachment_storage = multer.diskStorage({
         const attachment_directory = `./uploads/ATTACHMENTS/${sanitize_file_path_component(user.name.first)}-${sanitize_file_path_component(user.name.last)}/${sanitize_file_path_component(subject)}`;
         
         create_directory(attachment_directory);
-        cb(null, attachment_directory)
+        cb(null, attachment_directory);
     },
     filename
 });

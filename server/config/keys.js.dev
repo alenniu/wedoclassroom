@@ -9,4 +9,6 @@ module.exports = {
     COOKIE_KEY: "jsadasudkbdcajhcbahwh",
     WEB_ADDRESS: "http://localhost:3000",
     STRIPE_SECRET_KEY: "",
+    STRIPE_GROUP_CLASS_PRICE_ID: "",
+    STRIPE_PRIVATE_CLASS_PRICE_ID: ""
 }
