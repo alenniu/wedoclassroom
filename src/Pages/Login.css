@@ -2,7 +2,7 @@
     position: relative;
     width: 100%;
     display: flex;
-    padding-left: 5%;
+    padding-left: 35px;
     /* text-align: center; */
     min-height: 100vh;
     align-items: center;
@@ -36,10 +36,9 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: center;
     padding-left: 20px;
     padding-top: 5%;
-    width: 40%;
+    width: 66.66%;
     height: 100%;
     /* min-height: 100vh; */
 }
@@ -54,13 +53,14 @@
 
 .login-form .login-form-inputs{
     margin-top: 40px;
-    padding-right: 5%;
+    padding-right: 35px;
     border-right: 2px solid rgba(63, 63, 68, 0.1);
 }
 
 .login-form .button.login{
     position: fixed;
     top: 6%;
+    min-width: 120px;
 }
 
 .button.sign-up{
@@ -138,12 +138,13 @@
   }
   
   .connect-image-container{
-    width: calc(100% + 20px);
-    margin-left: -20px;
+    width: 90%;
+    margin-top: 50px;
   }
   
   .connect-image-container img{
     width: 100%;
+    max-width: 200px;
   }
   
   .auth-image-container img{

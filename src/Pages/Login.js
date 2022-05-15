@@ -69,7 +69,8 @@ const Login = () => {
                             </div>
 
                             <div>
-                                <p style={{margin: 0}}>Already Have An Account?</p>
+                                <p style={{margin: 0}}>Already Have</p>
+                                <p style={{margin: 0}}>An Account?</p>
                                 <Link to={"/login"} className='highlight'>Login</Link>
                             </div>
                         </div>
