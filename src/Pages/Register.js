@@ -1,13 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {VscArrowRight} from "react-icons/vsc";
 import {BsImageFill} from "react-icons/bs";
-import "./Login.css";
+import "./Auth.css";
 import "./Register.css";
 
 const Register = () => {
+    const navigate = useNavigate();
+
     return (
-        <div className='page login'>
+        <div className='page register'>
             <div className='auth-left'>
                 <div className='auth-image-container'>
                     <img src="/Assets/Images/AuthBackground.png" className='absolute-fill' />
@@ -30,13 +32,15 @@ const Register = () => {
             </div>
 
             <div className='auth-right'>
-                <div className='login-form'>
-                    <div className='login-form-main-col'>
+                <div className='auth-form'>
+                    <div className='auth-form-main-col'>
                         <div>
-                            <p className='promo-text'>Let's Join <b>10,000+</b></p>
-                            <p className='promo-text'>Other <span className='highlight'>Students</span></p>
+                            <div className='promo-text-container'>
+                                <p className='promo-text'>Let's Join <b>10,000+</b></p>
+                                <p className='promo-text'>Other <span className='highlight'>Students</span></p>
+                            </div>
 
-                            <div className="login-form-inputs">
+                            <div className="auth-form-inputs">
                                 <div className='input-container name'>
                                     <label>First Name</label>
                                     <input type="text" name='firstname' placeholder='First Name' />
@@ -57,12 +61,12 @@ const Register = () => {
                                     <input type="password" name='password' placeholder='Enter Your Password' />
                                 </div>
                                 
-                                <button className='button primary fullwidth sign-up' onClick={() => {}}>Sign Up</button>
+                                <button className='button primary fullwidth submit' onClick={() => {}}>Sign Up</button>
                         </div>
                         </div>
-                        <div className='login-form-misc-col'>
-                            <div className='login-button-wrapper'>
-                                <button className='button primary login' onClick={() => {}} >Login</button>
+                        <div className='auth-form-misc-col'>
+                            <div className='auth-button-wrapper'>
+                                <button className='button primary login' onClick={() => {navigate("/login")}}>Login</button>
 
                                 <div className='connect-image-container'>
                                     <img src="/Assets/Images/AuthConnect.png" />
@@ -72,7 +76,7 @@ const Register = () => {
                             <div>
                                 <p style={{margin: 0}}>Already Have</p>
                                 <p style={{margin: 0}}>An Account?</p>
-                                <Link to={"/login"} className='highlight'>Login</Link>
+                                <Link to={"/login"} style={{marginTop: 10, display: "inline-block"}} className='highlight'>Login</Link>
                             </div>
                         </div>
                     </div>

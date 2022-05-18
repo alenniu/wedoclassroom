@@ -16,6 +16,7 @@
   width: 95%;
   max-width: 1290px;
   min-height: 100vh;
+  height: 100vh;
   margin: 0 auto;
   color: #3F3F44;
 }

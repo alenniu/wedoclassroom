@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {VscArrowRight} from "react-icons/vsc";
 import {BsImageFill} from "react-icons/bs";
+import "./Auth.css";
 import "./Login.css";
 
 const Login = () => {
@@ -29,23 +30,15 @@ const Login = () => {
             </div>
 
             <div className='auth-right'>
-                <div className='login-form'>
-                    <div className='login-form-main-col'>
+                <div className='auth-form'>
+                    <div className='auth-form-main-col'>
                         <div>
-                            <p className='promo-text'>Let's Join <b>10,000+</b></p>
-                            <p className='promo-text'>Other <span className='highlight'>Students</span></p>
+                            <div className='promo-text-container'>
+                                <p className='promo-text'>Let's Join <b>10,000+</b></p>
+                                <p className='promo-text'>Other <span className='highlight'>Students</span></p>
+                            </div>
 
-                            <div className="login-form-inputs">
-                                <div className='input-container name'>
-                                    <label>First Name</label>
-                                    <input type="text" name='firstname' placeholder='First Name' />
-                                </div>
-
-                                <div className='input-container name last'>
-                                    <label>Last Name</label>
-                                    <input type="text" name='lastname' placeholder='Last Name' />
-                                </div>
-
+                            <div className="auth-form-inputs">
                                 <div className='input-container'>
                                     <label>Email</label>
                                     <input type="email" name='email' placeholder='youremail@example.com' />
@@ -56,22 +49,20 @@ const Login = () => {
                                     <input type="password" name='password' placeholder='Enter Your Password' />
                                 </div>
                                 
-                                <button className='button primary fullwidth sign-up' onClick={() => {}}>Sign Up</button>
+                                <button className='button primary fullwidth submit' onClick={() => {}}>Log In</button>
                         </div>
                         </div>
-                        <div className='login-form-misc-col'>
-                            <div className='login-button-wrapper'>
-                                <button className='button primary login' onClick={() => {}} >Login</button>
-
+                        <div className='auth-form-misc-col'>
+                            <div className='auth-button-wrapper'>
                                 <div className='connect-image-container'>
                                     <img src="/Assets/Images/AuthConnect.png" />
                                 </div>
                             </div>
 
                             <div>
-                                <p style={{margin: 0}}>Already Have</p>
+                                <p style={{margin: 0}}>Don't Have</p>
                                 <p style={{margin: 0}}>An Account?</p>
-                                <Link to={"/login"} className='highlight'>Login</Link>
+                                <Link to={"/register"} style={{marginTop: 10, display: "inline-block"}} className='highlight'>Sign Up</Link>
                             </div>
                         </div>
                     </div>
