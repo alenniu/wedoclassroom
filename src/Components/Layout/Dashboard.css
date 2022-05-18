@@ -34,6 +34,7 @@ nav.admin-nav{
 .nav-links .nav-link a{
     display: inline-flex;
     align-items: center;
+    justify-content: flex-start;
     width: 100%;
     padding: 15px 10%;
     color: #3F3F44;
