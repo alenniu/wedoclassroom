@@ -9,7 +9,6 @@ const { get_file_extension } = require("./functions/utils");
 const mongoStore = require("connect-mongo");
 
 const db_init = require("./database/init");
-
 const db = db_init();
 
 require("./database/schemas/users");
@@ -33,7 +32,7 @@ app.use(express_session({
     cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000,
     },
-    store: mongoStore.create({mongoUrl: config.DB_HOST, dbName: "app_sessions", mongoOptions: {auth: {username: config.DB_USER, password: config.DB_PASS}}}), /// should use mongostore in future
+    store: mongoStore.create({client: db.getClient(), collectionName: "sessions"}), /// should use mongostore in future
     resave: false,
     saveUninitialized: false,
     secret: config.SECRET, 

@@ -1,9 +1,14 @@
 .App {
+  font-family: "Worker Sans", sans-serif;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+.clickable{
+  cursor: pointer;
 }
 
 .page{
@@ -105,6 +110,17 @@
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-family: "Worker Sans", sans-serif;
+}
+
+.button .icon.left{
+  margin-right: 10px;
+}
+
+.button .icon.right{
+  margin-left: 10px;
 }
 
 .button.clear{
@@ -119,7 +135,7 @@
 }
 
 .button.primary:hover{
-  background-color: #FDCB9E;
+  background-color: #e4a771;
 }
 
 .button.clear:hover{

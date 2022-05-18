@@ -3,8 +3,14 @@ import "./Dashboard.css";
 
 const Dashboard = () => {
     return (
-        <div>
-            <h1>Dashboard Page</h1>
+        <div className='page dashboard'>
+            <div className='main-col'>
+                <h1>Dashboard Main</h1>
+            </div>
+
+            <div className='misc-col'>
+                <h1>Dashboard Misc</h1>
+            </div>
         </div>
     );
 }

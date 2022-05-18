@@ -14,7 +14,7 @@ const routes = [
         path: "/dashboard",
         component: DashboardLayout,
         exact: false,
-        authRequired: true, //will also effect children
+        authRequired: false, //will also effect children
         adminRequired: false, //will also effect children
         children: [
             {

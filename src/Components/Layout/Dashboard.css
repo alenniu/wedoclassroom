@@ -1,0 +1,174 @@
+nav.admin-nav{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100%;
+    min-height: 100vh;
+    border-right: 1px solid rgb(63, 63, 68, 0.1);
+    /* background-color: blue; */
+}
+
+.admin-nav .nav-wrapper{
+    width: 280px;
+    height: 100%;
+    /* background-color: orange; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nav-wrapper .nav-links{
+    width: 100%;
+    padding: 20px 12.5%;
+}
+
+.nav-links .nav-link{
+    margin: 10px 0;
+}
+
+.nav-links .nav-link .link-icon{
+    margin-right: 10px;
+}
+
+.nav-links .nav-link a{
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    padding: 15px 10%;
+    color: #3F3F44;
+    font-size: 16px;
+    font-weight: 300;
+    font-family: "Work Sans", sans-serif;
+    text-align: left;
+}
+
+.nav-links .nav-link a:hover{
+    color: #699f49;
+}
+
+.nav-links .nav-link a.active{
+    background-color: #CCEABB;
+}
+
+.nav-wrapper .nav-image-container{
+    margin-top: 60px;
+    margin-bottom: 20px;
+    width: 60%;
+    height: 60px;
+}
+
+.nav-image-container img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-page-container{
+    width: calc(100% - 280px);
+    margin-left: 280px;
+    padding: 0 20px;
+}
+
+.admin-page-container header.admin-header{
+    height: 90px;
+    padding: 20px 0;
+    display: flex;
+}
+
+.admin-page-container .admin-header .dashboard-greeting-action{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.dashboard-greeting-action .button{
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-header .dashboard-greeting{
+    font-size: 24px;
+}
+
+.dashboard-greeting .username{
+    font-weight: bold;
+}
+
+.admin-page-container .main-col{
+    padding-right: 20px;
+    display: inline-block;
+    height: 100%;
+    width: 65%;
+    /* background-color: aqua; */
+}
+
+.admin-page-container .misc-col{
+    padding-left: 20px;
+    display: inline-block;
+    height: 100%;
+    width: 35%;
+    /* background-color: gold; */
+}
+
+.admin-page-container .page{
+    max-width: unset;
+    width: 100%;
+}
+
+.admin-page-container .page .main-col, .admin-page-container .page .misc-col, .admin-page-container .page{
+    min-height: calc(100vh - 90px);
+    border-top: 1px solid #CCEABB;
+}
+
+.admin-page-container .page .main-col{
+    border-right: 1px solid #CCEABB;
+}
+
+.admin-page-container .page .misc-col{
+    border-left: 1px solid #CCEABB;
+}
+
+.admin-header .dashboard-user-actions{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.admin-header .user-profile-container{
+    display: flex;
+    align-items: center;
+}
+
+.admin-header .user-profile-container .user-image-container{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #F6F6F6;
+}
+
+.admin-header .user-image-container img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-header .user-profile-container .user-info-container{
+    margin-left: 10px;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.admin-header .user-profile-container .user-info-container .name{
+    font-size: 14px;
+    font-weight: 600px;
+    margin-bottom: 5px;
+}
+
+.admin-header .user-actions .action-icon-container{
+    position: relative;
+    margin: 0 8px;
+}
