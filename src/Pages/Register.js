@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { check_login, edit_auth_value, register } from '../Actions/AuthActions';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { check_login, edit_auth_value, register, set_loading } from '../Actions';
 import {VscArrowRight} from "react-icons/vsc";
 import {BsImageFill} from "react-icons/bs";
 import "./Auth.css";
 import "./Register.css";
 import { connect } from 'react-redux';
-import { set_loading } from '../Actions/AppActions';
 import { password_requirements, validate_email, validate_name, validate_password } from '../Utils';
 
 const Register = ({email, name={}, logged_in, is_admin, user, error, check_login, register, set_loading, edit_auth_value}) => {
     const navigate = useNavigate();
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+
+    const [query] = useSearchParams()
+
 
     useEffect(() => {
         async function login_check(){
@@ -23,6 +25,17 @@ const Register = ({email, name={}, logged_in, is_admin, user, error, check_login
 
         login_check();
     }, []);
+
+    useEffect(() => {
+        const from = query.get("from");
+        if(logged_in && user){
+            if(is_admin){
+                navigate(from || "/dashboard");
+            }else{
+                navigate(`/dashboard`);
+            }
+        }
+    }, [logged_in, is_admin, user]);
 
     const onChangeValue = (keys=[], error_prop) => (e) => {
         error_prop && (typeof(error_prop) === "string") && setErrors(e => ({...e, [error_prop]: ""}));
@@ -52,7 +65,7 @@ const Register = ({email, name={}, logged_in, is_admin, user, error, check_login
     const onPressRegister = async () => {
         set_loading(true);
         if(validate_fields()){
-            await register({email, name, password, phone: "", type: "admin", addresses: [], role: ""});
+            await register({email, name, password, phone: "", type: "admin", addresses: [], role: ""})
         }
         set_loading(false);
     }

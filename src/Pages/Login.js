@@ -5,8 +5,7 @@ import {BsImageFill} from "react-icons/bs";
 import "./Auth.css";
 import "./Login.css";
 import { connect } from 'react-redux';
-import { check_login, edit_auth_value, login } from '../Actions/AuthActions';
-import { set_loading } from '../Actions/AppActions';
+import { check_login, edit_auth_value, login, set_loading } from '../Actions';
 import { validate_email, validate_password } from '../Utils';
 
 const Login = ({email, error, logged_in, is_admin, user, login, check_login, set_loading, edit_auth_value}) => {
