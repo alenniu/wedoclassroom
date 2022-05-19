@@ -2,6 +2,10 @@
   font-family: "Worker Sans", sans-serif;
 }
 
+.print-only{
+  display: none!important;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -212,6 +216,12 @@
   transform: rotate(45deg);
 }
 
+p.error{
+  font-size: 14px;
+  color: #8B000D;
+  width: 100%;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -238,6 +248,16 @@
   }
 
   button, .button, .MuiButton-root{
+    display: none!important;
+  }
+
+  .print-only{
+    display: block;
+    opacity: 1;
+  }
+
+  .no-print{
+    visibility: hidden;
     display: none!important;
   }
 }

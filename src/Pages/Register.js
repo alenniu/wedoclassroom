@@ -1,12 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { check_login, edit_auth_value, register } from '../Actions/AuthActions';
 import {VscArrowRight} from "react-icons/vsc";
 import {BsImageFill} from "react-icons/bs";
 import "./Auth.css";
 import "./Register.css";
+import { connect } from 'react-redux';
+import { set_loading } from '../Actions/AppActions';
+import { password_requirements, validate_email, validate_name, validate_password } from '../Utils';
 
-const Register = () => {
+const Register = ({email, name={}, logged_in, is_admin, user, error, check_login, register, set_loading, edit_auth_value}) => {
     const navigate = useNavigate();
+    const [password, setPassword] = useState("");
+    const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        async function login_check(){
+            set_loading(true);
+            await check_login()
+            set_loading(false);
+        }
+
+        login_check();
+    }, []);
+
+    const onChangeValue = (keys=[], error_prop) => (e) => {
+        error_prop && (typeof(error_prop) === "string") && setErrors(e => ({...e, [error_prop]: ""}));
+
+        edit_auth_value(keys, e.target.value);
+    }
+
+    const onChangePassword = (e) => {
+        setErrors(e => ({...e, password_error: ""}));
+        setPassword(e.target.value);
+    }
+
+    const validate_fields = () => {
+        let is_valid = true;
+        
+        if(!validate_email(email)){is_valid=false; setErrors((e) => ({...e, email_error: "Not a valid email"}))}
+        
+        if(!validate_name(name.first)){is_valid=false; setErrors((e) => ({...e, firstname_error: "Not a valid name, At least 2 character"}))}
+
+        if(!validate_name(name.last)){is_valid=false; setErrors((e) => ({...e, lastname_error: "Not a valid name, At least 2 character"}))}
+
+        if(!validate_password(password)){is_valid=false; setErrors((e) => ({...e, password_error: `Not a valid password, ${password_requirements}`}))}
+
+        return is_valid;
+    }
+
+    const onPressRegister = async () => {
+        set_loading(true);
+        if(validate_fields()){
+            await register({email, name, password, phone: "", type: "admin", addresses: [], role: ""});
+        }
+        set_loading(false);
+    }
 
     return (
         <div className='page register'>
@@ -43,25 +92,35 @@ const Register = () => {
                             <div className="auth-form-inputs">
                                 <div className='input-container name'>
                                     <label>First Name</label>
-                                    <input type="text" name='firstname' placeholder='First Name' />
+                                    <input type="text" name='firstname' value={name.first} onChange={onChangeValue(["name", "first"], "firstname_error")} placeholder='First Name' />
+
+                                    {errors.firstname_error && <p className='error'>{errors.firstname_error}</p>}
                                 </div>
 
                                 <div className='input-container name last'>
                                     <label>Last Name</label>
-                                    <input type="text" name='lastname' placeholder='Last Name' />
+                                    <input type="text" name='lastname' value={name.last} onChange={onChangeValue(["name", "last"], "lastname_error")} placeholder='Last Name' />
+
+                                    {errors.lastname_error && <p className='error'>{errors.lastname_error}</p>}
                                 </div>
 
                                 <div className='input-container'>
                                     <label>Email</label>
-                                    <input type="email" name='email' placeholder='youremail@example.com' />
+                                    <input type="email" name='email' value={email} onChange={onChangeValue(["email"], "email_error")} placeholder='youremail@example.com' />
+
+                                    {errors.email_error && <p className='error'>{errors.email_error}</p>}
                                 </div>
 
                                 <div className='input-container'>
                                     <label>Password</label>
-                                    <input type="password" name='password' placeholder='Enter Your Password' />
+                                    <input type="password" name='password' value={password} onChange={onChangePassword} placeholder='Enter Your Password' />
+
+                                    {errors.password_error && <p className='error'>{errors.password_error}</p>}
                                 </div>
                                 
-                                <button className='button primary fullwidth submit' onClick={() => {}}>Sign Up</button>
+                                <button className='button primary fullwidth submit' onClick={onPressRegister}>Sign Up</button>
+
+                                {error && <p className='error'>{error}</p>}
                         </div>
                         </div>
                         <div className='auth-form-misc-col'>
@@ -85,5 +144,9 @@ const Register = () => {
         </div>
     );
 }
- 
-export default Register;
+
+function map_state_to_props({Auth, App}){
+    return {email: Auth.email, name: Auth.name, logged_in: Auth.logged_in, is_admin: Auth.is_admin, user: App.user, error: Auth.error}
+}
+
+export default connect(map_state_to_props, {register, check_login, edit_auth_value, set_loading})(Register);
