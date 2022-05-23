@@ -73,7 +73,6 @@ nav.admin-nav{
 
 .admin-page-container header.admin-header{
     height: 90px;
-    padding: 20px 0;
     display: flex;
 }
 
@@ -104,6 +103,11 @@ nav.admin-nav{
     width: 65%;
     border-right: 1px solid #CCEABB;
     /* background-color: aqua; */
+}
+
+.admin-header .main-col, .admin-header .misc-col{
+    padding: 20px;
+
 }
 
 .admin-page-container .misc-col{
