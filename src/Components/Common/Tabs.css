@@ -1,0 +1,27 @@
+.tabs-container{
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
+.tabs-container .tab{
+    display: inline-block;
+    flex-shrink: 0;
+    padding: 20px 15px;
+    font-weight: 600;
+}
+
+.tabs-container .tab.inactive{
+    opacity: 45%;
+}
+
+.tabs-container .tab-indicator{
+    position: absolute;
+    transition: transform .300s;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #CCEABB;
+    bottom: 10px;
+}

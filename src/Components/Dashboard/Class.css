@@ -1,0 +1,33 @@
+.class-container{
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 1px 1px 5px grey;
+}
+
+.class-container .class-subject{
+    font-weight: 600;
+    font-size: 17px;
+}
+
+.class-container .class-schedule{
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    color: rgba(63, 63, 68, .45);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.class-container .class-image{
+    width: 100%;
+    height: 60px;
+    margin-top: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.class-container .class-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

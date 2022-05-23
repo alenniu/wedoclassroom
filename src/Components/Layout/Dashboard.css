@@ -121,6 +121,7 @@ nav.admin-nav{
 .admin-page-container .page .main-col, .admin-page-container .page .misc-col, .admin-page-container .page{
     min-height: calc(100vh - 90px);
     border-top: 1px solid #CCEABB;
+    vertical-align: top;
 }
 
 .admin-page-container .page .main-col{
@@ -161,6 +162,10 @@ nav.admin-nav{
     margin-left: 10px;
     font-size: 12px;
     font-weight: 400;
+}
+
+.admin-header .user-profile-container .user-info-container .role{
+    text-transform: capitalize;
 }
 
 .admin-header .user-profile-container .user-info-container .name{

@@ -9,13 +9,13 @@ export const create_class_handler = async (req: Request, res: Response, next: Ne
         const {user} = req;
 
         if((user.type === "admin") || (user.type === "teacher")){
-            let {subject, tags=[], teacher} = req.body;
+            let {subject, tags=[], class_type="group", teacher} = req.body;
         
             if(user.type === "teacher"){
                 teacher = user;
             }
         
-            const _class = await create_class({subject, tags, teacher}, user);
+            const _class = await create_class({subject, tags, teacher, class_type}, user);
 
             return res.json({success: true, _class});
         }else{

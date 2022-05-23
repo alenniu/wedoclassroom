@@ -77,10 +77,10 @@ async function get_user_classes(user, limit=20, offset=0, search=""){
     }
 }
 
-async function create_class({subject, teacher=null, tags=[]}, creator){
+async function create_class({subject, teacher=null, class_type, tags=[]}, creator){
     try{
         if(subject){
-            const new_class = await ((new Class({subject, teacher: teacher?._id || null, tags, created_by: creator._id})).save());
+            const new_class = await ((new Class({subject, teacher: teacher?._id || null, tags, created_by: creator._id, class_type})).save());
 
             return new_class;
         }else{

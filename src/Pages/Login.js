@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {VscArrowRight} from "react-icons/vsc";
 import {BsImageFill} from "react-icons/bs";
@@ -6,12 +6,15 @@ import "./Auth.css";
 import "./Login.css";
 import { connect } from 'react-redux';
 import { check_login, edit_auth_value, login, set_loading } from '../Actions';
-import { validate_email, validate_password } from '../Utils';
+import { onPressReturn, validate_email, validate_password } from '../Utils';
 
 const Login = ({email, error, logged_in, is_admin, user, login, check_login, set_loading, edit_auth_value}) => {
     const navigate = useNavigate()
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+
+    const email_ref = useRef(null);
+    const password_ref = useRef(null);
 
     const [query] = useSearchParams()
 
@@ -65,6 +68,14 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, set
         set_loading(false);
     }
 
+    const onPressEnterEmail = onPressReturn(() => {
+        password_ref.current?.focus();
+    });
+
+    const onPressEnterPassword = onPressReturn(() => {
+        onPressLogin();
+    });
+
     return (
         <div className='page login'>
             <div className='auth-left'>
@@ -100,14 +111,14 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, set
                             <div className="auth-form-inputs">
                                 <div className='input-container'>
                                     <label>Email</label>
-                                    <input type="email" name='email' value={email} onChange={onChangeValue(["email"])} placeholder='youremail@example.com' />
+                                    <input ref={email_ref} type="email" name='email' value={email} onChange={onChangeValue(["email"])} placeholder='youremail@example.com' onKeyDown={onPressEnterEmail} />
 
                                     {errors.email_error && <p className='error'>{errors.email_error}</p>}
                                 </div>
 
                                 <div className='input-container'>
                                     <label>Password</label>
-                                    <input type="password" name='password' value={password} onChange={onChangePassword} placeholder='Enter Your Password' />
+                                    <input ref={password_ref} type="password" name='password' value={password} onChange={onChangePassword} placeholder='Enter Your Password' onKeyDown={onPressEnterPassword} />
                                 </div>
                                 
                                 <button className='button primary fullwidth submit' onClick={onPressLogin}>Log In</button>

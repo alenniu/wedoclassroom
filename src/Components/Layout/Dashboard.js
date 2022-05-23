@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { connect } from 'react-redux';
 import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line} from "react-icons/ri";
+import { logout, set_loading } from '../../Actions';
 
 import "./Dashboard.css";
 
-const DashboardLayout = () => {
+const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_loading}) => {
+
+    const {name={first: "Ruth", last: "Langmore"}, phone, type} = user;
+
     const [navOpen, setNavOpen] = useState(null);
+
+    const navigate = useNavigate();
 
     const openNav = () => {
         setNavOpen(true);
@@ -17,6 +24,14 @@ const DashboardLayout = () => {
 
     const toggleNav = () => {
         setNavOpen((open) => !open);
+    }
+
+    const onPressMessageIcon = async () => {
+        set_loading(true);
+        if(await logout()){
+            navigate("/login");
+        }
+        set_loading(false);
     }
 
     return (
@@ -33,24 +48,28 @@ const DashboardLayout = () => {
                         </li>
 
                         <li className='nav-link'>
-                            <NavLink to="/schedule" className="button"><RiCalendar2Line className='link-icon' size={"20px"} /><span className='link-label'>My Schedule</span></NavLink>
+                            <NavLink to="/classes" className="button"><RiBook2Line className='link-icon' size={"20px"} /><span className='link-label'>My Classes</span></NavLink>
                         </li>
 
                         <li className='nav-link'>
+                            <NavLink to="/schedule" className="button"><RiCalendar2Line className='link-icon' size={"20px"} /><span className='link-label'>My Schedule</span></NavLink>
+                        </li>
+
+                        {/* <li className='nav-link'>
                             <NavLink to="/message" className="button"><RiMessage3Line className='link-icon' size={"20px"} /><span className='link-label'>Messages</span></NavLink>
                         </li>
 
                         <li className='nav-link'>
-                            <NavLink to="/courses" className="button"><RiBook2Line className='link-icon' size={"20px"} /><span className='link-label'>My Courses</span></NavLink>
-                        </li>
-
-                        <li className='nav-link'>
                             <NavLink to="/review" className="button"><RiStarLine className='link-icon' size={"20px"} /><span className='link-label'>Reviews</span></NavLink>
-                        </li>
+                        </li> */}
 
-                        <li className='nav-link'>
-                            <NavLink to="/account" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>My Account</span></NavLink>
-                        </li>
+                        {is_teacher && <li className='nav-link'>
+                            <NavLink to="/payments" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>My Payments</span></NavLink>
+                        </li>}
+
+                        {is_admin && <li className='nav-link'>
+                            <NavLink to="/accounts" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>Accounts</span></NavLink>
+                        </li>}
                     </ul>
                 </div>
             </nav>
@@ -60,9 +79,9 @@ const DashboardLayout = () => {
                 <header className={`admin-header ${navOpen===false?"nav-closed":navOpen===true?"nav-open":""}`}>
                     <div className='main-col'>
                         <div className='dashboard-greeting-action'>
-                            <p className='dashboard-greeting'>Good Morning, <span className='username'>Samantha</span></p>
+                            <p className='dashboard-greeting'>Good Morning, <span className='username'>{name.first}</span></p>
 
-                            <button className='button primary'><RiVideoAddLine className='icon left' size={"20px"} /> New Course</button>
+                            <button className='button primary'><RiVideoAddLine className='icon left' size={"20px"} /> New Class</button>
                         </div>
                     </div>
                     <div className='misc-col'>
@@ -73,13 +92,13 @@ const DashboardLayout = () => {
                                 </div>
 
                                 <div className='user-info-container'>
-                                    <p className='name'>Samantha</p>
-                                    <p className='role'>UI / UX</p>
+                                    <p className='name'>{name.first}</p>
+                                    <p className='role'>{type}</p>
                                 </div>
                             </div>
 
                             <div className='user-actions icons'>
-                                <span className='action-icon-container'><RiMessage3Line size={25} className="clickable" /></span>
+                                <span className='action-icon-container' onClick={onPressMessageIcon}><RiMessage3Line size={25} className="clickable" /></span>
                                 <span className='action-icon-container'><RiNotification3Line size={25} className="clickable" /></span>
                             </div>
                         </div>
@@ -90,5 +109,9 @@ const DashboardLayout = () => {
         </div>
     );
 }
- 
-export default DashboardLayout;
+
+function map_state_to_props({App, Auth}){
+    return {user: App.user, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student}
+}
+
+export default connect(map_state_to_props, {logout, set_loading})(DashboardLayout);

@@ -16,7 +16,9 @@ export const register = ({name, email, password, phone, type="admin", role="", a
 
             if(res.data){
                 if(res.data.success){
-                    dispatch({type: REGISTER, payload: {user: res.data.user, is_admin: res.data.is_admin}})
+                    const {type} = res.data.user;
+
+                    dispatch({type: REGISTER, payload: {user: res.data.user, is_admin: type === "admin", is_teacher: type === "teacher", is_student: type === "student"}})
                     dispatch({type: SET_USER, payload: {user: res.data.user}});
                     
                     return res.data
@@ -41,7 +43,9 @@ export const login = ({email, password, is_sso}) => async (dispatch) => {
     
             if(res.data){
                 if(res.data.success){
-                    dispatch({type: LOGIN, payload: {user: res.data.user, is_admin: res.data.is_admin}});
+                    const {type} = res.data.user;
+
+                    dispatch({type: LOGIN, payload: {user: res.data.user, is_admin: type === "admin", is_teacher: type === "teacher", is_student: type === "student"}});
                     dispatch({type: SET_USER, payload: {user: res.data.user}});
                     
                     return res.data;
@@ -89,7 +93,9 @@ export const check_login = () => async (dispatch) => {
         if(res.data){
             if(res.data.success){
                 if(res.data.logged_in){
-                    dispatch({type: LOGIN, payload: {user: res.data.user, is_admin: res.data.is_admin}})
+                    const {type} = res.data.user;
+
+                    dispatch({type: LOGIN, payload: {user: res.data.user, is_admin: type === "admin", is_teacher: type === "teacher", is_student: type === "student"}})
                     dispatch({type: SET_USER, payload: {user: res.data.user}});
                 }
                 return res.data;

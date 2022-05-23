@@ -25,7 +25,12 @@ const class_schema = new schema({
     attachments: [{
         type: schema.Types.ObjectId,
         ref: "attachment"
-    }]
+    }],
+    class_type: {
+        type: String,
+        enum: ["group", "individual"],
+        default: "group"
+    }
 }, {timestamps: true});
 
 mongoose.model("class", class_schema, "classes");

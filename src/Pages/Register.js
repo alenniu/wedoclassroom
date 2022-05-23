@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { check_login, edit_auth_value, register, set_loading } from '../Actions';
 import {VscArrowRight} from "react-icons/vsc";
@@ -6,12 +6,18 @@ import {BsImageFill} from "react-icons/bs";
 import "./Auth.css";
 import "./Register.css";
 import { connect } from 'react-redux';
-import { password_requirements, validate_email, validate_name, validate_password } from '../Utils';
+import { onPressReturn, password_requirements, validate_email, validate_name, validate_password } from '../Utils';
 
 const Register = ({email, name={}, logged_in, is_admin, user, error, check_login, register, set_loading, edit_auth_value}) => {
     const navigate = useNavigate();
+
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+
+    const firstname_ref = useRef(null);
+    const lastname_ref = useRef(null);
+    const email_ref = useRef(null);
+    const password_ref = useRef(null);
 
     const [query] = useSearchParams()
 
@@ -70,6 +76,22 @@ const Register = ({email, name={}, logged_in, is_admin, user, error, check_login
         set_loading(false);
     }
 
+    const onPressEnterFirstname = onPressReturn(() => {
+        lastname_ref.current?.focus();
+    })
+
+    const onPressEnterLastname = onPressReturn(() => {
+        email_ref.current?.focus();
+    })
+
+    const onPressEnterEmail = onPressReturn(() => {
+        password_ref.current?.focus();
+    })
+
+    const onPressEnterPassword = onPressReturn(() => {
+        onPressRegister()
+    })
+
     return (
         <div className='page register'>
             <div className='auth-left'>
@@ -105,28 +127,28 @@ const Register = ({email, name={}, logged_in, is_admin, user, error, check_login
                             <div className="auth-form-inputs">
                                 <div className='input-container name'>
                                     <label>First Name</label>
-                                    <input type="text" name='firstname' value={name.first} onChange={onChangeValue(["name", "first"], "firstname_error")} placeholder='First Name' />
+                                    <input ref={firstname_ref} type="text" name='firstname' value={name.first} onChange={onChangeValue(["name", "first"], "firstname_error")} placeholder='First Name' onKeyDown={onPressEnterFirstname} />
 
                                     {errors.firstname_error && <p className='error'>{errors.firstname_error}</p>}
                                 </div>
 
                                 <div className='input-container name last'>
                                     <label>Last Name</label>
-                                    <input type="text" name='lastname' value={name.last} onChange={onChangeValue(["name", "last"], "lastname_error")} placeholder='Last Name' />
+                                    <input ref={lastname_ref} type="text" name='lastname' value={name.last} onChange={onChangeValue(["name", "last"], "lastname_error")} placeholder='Last Name' onKeyDown={onPressEnterLastname} />
 
                                     {errors.lastname_error && <p className='error'>{errors.lastname_error}</p>}
                                 </div>
 
                                 <div className='input-container'>
                                     <label>Email</label>
-                                    <input type="email" name='email' value={email} onChange={onChangeValue(["email"], "email_error")} placeholder='youremail@example.com' />
+                                    <input ref={email_ref} type="email" name='email' value={email} onChange={onChangeValue(["email"], "email_error")} placeholder='youremail@example.com' onKeyDown={onPressEnterEmail} />
 
                                     {errors.email_error && <p className='error'>{errors.email_error}</p>}
                                 </div>
 
                                 <div className='input-container'>
                                     <label>Password</label>
-                                    <input type="password" name='password' value={password} onChange={onChangePassword} placeholder='Enter Your Password' />
+                                    <input ref={password_ref} type="password" name='password' value={password} onChange={onChangePassword} placeholder='Enter Your Password' onKeyDown={onPressEnterPassword} />
 
                                     {errors.password_error && <p className='error'>{errors.password_error}</p>}
                                 </div>

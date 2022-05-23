@@ -8,3 +8,6 @@ export const EDIT_AUTH_VALUE = "SET_AUTH_VALUE";
 
 export const SET_USER = "SET_USER";
 export const SET_LOADING = "SET_LOADING";
+
+export const SET_CLASS = "SET_CLASS";
+export const SET_CLASSES = "SET_CLASSES";
