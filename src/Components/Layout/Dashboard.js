@@ -71,6 +71,18 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_lo
                             <NavLink to="/dashboard/accounts" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>Accounts</span></NavLink>
                         </li>}
                     </ul>
+
+                    <div className='support-container'>
+                        <div className='support-image-container'>
+                            <img src="/Assets/Images/support-badge.svg" />
+                        </div>
+                        <div className='support-text'>
+                            <p>Need Help?</p>
+                            <p>Contact Wedo Support</p>
+                        </div>
+
+                        <button className='button primary'>Contact Support</button>
+                    </div>
                 </div>
             </nav>
 

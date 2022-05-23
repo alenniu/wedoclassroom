@@ -12,7 +12,8 @@
 .class-container .class-schedule{
     margin-top: 15px;
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: space-around;
     color: rgba(63, 63, 68, .45);
     font-size: 15px;
     font-weight: 600;
