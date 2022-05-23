@@ -36,9 +36,9 @@ const Register = ({email, name={}, logged_in, is_admin, user, error, check_login
         const from = query.get("from");
         if(logged_in && user){
             if(is_admin){
-                navigate(from || "/dashboard");
+                navigate(from || "/dashboard/");
             }else{
-                navigate(`/dashboard`);
+                navigate(`/dashboard/`);
             }
         }
     }, [logged_in, is_admin, user]);

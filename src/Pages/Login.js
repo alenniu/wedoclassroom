@@ -32,9 +32,9 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, set
         const from = query.get("from");
         if(logged_in && user){
             if(is_admin){
-                navigate(from || "/dashboard");
+                navigate(from || "/dashboard/");
             }else{
-                navigate(`/dashboard`);
+                navigate(`/dashboard/`);
             }
         }
     }, [logged_in, is_admin, user]);

@@ -18,11 +18,43 @@ const routes = [
         adminRequired: false, //will also effect children
         children: [
             {
-                path: "/dashboard",
+                path: "/dashboard/",
                 component: Dashboard,
                 exact: true,
                 children: null,
                 isIndex: true,
+                adminRequired: false
+            },
+            {
+                path: "/dashboard/classes",
+                component: Dashboard,
+                exact: true,
+                children: null,
+                isIndex: false,
+                adminRequired: false
+            },
+            {
+                path: "/dashboard/schedule",
+                component: Dashboard,
+                exact: true,
+                children: null,
+                isIndex: false,
+                adminRequired: false
+            },
+            {
+                path: "/dashboard/payments",
+                component: Dashboard,
+                exact: true,
+                children: null,
+                isIndex: false,
+                adminRequired: false
+            },
+            {
+                path: "/dashboard/accounts",
+                component: Dashboard,
+                exact: true,
+                children: null,
+                isIndex: false,
                 adminRequired: false
             }
         ]

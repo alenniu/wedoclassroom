@@ -44,31 +44,31 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_lo
 
                     <ul className='nav-links'>
                         <li className='nav-link'>
-                            <NavLink to="/dashboard" className="button"><RiDashboardLine className='link-icon' size={"20px"} /><span className='link-label'>Dashboard</span></NavLink>
+                            <NavLink to="/dashboard/" className="button"><RiDashboardLine className='link-icon' size={"20px"} /><span className='link-label'>Dashboard</span></NavLink>
                         </li>
 
                         <li className='nav-link'>
-                            <NavLink to="/classes" className="button"><RiBook2Line className='link-icon' size={"20px"} /><span className='link-label'>My Classes</span></NavLink>
+                            <NavLink to="/dashboard/classes" className="button"><RiBook2Line className='link-icon' size={"20px"} /><span className='link-label'>My Classes</span></NavLink>
                         </li>
 
                         <li className='nav-link'>
-                            <NavLink to="/schedule" className="button"><RiCalendar2Line className='link-icon' size={"20px"} /><span className='link-label'>My Schedule</span></NavLink>
+                            <NavLink to="/dashboard/schedule" className="button"><RiCalendar2Line className='link-icon' size={"20px"} /><span className='link-label'>My Schedule</span></NavLink>
                         </li>
 
                         {/* <li className='nav-link'>
-                            <NavLink to="/message" className="button"><RiMessage3Line className='link-icon' size={"20px"} /><span className='link-label'>Messages</span></NavLink>
+                            <NavLink to="/dashboard/messages" className="button"><RiMessage3Line className='link-icon' size={"20px"} /><span className='link-label'>Messages</span></NavLink>
                         </li>
 
                         <li className='nav-link'>
-                            <NavLink to="/review" className="button"><RiStarLine className='link-icon' size={"20px"} /><span className='link-label'>Reviews</span></NavLink>
+                            <NavLink to="/dashboard/reviews" className="button"><RiStarLine className='link-icon' size={"20px"} /><span className='link-label'>Reviews</span></NavLink>
                         </li> */}
 
                         {is_teacher && <li className='nav-link'>
-                            <NavLink to="/payments" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>My Payments</span></NavLink>
+                            <NavLink to="/dashboard/payments" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>My Payments</span></NavLink>
                         </li>}
 
                         {is_admin && <li className='nav-link'>
-                            <NavLink to="/accounts" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>Accounts</span></NavLink>
+                            <NavLink to="/dashboard/accounts" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>Accounts</span></NavLink>
                         </li>}
                     </ul>
                 </div>
