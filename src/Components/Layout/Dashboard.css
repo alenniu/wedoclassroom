@@ -102,6 +102,7 @@ nav.admin-nav{
     display: inline-block;
     height: 100%;
     width: 65%;
+    border-right: 1px solid #CCEABB;
     /* background-color: aqua; */
 }
 
@@ -110,6 +111,7 @@ nav.admin-nav{
     display: inline-block;
     height: 100%;
     width: 35%;
+    border-left: 1px solid #CCEABB;
     /* background-color: gold; */
 }
 
