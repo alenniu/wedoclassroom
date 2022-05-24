@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import {RiCalendarLine} from "react-icons/ri";
 import { get_classes, set_loading } from '../Actions';
 import Tabs from '../Components/Common/Tabs';
 import Class from '../Components/Dashboard/Class';
 import "./Dashboard.css";
+import { get_week_date_range, MONTHS } from '../Data';
 
 const Dashboard = ({classes=[], total=0, get_classes, set_loading}) => {
     const [pageLimit, setPageLimit] = useState(20);
@@ -36,10 +38,20 @@ const Dashboard = ({classes=[], total=0, get_classes, set_loading}) => {
         setClasstype(id);
     }
 
+    const current_date = new Date();
+    const {min, max} = get_week_date_range(current_date.getMonth(), current_date.getDate());
     return (
         <div className='page dashboard'>
             <div className='main-col'>
-                <h1>Dashboard Main</h1>
+                <div className='schedule-container'>
+                    <p className='schedule-date-range'>
+                        <RiCalendarLine color='#99C183' size={24} /> {MONTHS[current_date.getMonth()].long} {min} - {max}, {current_date.getFullYear()}
+                    </p>
+
+                    <div className='scedule-calender'>
+                        
+                    </div>
+                </div>
             </div>
 
             <div className='misc-col'>

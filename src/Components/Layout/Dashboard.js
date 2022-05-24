@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line} from "react-icons/ri";
+import {BsCurrencyDollar} from "react-icons/bs";
 import { logout, set_loading } from '../../Actions';
 
 import "./Dashboard.css";
@@ -64,7 +65,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_lo
                         </li> */}
 
                         {is_teacher && <li className='nav-link'>
-                            <NavLink to="/dashboard/payments" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>My Payments</span></NavLink>
+                            <NavLink to="/dashboard/payments" className="button"><BsCurrencyDollar className='link-icon' size={"20px"} /><span className='link-label'>My Payments</span></NavLink>
                         </li>}
 
                         {is_admin && <li className='nav-link'>

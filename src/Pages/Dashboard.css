@@ -10,3 +10,27 @@
     text-align: center;
     margin-bottom: 20px;
 }
+
+.page.dashboard .schedule-container{
+    padding-top: 20px;
+}
+
+.page.dashboard .schedule-container .schedule-date-range{
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    text-transform: capitalize;
+}
+
+.page.dashboard .schedule-container .schedule-date-range svg{
+    margin-right: 10px;
+}
+
+.page.dashboard .schedule-container .scedule-calender{
+    width: 100%;
+    min-height: 50px;
+    border-radius: 16px;
+    border: 1px solid #ECECEC;
+    margin-top: 20px;
+}
