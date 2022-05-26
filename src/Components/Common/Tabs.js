@@ -24,7 +24,7 @@ const Tabs = ({tabs=[], index, current_id, horizontal=true, onPressTab}) => {
     const _onPressTab = (e:React.MouseEvent<HTMLSpanElement, MouseEvent>, {label, id}, index) => {
         const {width} = e.currentTarget.getBoundingClientRect();
         const x = e.currentTarget.offsetLeft;
-        console.log(e.currentTarget, e.currentTarget.parentElement);
+        
         tabWidth.current = width;
         tabX.current = x;
 

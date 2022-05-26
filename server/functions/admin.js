@@ -17,13 +17,13 @@ async function get_teachers(limit=20, offset=0, search="", sort={}, filters={}){
             total = await Users.count({...filters, $and: [{type: "teacher"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]});
 
             if(total){
-                teachers = await Users.find({...filters, $and: [{type: "teacher"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}, {password: 0}).sort(sort).limit(limit).skip(offset).lean(true);
+                teachers = await Users.find({...filters, $and: [{type: "teacher"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}, {password: 0}).collation({locale: "en"}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }else{
             total = await Users.count({...filters, type: "teacher"});
 
             if(total){
-                teachers = await Users.find({...filters, type: "teacher"}, {password: 0}).sort(sort).limit(limit).skip(offset).lean(true);
+                teachers = await Users.find({...filters, type: "teacher"}, {password: 0}).collation({locale: "en"}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }
 
@@ -46,13 +46,13 @@ async function get_students(limit=20, offset=0, search="", sort={}, filters={}){
             total = await Users.count({...filters, $and: [{type: "student"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]});
 
             if(total){
-                students = await Users.find({...filters, $and: [{type: "student"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}, {password: 0}).sort(sort).limit(limit).skip(offset).lean(true);
+                students = await Users.find({...filters, $and: [{type: "student"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}, {password: 0}).collation({locale: "en"}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }else{
             total = await Users.count({...filters, type: "student"});
 
             if(total){
-                students = await Users.find({...filters, type: "student"}, {password: 0}).sort(sort).limit(limit).skip(offset).lean(true);
+                students = await Users.find({...filters, type: "student"}, {password: 0}).collation({locale: "en"}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }
 
@@ -75,13 +75,13 @@ async function get_admins(limit=20, offset=0, search="", sort={}, filters={}){
             total = await Users.count({...filters, $and: [{type: "admin"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]});
 
             if(total){
-                admins = await Users.find({...filters, $and: [{type: "admin"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}, {password: 0}).sort(sort).limit(limit).skip(offset).lean(true);
+                admins = await Users.find({...filters, $and: [{type: "admin"}, {$or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}]}, {password: 0}).collation({locale: "en"}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }else{
             total = await Users.count({...filters, type: "admin"});
 
             if(total){
-                admins = await Users.find({...filters, type: "admin"}, {password: 0}).sort(sort).limit(limit).skip(offset).lean(true);
+                admins = await Users.find({...filters, type: "admin"}, {password: 0}).collation({locale: "en"}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }
 
@@ -104,13 +104,13 @@ async function get_accounts(limit=20, offset=0, search="", sort={}, filters={}){
             total = await Users.count({...filters, $or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]});
 
             if(total){
-                accounts = await Users.find({...filters, $or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}, {password: 0}).sort(sort).limit(limit).skip(offset).lean(true);
+                accounts = await Users.find({...filters, $or: [{"name.first": search_regex}, {"name.last": search_regex}, {email: search_regex}, {phone: search_regex}]}, {password: 0}).collation({locale: "en"}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }else{
             total = await Users.count({...filters});
 
             if(total){
-                accounts = await Users.find({...filters}, {password: 0}).sort(sort).limit(limit).skip(offset).lean(true);
+                accounts = await Users.find({...filters}, {password: 0}).collation({locale: "en"}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }
 
