@@ -5,14 +5,13 @@ const {backend_url} = config;
 
 export async function api(method, path){
     if(method && path){
+        method = method.toLowerCase();
+        
         if(path[0] !== "/"){
             path = "/" + path;
         }
 
-        axios.get()
-
         const additional_args = [];
-
         
         if(method === "get" || method === "delete"){
             const config = arguments[2] || {withCredentials: true};

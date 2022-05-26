@@ -1,11 +1,11 @@
-.page.dashboard .class-list{
+.page .misc-col .class-list{
     padding-top: 20px;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
 }
 
-.page.dashboard .class-list .class-item{
+.page .misc-col .class-list .class-item{
     width: 48%;
     text-align: center;
     margin-bottom: 20px;

@@ -13,6 +13,28 @@ a{
   text-decoration: none;
 }
 
+table{
+  border-radius: 0 0 5px 5px;
+  width: 100%;
+  box-shadow: 1px 1px 3px #bfbfbf;
+  padding: 0 20px;
+  border-spacing: 0px;
+}
+
+table th{
+  padding: 20px 0;
+  text-align: left;
+}
+
+table tbody td{
+  border-bottom: 1px solid #efefef;
+  padding: 20px 0;
+}
+
+table tbody tr:last-of-type td{
+  border-bottom: none;
+}
+
 button{
   cursor: pointer;
 }

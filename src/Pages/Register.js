@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { check_login, edit_auth_value, register, set_loading } from '../Actions';
 import {VscArrowRight} from "react-icons/vsc";
-import {BsImageFill} from "react-icons/bs";
+import {BsImageFill, BsEye, BsEyeSlash} from "react-icons/bs";
 import "./Auth.css";
 import "./Register.css";
 import { connect } from 'react-redux';
@@ -11,8 +11,10 @@ import { onPressReturn, password_requirements, validate_email, validate_name, va
 const Register = ({email, name={}, logged_in, is_admin, user, error, check_login, register, set_loading, edit_auth_value}) => {
     const navigate = useNavigate();
 
-    const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+    
+    const [password, setPassword] = useState("");
+    const [passwordVisible, setPasswordVisible] = useState(false);
 
     const firstname_ref = useRef(null);
     const lastname_ref = useRef(null);
@@ -92,6 +94,10 @@ const Register = ({email, name={}, logged_in, is_admin, user, error, check_login
         onPressRegister()
     })
 
+    const onClickPasswordEye = () => {
+        setPasswordVisible((v) => !v);
+    }
+
     return (
         <div className='page register'>
             <div className='auth-left'>
@@ -148,10 +154,13 @@ const Register = ({email, name={}, logged_in, is_admin, user, error, check_login
 
                                 <div className='input-container'>
                                     <label>Password</label>
-                                    <input ref={password_ref} type="password" name='password' value={password} onChange={onChangePassword} placeholder='Enter Your Password' onKeyDown={onPressEnterPassword} />
+                                    <input ref={password_ref} type={passwordVisible?"text":"password"} name='password' value={password} onChange={onChangePassword} placeholder='Enter Your Password' onKeyDown={onPressEnterPassword} />
 
-                                    {errors.password_error && <p className='error'>{errors.password_error}</p>}
+                                    <div className='input-adornment end' style={{backgroundColor: "transparent"}}>
+                                        <span className='clickable' onClick={onClickPasswordEye}>{passwordVisible?<BsEye />:<BsEyeSlash />}</span>
+                                    </div>
                                 </div>
+                                {errors.password_error && <p className='error'>{errors.password_error}</p>}
                                 
                                 <button className='button primary fullwidth submit' onClick={onPressRegister}>Sign Up</button>
 

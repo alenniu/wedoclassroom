@@ -8,6 +8,7 @@ import Login from './Pages/Login';
 import Register from './Pages/Register';
 import NotFound from './Pages/404';
 import Home from './Pages/Home';
+import Accounts from './Pages/Accounts';
 
 const routes = [
     {
@@ -51,7 +52,7 @@ const routes = [
             },
             {
                 path: "/dashboard/accounts",
-                component: Dashboard,
+                component: Accounts,
                 exact: true,
                 children: null,
                 isIndex: false,

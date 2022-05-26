@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {VscArrowRight} from "react-icons/vsc";
-import {BsImageFill} from "react-icons/bs";
+import {BsImageFill, BsEye, BsEyeSlash} from "react-icons/bs";
 import "./Auth.css";
 import "./Login.css";
 import { connect } from 'react-redux';
@@ -10,8 +10,10 @@ import { onPressReturn, validate_email, validate_password } from '../Utils';
 
 const Login = ({email, error, logged_in, is_admin, user, login, check_login, set_loading, edit_auth_value}) => {
     const navigate = useNavigate()
-    const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+    
+    const [password, setPassword] = useState("");
+    const [passwordVisible, setPasswordVisible] = useState(false);
 
     const email_ref = useRef(null);
     const password_ref = useRef(null);
@@ -76,6 +78,10 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, set
         onPressLogin();
     });
 
+    const onClickPasswordEye = () => {
+        setPasswordVisible((v) => !v);
+    }
+
     return (
         <div className='page login'>
             <div className='auth-left'>
@@ -118,7 +124,11 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, set
 
                                 <div className='input-container'>
                                     <label>Password</label>
-                                    <input ref={password_ref} type="password" name='password' value={password} onChange={onChangePassword} placeholder='Enter Your Password' onKeyDown={onPressEnterPassword} />
+                                    <input ref={password_ref} type={passwordVisible?"text":"password"} name='password' value={password} onChange={onChangePassword} placeholder='Enter Your Password' onKeyDown={onPressEnterPassword} />
+
+                                    <div className='input-adornment end' style={{backgroundColor: "transparent"}}>
+                                        <span className='clickable' onClick={onClickPasswordEye}>{passwordVisible?<BsEye />:<BsEyeSlash />}</span>
+                                    </div>
                                 </div>
                                 
                                 <button className='button primary fullwidth submit' onClick={onPressLogin}>Log In</button>

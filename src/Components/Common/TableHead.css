@@ -1,0 +1,12 @@
+table .sort-icon-container{
+    transition: transform .300s;
+    display: inline-block;
+}
+table th:hover .sort-icon-container:not(.visible){
+    opacity: 50%;
+    visibility: visible;
+}
+
+table .sort-icon-container.no-sort{
+    display: none;
+}
