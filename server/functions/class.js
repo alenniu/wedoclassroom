@@ -18,7 +18,7 @@ async function get_class(class_id){
     }
 }
 
-async function get_classes(limit=20, offset=0, search=""){
+async function get_classes(limit=20, offset=0, search="", sort={}, filters={}){
     try{
         let classes = [];
         let total = 0;
@@ -28,15 +28,15 @@ async function get_classes(limit=20, offset=0, search=""){
 
             const search_regex = new RegExp(`${escaped_search}`, "i");
 
-            total = await Classes.count({$or: [{subject: search_regex}, {tags: search_regex}]});
+            total = await Classes.count({...filters, $or: [{subject: search_regex}, {tags: search_regex}]});
 
             if(total){
-                classes = await Classes.find({$or: [{subject: search_regex}, {tags: search_regex}]}).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find({...filters, $or: [{subject: search_regex}, {tags: search_regex}]}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }else{
-            total = await Classes.count({});
+            total = await Classes.count({...filters});
             if(total){
-                classes = await Classes.find({}).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find({...filters}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }
 
@@ -80,7 +80,7 @@ async function get_user_classes(user, limit=20, offset=0, search=""){
 async function create_class({subject, teacher=null, class_type, tags=[]}, creator){
     try{
         if(subject){
-            const new_class = await ((new Class({subject, teacher: teacher?._id || null, tags, created_by: creator._id, class_type})).save());
+            const new_class = await ((new Class({subject, teacher: teacher?._id || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
 
             return new_class;
         }else{
@@ -123,6 +123,8 @@ async function request_class({_class, student}){
     try{
         if(_class && student){
             const new_request = await ((new Request({_class: _class._id, student: student._id})).save());
+
+            await Classes.updateOne({_id: _class._id}, {$inc: {popularity: 1}});
 
             return new_request;
         }else{

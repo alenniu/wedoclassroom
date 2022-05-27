@@ -28,8 +28,30 @@ const class_schema = new schema({
     }],
     class_type: {
         type: String,
-        enum: ["group", "individual"],
+        enum: ["group", "private"],
         default: "group"
+    },
+    schedule: {
+        days: [Number],
+        daily_start_time: Number,
+        daily_end_time: Number
+    },
+    popularity: {
+        type: Number,
+        default: 0
+    },
+    bgColor: {
+        type: String
+    },
+    textColor: {
+        type: String
+    },
+    cover_image: {
+        type: String
+    },
+    max_students: {
+        type: Number,
+        default: 1
     }
 }, {timestamps: true});
 

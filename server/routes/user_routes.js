@@ -1,4 +1,5 @@
 const multer = require("multer");
+const { get_user_classes_handler } = require("../handlers/class");
 const { get_requests_handler, upload_attachment_handler, get_attachments_handler, get_schedule_handler, add_item_to_schedule_handler, update_schedule_item_handler, remove_item_from_schedule_handler } = require("../handlers/user");
 const { attachment_storage, MB } = require("../middleware/upload_middleware");
 const verify_user = require("../middleware/verify_user");
@@ -21,6 +22,8 @@ module.exports = (app) => {
     router.route("/requests").get(verify_user, get_requests_handler);
 
     router.route("/schedule").get(verify_user, get_schedule_handler).post(verify_user, add_item_to_schedule_handler).put(verify_user, update_schedule_item_handler).delete(verify_user, remove_item_from_schedule_handler)
+
+    router.route("/classes").get(verify_user, get_user_classes_handler)
 
     app.use("/api/user", router)
 }

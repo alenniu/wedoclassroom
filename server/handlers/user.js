@@ -8,12 +8,14 @@ import { delete_file } from "../functions/utils";
 export const get_requests_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {user} = req;
-        let {limit=20, offset=0} = req.query;
+        let {limit=20, offset=0, sort="{}", filters="{}"} = req.query;
 
         limit = Number(limit) || 20;
         offset = Number(offset) || 0;
+        sort = JSON.parse(sort) || {};
+        filters = JSON.parse(filters) || {};
 
-        const {requests, total} = await get_requests(user._id, limit, offset);
+        const {requests, total} = await get_requests(user, limit, offset, sort, filters);
 
         return res.json({requests, total, success: true});
     }catch(e){
@@ -24,10 +26,12 @@ export const get_requests_handler = async (req: Request, res: Response, next: Ne
 export const get_attachments_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {user} = req;
-        let {limit=20, offset=0, search=""} = req.query;
+        let {limit=20, offset=0, search="", sort="{}", filters="{}"} = req.query;
 
         limit = Number(limit) || 20;
         offset = Number(offset) || 0;
+        sort = JSON.parse(sort) || {};
+        filters = JSON.parse(filters) || {};
 
         const {attachments, total} = await get_attachments(user, limit, offset, search);
 

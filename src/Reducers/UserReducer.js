@@ -1,6 +1,6 @@
-import { SET_CLASSES } from "../Actions/types";
+import { SET_USER_REQUESTS, SET_USER_CLASSES } from "../Actions/types";
 
-const INITIAL_STATE = {classes: [], total_classes: 0};
+const INITIAL_STATE = {classes: [], total_classes: 0, requests: [], total_requests: 0};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -9,10 +9,15 @@ export default (state=INITIAL_STATE, action) => {
 
     switch(type){
 
-        case SET_CLASSES:
+        case SET_USER_CLASSES:
             new_state.classes = payload.classes;
             new_state.total_classes = payload.total;
         break;
+
+        case SET_USER_REQUESTS:
+            new_state.requests = payload.requests;
+            new_state.total_requests = payload.total;
+        break
 
         default:
             return state;

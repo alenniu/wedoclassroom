@@ -49,7 +49,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_lo
                         </li>
 
                         <li className='nav-link'>
-                            <NavLink to="/dashboard/classes" className="button"><RiBook2Line className='link-icon' size={"20px"} /><span className='link-label'>My Classes</span></NavLink>
+                            <NavLink to="/dashboard/classes" className="button"><RiBook2Line className='link-icon' size={"20px"} /><span className='link-label'>Classes</span></NavLink>
                         </li>
 
                         <li className='nav-link'>

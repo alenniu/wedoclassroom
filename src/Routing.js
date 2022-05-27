@@ -9,6 +9,7 @@ import Register from './Pages/Register';
 import NotFound from './Pages/404';
 import Home from './Pages/Home';
 import Accounts from './Pages/Accounts';
+import Classes from './Pages/Classes';
 
 const routes = [
     {
@@ -28,7 +29,7 @@ const routes = [
             },
             {
                 path: "/dashboard/classes",
-                component: Dashboard,
+                component: Classes,
                 exact: true,
                 children: null,
                 isIndex: false,

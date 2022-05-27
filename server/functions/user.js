@@ -10,6 +10,9 @@ const User = Users;
 const Requests = mongoose.model("request");
 const Request = Requests;
 
+const Classes = mongoose.model("class");
+const Class = Classes;
+
 function get_user_token({name, phone, email, activated, _id, type, role, birth}){
     return jwt.sign({name, phone, email, activated, _id, type, role, birth}, SECRET);
 }
@@ -66,22 +69,25 @@ async function update_user(user, existing_user){
     }
 }
 
-async function get_requests(user_or_class_id, limit=20, offset=0){
+async function get_requests(user, limit=20, offset=0, sort={}, filters={}){
     try{
-        if(mongoose.isValidObjectId(user_or_class_id)){
-            let requests = [];
-            let total = 0;
+        let requests = [];
+        let total = 0;
+        const query = {...filters, $or: [{student: user._id}, {handled_by: user._id}]};
 
-            total = await Requests.count({$or: [{student: user_or_class_id}, {_class: user_or_class_id}, {handled_by: user_or_class_id}]});
+        if(user.type === "teacher"){
+            const classes = await Classes.find({teacher: user._id}, {_id: 1}).lean(true);
 
-            if(total){
-                requests = await Requests.find({$or: [{student: user_or_class_id}, {_class: user_or_class_id}, {handled_by: user_or_class_id}]}).limit(limit).skip(offset).lean(true);
-            }
-
-            return {requests, total};
-        }else{
-            throw new Error("no valid user id or class id provided");
+            query["$or"].push({_class: {$in: classes.map(({_id}) => _id)}});
         }
+
+        total = await Requests.count(query);
+
+        if(total){
+            requests = await Requests.find(query).sort(sort).limit(limit).skip(offset).lean(true);
+        }
+
+        return {requests, total};
     }catch(e){
         throw e;
     }

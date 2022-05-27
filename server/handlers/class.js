@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import { electron } from "webpack";
-import { accept_request, create_class, decline_request, get_class, get_class_attendance, get_user_classes, request_class, update_attendance } from "../functions/class";
+import { accept_request, create_class, decline_request, get_class, get_classes, get_class_attendance, get_user_classes, request_class, update_attendance } from "../functions/class";
 import { get_request } from "../functions/request";
 
 
@@ -105,12 +105,32 @@ export const decline_request_handler = async (req: Request, res: Response, next:
 export const get_classes_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {user} = req;
-        let {limit=20, offset=0, search=""} = req.query;
+        let {limit=20, offset=0, search="", sort="{}", filters="{}"} = req.query;
 
         limit = Number(limit) || 20;
         offset = Number(offset) || 0;
+        sort = JSON.parse(sort) || {};
+        filters = JSON.parse(filters) || {};
         
-        const {classes, total} = await get_user_classes(user, limit, offset, search);
+        const {classes, total} = await get_classes(limit, offset, search, sort, filters);
+
+        return res.json({classes, total, success: true})
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const get_user_classes_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        let {limit=20, offset=0, search="", sort="{}", filters="{}"} = req.query;
+
+        limit = Number(limit) || 20;
+        offset = Number(offset) || 0;
+        sort = JSON.parse(sort) || {};
+        filters = JSON.parse(filters) || {};
+        
+        const {classes, total} = await get_user_classes(user, limit, offset, search, sort, filters);
 
         return res.json({classes, total, success: true})
     }catch(e){

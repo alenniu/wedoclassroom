@@ -1,0 +1,58 @@
+.admin-page-container .page.classes .main-col, .admin-page-container .page.classes .misc-col, .admin-page-container .page.classes{
+    min-height: unset;
+    height: unset;
+}
+
+.popular-class-list{
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    margin-bottom: 20px;
+    overflow-x: auto;
+}
+
+.popular-class-list li{
+    max-width: 80%;
+    width: 320px;
+    flex-shrink: 0;
+    margin: 10px 20px 10px 2px;
+}
+
+.classes-list{
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: auto;
+    margin-top: 40px;
+}
+
+.classes-list li{
+    flex-shrink: 0;
+    display: inline-block;
+    margin: 10px 2px;
+    margin-right: 40px;
+    max-width: 80%;
+    width: 350px;
+}
+
+.input-container.class-filter:nth-of-type(even){
+    margin-left: 4%;
+}
+
+.input-container.class-filter{
+    display: inline-block;
+    width: 48%;
+}
+
+.input-container.class-filter label{
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.input-container.class-filter input, .input-container.class-filter select{
+    height: 45px;
+}
+
+.input-container.class-filter .input-adornment{
+    height: 45px;
+    top: calc(100% - 45px);
+}
