@@ -1,0 +1,104 @@
+.new-class .input-container{
+    width: 48%;
+}
+
+.new-class .input-container:nth-of-type(odd){
+    margin-right: 4%;
+}
+
+.new-class .input-container.subject, .new-class .input-container.level{
+    width: 23%;
+    margin-right: 0;
+}
+
+.new-class .input-container.subject{
+    margin-right: 2%;
+}
+
+.new-class .input-container.cover-file-input input, .new-class .input-container textarea{
+    height: 120px;
+    resize: none;
+}
+
+.new-class .input-container:nth-of-type(n+3){
+    vertical-align: bottom;
+    top: -64px;
+}
+
+.new-class .input-container:nth-of-type(n+6):nth-of-type(even){
+    margin-right: 4%;
+}
+
+.new-class .input-container:nth-of-type(n+6):nth-of-type(odd){
+    margin-right: 0;
+}
+
+.new-class .cover-file-input input[type=file]::file-selector-button{
+    display: none;
+}
+
+.new-class .cover-file-input input[type=file]::-ms-browse{
+    display: none;
+}
+
+.new-class .input-container.cover-file-input input{
+    /* border: 2px dashed #CCEABB; */
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23CCEABB' stroke-width='3' stroke-dasharray='14%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+    background-color: rgba(245, 249, 242, 0.8);
+    color: transparent;
+}
+
+.new-class .input-container.cover-file-input .upload-content-container{
+    position: absolute;
+    width: 100%;
+    height: 120px;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #99C183;
+    pointer-events: none;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.new-class .upload-content-container p.upload-cover-text{
+    margin-bottom: 15px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.new-class .upload-content-container p.upload-drop-text{
+    font-size: 12px;
+    font-weight: 300;
+}
+
+.new-class .upload-content-container .add-icon-container{
+    width: 60px;
+    height: 60px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: white;
+    border: 1px solid #99C183;
+    margin-right: 20px;
+}
+
+.new-class .input-container.cover-file-input label{
+    visibility: hidden;
+}
+
+.new-class .input-container.price, .new-class .input-container.max-students, .new-class .input-container.color{
+    width: 23%;
+    margin-right: 0!important;
+}
+
+.new-class .input-container.price, .new-class .input-container.max-students{
+    margin-right: 2%!important;
+}
+
+.new-class .input-container.color{
+    margin-left: 2%!important;
+}
+

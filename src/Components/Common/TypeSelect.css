@@ -1,0 +1,57 @@
+.type-select-container{
+    width: 100%;
+    position: relative;
+}
+
+.type-select-container.disabled{
+    opacity: 0.7;
+}
+
+.type-select-container .input-container input{
+    outline: none!important;
+}
+
+.type-select-container .input-container{
+    width: 100%!important;
+    margin: 0;
+}
+
+.type-select-container .input-container .input-adornment{
+    top: unset;
+    height: 100%;
+    bottom: 0;
+}
+
+.type-select-container .options-container{
+    position: absolute;
+    top: calc(100% + 8px);
+    width: 100%;
+    background-color: #f6f6f6;
+    padding: 10px 0;
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.3);
+}
+
+.type-select-container .option{
+    display: inline-block;
+    padding: 10px;
+    width: 100%;
+    /* border-radius: inherit; */
+}
+
+.type-select-container .option.suggested, .type-select-container .option:hover{
+    background-color: rgba(0,0,0,0.3);
+}
+
+.type-select-container .option.selected{
+    pointer-events: none;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    max-width: 100%;
+    padding: 10px;
+}

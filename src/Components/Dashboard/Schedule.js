@@ -38,22 +38,31 @@ const Schedule = ({schedule={}}) => {
     const current_date = new Date();
     const month = current_date.getMonth();
     const date = current_date.getDate();
-    const {min, max} = get_week_date_range(current_date.getMonth(), current_date.getDate());
+    const {min, max} = get_week_date_range(month, date);
+    const previous_month = min<1;
+    const month_obj = MONTHS[month - (previous_month?1:0)] 
+
+    const goes_into_next_month = !previous_month && max>month_obj.days;
+    
+    const subtract = goes_into_next_month?month_obj.days:0;
 
     return (
         <div className='schedule-container'>
             <p className='schedule-date-range'>
-                <RiCalendarLine color='#99C183' size={24} /> {MONTHS[current_date.getMonth()].long} {min} - {max}, {current_date.getFullYear()}
+                <RiCalendarLine color='#99C183' size={24} /> {month_obj.long} {min + (previous_month ? month_obj.days : 0)} - {(goes_into_next_month || previous_month) && MONTHS[month + (goes_into_next_month ? 1 : 0)].long} {max - subtract}, {current_date.getFullYear()}
             </p>
 
             <div className='schedule-calender'>
                 {Array(7).fill(null).map((_, i) => {
+                    const this_date = min+i;
+                    const subtract = this_date < 1 ? -month_obj.days : this_date > month_obj.days ? month_obj.days : 0;
+
                     return (
                         <span className='schedule-column-container'>
                             <span className='day'>{DAYS[i].short}</span>
                             <div className='schedule-column-day top'></div>
                             <div className='schedule-column-day main'>
-                                {min+i}
+                                {this_date - subtract}
                             </div>
                             <div className='schedule-column-day bottom'></div>
                         </span>

@@ -55,7 +55,7 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, set
     const validate_fields = () => {
         let is_valid = true;
         
-        if(!validate_email(email)){is_valid=false; setErrors((e) => ({...e, email_error: "Not a valid email"}))}
+        if(!validate_email(email.trim())){is_valid=false; setErrors((e) => ({...e, email_error: "Not a valid email"}))}
 
         // if(!validate_password(password)){is_valid=false; setErrors((e) => ({...e, password_error: "Not a valid email"}))}
 
@@ -65,7 +65,7 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, set
     const onPressLogin = async () => {
         set_loading(true);
         if(validate_fields()){
-            await login({email, password});
+            await login({email: email.trim(), password});
         }
         set_loading(false);
     }

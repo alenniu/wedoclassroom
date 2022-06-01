@@ -89,7 +89,7 @@
   position: relative;
   margin: 15px 0;
   width: 100%;
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
@@ -107,6 +107,15 @@
   max-height: 0;
   opacity: 0;
   transform: translateY(-100px);
+  pointer-events: none;
+}
+
+.input-container.select{
+  z-index: 2;
+}
+
+.input-container.select:focus-within{
+  z-index: 3;
 }
 
 .fullwidth{
@@ -124,6 +133,7 @@
   width: 100%;
   border: none;
   background-color: #F6F6F6;
+  box-shadow: 0px 0px 3px -1px rgba(0,0,0,0.3);
 }
 
 .input-container .input-adornment{
@@ -191,6 +201,11 @@
 
 .button.clear:hover{
   background-color: rgba(255,255,255,0.2);
+}
+
+.button:disabled{
+  background-color: #ccc!important;
+  cursor: default;
 }
 
 .checkbox-container {

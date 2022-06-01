@@ -10,6 +10,7 @@ import NotFound from './Pages/404';
 import Home from './Pages/Home';
 import Accounts from './Pages/Accounts';
 import Classes from './Pages/Classes';
+import NewClass from './Pages/NewClass';
 
 const routes = [
     {
@@ -17,6 +18,7 @@ const routes = [
         component: DashboardLayout,
         exact: false,
         authRequired: true, //will also effect children
+        teacherRequired: false, //will also effect children
         adminRequired: false, //will also effect children
         children: [
             {
@@ -25,6 +27,7 @@ const routes = [
                 exact: true,
                 children: null,
                 isIndex: true,
+                teacherRequired: false,
                 adminRequired: false
             },
             {
@@ -33,6 +36,7 @@ const routes = [
                 exact: true,
                 children: null,
                 isIndex: false,
+                teacherRequired: false,
                 adminRequired: false
             },
             {
@@ -41,6 +45,7 @@ const routes = [
                 exact: true,
                 children: null,
                 isIndex: false,
+                teacherRequired: false,
                 adminRequired: false
             },
             {
@@ -49,6 +54,7 @@ const routes = [
                 exact: true,
                 children: null,
                 isIndex: false,
+                teacherRequired: true,
                 adminRequired: false
             },
             {
@@ -57,6 +63,16 @@ const routes = [
                 exact: true,
                 children: null,
                 isIndex: false,
+                teacherRequired: false,
+                adminRequired: true
+            },
+            {
+                path: "/dashboard/new-class",
+                component: NewClass,
+                exact: true,
+                children: null,
+                isIndex: false,
+                teacherRequired: true,
                 adminRequired: false
             }
         ]
@@ -73,6 +89,7 @@ const routes = [
                 component: Home,
                 exact: true,
                 authRequired: false,
+                teacherRequired: true,
                 adminRequired: false,
                 children: null
             },
@@ -81,6 +98,7 @@ const routes = [
                 component: Login,
                 exact: true,
                 authRequired: false,
+                teacherRequired: true,
                 adminRequired: false,
                 children: null
             },
@@ -89,6 +107,7 @@ const routes = [
                 component: Register,
                 exact: true,
                 authRequired: false,
+                teacherRequired: true,
                 adminRequired: false,
                 children: null
             }
@@ -97,25 +116,25 @@ const routes = [
 ];
 
 
-const renderChildrenRoutes = ({children=[], authenticated=false, is_admin=false, authRequired, adminRequired}) => {
+const renderChildrenRoutes = ({children=[], authenticated=false, is_admin=false, is_teacher=false, is_student=false, authRequired, teacherRequired, adminRequired}) => {
     return children.map(({path, component:C, exact, isIndex=false, children}) => {
         const has_children = Array.isArray(children) && children.length > 0;
         
-        const allowed = !authRequired || authenticated && (!adminRequired || (adminRequired && is_admin));
+        const allowed = !authRequired || authenticated && (!teacherRequired || is_teacher || is_admin) && (!adminRequired ||  is_admin);
         
         return (
             <Route index={isIndex} key={path} path={path} exact={exact} element={allowed?<C />:<Navigate to={`/login?from=${window.location.pathname}`} replace />}>
-                {has_children && renderChildrenRoutes({children, authenticated, is_admin, authRequired, adminRequired})}
+                {has_children && renderChildrenRoutes({children, authenticated, is_admin, is_teacher, is_student, authRequired, teacherRequired, adminRequired})}
             </Route>
         )
     })
 }
 
 function map_state_to_props({Auth}){
-    return {authenticated: Auth.logged_in, is_admin: Auth.is_admin};
+    return {authenticated: Auth.logged_in, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student};
 }
 
-export default connect(map_state_to_props, {})(({authenticated=false, is_admin=false}) => {
+export default connect(map_state_to_props, {})(({authenticated=false, is_admin=false, is_teacher=false, is_student=false}) => {
     useEffect(() => {
         // check_login();
     }, []);
@@ -123,14 +142,14 @@ export default connect(map_state_to_props, {})(({authenticated=false, is_admin=f
     return (
         <Router>
             <Routes>
-                {routes.map(({path, component:C, exact, authRequired, adminRequired, children}) => {
+                {routes.map(({path, component:C, exact, authRequired, teacherRequired, adminRequired, children}) => {
                     const has_children = Array.isArray(children) && children.length > 0;
 
-                    const allowed = !authRequired || authenticated && (!adminRequired || (adminRequired && is_admin));
+                    const allowed = !authRequired || authenticated && (!teacherRequired || is_teacher || is_admin) && (!adminRequired ||  is_admin);
 
                     return (
                         <Route key={path} path={path} exact={exact} element={allowed?<C />:<Navigate to={`/login?from=${window.location.pathname}`} replace />}>
-                            {has_children && renderChildrenRoutes({children, authenticated, is_admin, authRequired, adminRequired})}
+                            {has_children && renderChildrenRoutes({children, authenticated, is_admin, is_teacher, is_student, authRequired, teacherRequired, adminRequired})}
                         </Route>
                     );
                 })}

@@ -59,7 +59,7 @@ const Register = ({email, name={}, logged_in, is_admin, user, error, check_login
     const validate_fields = () => {
         let is_valid = true;
         
-        if(!validate_email(email)){is_valid=false; setErrors((e) => ({...e, email_error: "Not a valid email"}))}
+        if(!validate_email(email.trim())){is_valid=false; setErrors((e) => ({...e, email_error: "Not a valid email"}))}
         
         if(!validate_name(name.first)){is_valid=false; setErrors((e) => ({...e, firstname_error: "Not a valid name, At least 2 character"}))}
 
@@ -73,7 +73,7 @@ const Register = ({email, name={}, logged_in, is_admin, user, error, check_login
     const onPressRegister = async () => {
         set_loading(true);
         if(validate_fields()){
-            await register({email, name, password, phone: "", type: "admin", addresses: [], role: ""})
+            await register({email: email.trim(), name, password, phone: "", type: "admin", addresses: [], role: ""})
         }
         set_loading(false);
     }

@@ -2,9 +2,15 @@ const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
 const class_schema = new schema({
+    title: {
+        type: String
+    },
     subject: {
         type: String,
         required: true,
+    },
+    description: {
+        type: String,
     },
     teacher: {
         type: schema.Types.ObjectId,
@@ -31,11 +37,11 @@ const class_schema = new schema({
         enum: ["group", "private"],
         default: "group"
     },
-    schedule: {
+    schedules: [{ // If the different days start at different times, They must be put in a seperate schedule
         days: [Number],
         daily_start_time: Number,
         daily_end_time: Number
-    },
+    }],
     popularity: {
         type: Number,
         default: 0
@@ -52,6 +58,14 @@ const class_schema = new schema({
     max_students: {
         type: Number,
         default: 1
+    },
+    level: {
+        type: String
+    },
+    price: {
+        type: Number,
+        default: 0,
+        required: true
     }
 }, {timestamps: true});
 

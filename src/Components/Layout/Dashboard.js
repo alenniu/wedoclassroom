@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
@@ -8,12 +8,15 @@ import { logout, set_loading } from '../../Actions';
 import "./Dashboard.css";
 
 const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_loading}) => {
-
+    
     const {name={first: "Ruth", last: "Langmore"}, phone, type} = user;
-
+    
     const [navOpen, setNavOpen] = useState(null);
-
+    
     const navigate = useNavigate();
+    
+    const location = useLocation();
+    const is_on_new_class = location.pathname === "/dashboard/new-class";
 
     const openNav = () => {
         setNavOpen(true);
@@ -33,6 +36,10 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_lo
             navigate("/login");
         }
         set_loading(false);
+    }
+
+    const onPressNewClass = async () => {
+        navigate("/dashboard/new-class");
     }
 
     return (
@@ -94,7 +101,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_lo
                         <div className='dashboard-greeting-action'>
                             <p className='dashboard-greeting'>Good Morning, <span className='username'>{name.first}</span></p>
 
-                            <button className='button primary'><RiVideoAddLine className='icon left' size={"20px"} /> New Class</button>
+                            {(is_admin || is_teacher) && <button disabled={is_on_new_class} className='button primary' onClick={onPressNewClass}><RiVideoAddLine className='icon left' size={"20px"} /> New Class</button>}
                         </div>
                     </div>
                     <div className='misc-col'>
