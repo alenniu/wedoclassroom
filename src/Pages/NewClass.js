@@ -131,7 +131,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, is_admin, is_teacher, ge
                 <div className='input-container'>
                     <label>Color Preview</label>
                     
-                    <input style={{backgroundColor: "#CCEABB", color: "#3F3F44"}} value={"Look On Schedule Calendar"} />
+                    <input style={{backgroundColor: "#CCEABB", color: "#3F3F44"}} value={"Look On Schedule Calendar"} disabled />
                 </div>
 
                 <div className='input-container fullwidth'>
