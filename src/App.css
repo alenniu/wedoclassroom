@@ -1,3 +1,18 @@
+:root{
+  --input-height: 56px;
+  --input-bgcolor: #F6F6F6;
+  --input-box-shadow: 0px 0px 3px -1px rgba(0,0,0,0.3);
+  --primary-button-bgcolor: #FDCB9E;
+  --primary-button-hover-bgcolor: #E4A771;
+  --text-color: #3F3F44;
+  --active-nav-link-bgcolor: #CCEABB;
+  --active-nav-link-text-color: #699F49;
+  --tag-bgcolor: #CCEABB;
+  --tag-border-color: #CCEABB;
+  --tag-border-width: 0px;
+  --tag-text-color: #3F3F44;
+}
+
 .App {
   font-family: "Worker Sans", sans-serif;
 }

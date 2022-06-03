@@ -7,6 +7,7 @@ import {RiImageAddLine} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
 
 import "./NewClass.css";
+import { ListInput } from '../Components/Common/ListInput';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -125,7 +126,8 @@ const NewClass = ({user, teachers=[], total_teachers=0, is_admin, is_teacher, ge
                 <div className='input-container'>
                     <label>Tags</label>
                     
-                    <input type="text" placeholder='math, english, beginner, advance etc...' />
+                    {/* <input type="text" placeholder='math, english, beginner, advance etc...' /> */}
+                    <ListInput items={["Math", "Advanced", "Rocket Science"]} />
                 </div>
 
                 <div className='input-container'>
