@@ -13,8 +13,11 @@
     padding-left: 10px;
 }
 
-.item-container{
+.selected-values-container > *{
     flex-shrink: 0;
+}
+
+.item-container{
     height: 80%;
     max-height: 35px;
     border-radius: 35px;
@@ -30,7 +33,6 @@
 }
 
 .item-button{
-    flex-shrink: 0;
     border: none;
     display: flex;
     flex-direction: column;
