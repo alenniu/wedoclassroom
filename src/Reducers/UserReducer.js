@@ -1,4 +1,4 @@
-import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS } from "../Actions/types";
+import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST } from "../Actions/types";
 
 const INITIAL_STATE = {classes: [], total_classes: 0, requests: [], total_requests: 0};
 
@@ -22,6 +22,16 @@ export default (state=INITIAL_STATE, action) => {
         case CREATE_CLASS:
             new_state.classes.push(payload._class);
         break;
+
+        case REQUEST_JOIN_CLASS:
+            new_state.requests.push(payload.request);
+            new_state.total_requests += 1
+        break
+
+        case ACCEPT_JOIN_REQUEST:
+            const index = new_state.classes.findIndex(x => x._id === payload.class._id)
+            new_state.classes[index] = payload.class
+        break
 
         default:
             return state;
