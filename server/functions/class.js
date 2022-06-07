@@ -77,14 +77,14 @@ async function get_user_classes(user, limit=20, offset=0, search=""){
     }
 }
 
-async function create_class({subject, teacher=null, class_type, tags=[]}, creator){
+async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[]}, creator){
     try{
-        if(subject){
-            const new_class = await ((new Class({subject, teacher: teacher?._id || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
+        if(title && subject && class_type){
+            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, schedules, teacher: teacher?._id || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
 
             return new_class;
         }else{
-            throw new Error("subject must be provided")
+            throw new Error("subject, title and class type must be provided")
         }
     }catch(e){
         throw e;

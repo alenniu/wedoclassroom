@@ -1,4 +1,5 @@
 import React from 'react';
+import { get_full_image_url } from '../../Utils';
 
 import "./Class.css";
 
@@ -10,7 +11,7 @@ const Class = ({_class}) => {
     return (
         <div className='classes-class-container'>
             <div className='class-image-container'>
-                <img src={cover_image} />
+                <img src={get_full_image_url(cover_image)} />
             </div>
 
             <div className='subject-tags-container'>

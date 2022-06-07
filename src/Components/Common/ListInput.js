@@ -13,6 +13,7 @@ class ListInput extends Component {
         this.onPress_cancel = this.onPress_cancel.bind(this);
         this.onPress_remove = this.onPress_remove.bind(this)
         this.onPress_add_item = this.onPress_add_item.bind(this);
+        this.onPress_match = this.onPress_match.bind(this);
         this.onChange_add_input_text = this.onChange_add_input_text.bind(this);
     }
 
@@ -20,19 +21,19 @@ class ListInput extends Component {
         const {search_array=[], search_property} = this.props;
         const {add_input_value} = this.state;
         const regex = new RegExp(`^${add_input_value}`, "i");
-
+        
         const matches = search_array.filter((item,i)=>{
             const regex_matches = search_property?item[search_property].match(regex):item.match(regex);
-
+            
             if(regex_matches){
                 return true;
             }else{
                 return false;
             }
         });
-        
+
         if(matches){
-            this.setState({matches});
+            this.setState({matches, typing: true});
         }else{
             this.setState({matches: []});
         }
@@ -51,7 +52,7 @@ class ListInput extends Component {
     }
 
     onPress_add(){
-        this.setState({typing: true}, ()=>{this.add_input.focus();});
+        this.setState({typing: true, add_input_value: ""}, ()=>{this.add_input.focus(); this.type_search()});
     }
 
     onPress_add_item(){
@@ -62,12 +63,26 @@ class ListInput extends Component {
                 onAddItem(add_input_value);
                 // console.log("item added");
             }
-            this.setState({typing: false, add_input_value: ""});
+            this.setState({typing: false, match_selected: false, add_input_value: ""});
+        // }
+    }
+
+    onPress_match(item){
+        const {onAddItem, search_prop} = this.props;
+        // if(match_selected){
+            if(onAddItem && typeof onAddItem === "function"){
+                onAddItem(search_prop?item[search_prop]:item);
+                // console.log("item added");
+            }
+            this.setState({typing: false, match_selected: false, add_input_value: ""});
         // }
     }
 
     onPress_cancel(){
-        this.setState({typing: false, add_input_value: "", matches: []});
+        const {always_show_matches=false} = this.props;
+        const {matches} = this.state;
+
+        this.setState({typing: false, add_input_value: "", matches: always_show_matches?matches:[]});
     }
 
     onPress_remove(e){
@@ -82,15 +97,15 @@ class ListInput extends Component {
     }
 
     onPressEnter = () => {
-        const {onAddItem} = this.props;
+        const {onAddItem, allowOnlySearchResults=false} = this.props;
         const {match_selected, add_input_value} = this.state;
-        // if(match_selected){
+        if(!allowOnlySearchResults || match_selected){
             if(onAddItem && typeof onAddItem === "function"){
                 onAddItem(add_input_value);
                 // console.log("item added");
             }
             this.setState({typing: false, add_input_value: ""});
-        // }
+        }
     }
 
     render_items(){
@@ -161,7 +176,7 @@ class ListInput extends Component {
 
     render() {
         const {matches, typing, match_selected} = this.state;
-        const {search_property:search_prop, className="", match_button_container_classname="", match_button_classname="", disabled=false} = this.props;
+        const {search_property:search_prop, always_show_matches=false, className="", match_button_container_classname="", match_button_classname="", disabled=false} = this.props;
         return (
             <>
                 <div className={`selected-values-container ${className}`}>
@@ -171,8 +186,8 @@ class ListInput extends Component {
                 {((matches.length > 0 && typing)&&!match_selected)?<div className="search-matches-container">
                     {matches.map((match, i) => {
                         return (
-                            <div className={`match-item-button-container ${match_button_container_classname}`}>
-                                <button className={`match-item-button ${match_button_classname}`} onClick={()=>{this.setState({match_selected: true, add_input_value: search_prop?match[search_prop]:match});}}>
+                            <div className={`match-item-container ${match_button_container_classname}`}>
+                                <button className={`match-item-button ${match_button_classname}`} onClick={() => this.onPress_match(match)}>
                                     <span className={"match-item-text"}>{search_prop?match[search_prop]:match}</span>
                                 </button>
                             </div>

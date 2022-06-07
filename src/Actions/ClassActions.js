@@ -1,5 +1,5 @@
 import { api } from "../Utils/api";
-import { SET_CLASSES, SET_POPULAR_CLASSES } from "./types";
+import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES } from "./types";
 
 export const set_classes = (classes=[], total=0) => {
     return {type: SET_CLASSES, payload: {classes, total: total || classes.length}};
@@ -47,4 +47,33 @@ export const get_popular_classes = (limit=20, offset=0, search="", filters="{}")
     }catch(e){
         console.error(e);
     }
+}
+
+export const create_new_class = (_class_formdata) => async (dispatch) => {
+    try{
+        const res = await api("post", `/api/classes`, _class_formdata);
+
+        if(res.data){
+            if(res.data.success){
+                const {_class} = res.data;
+                dispatch({type: CREATE_CLASS, payload: {_class}})
+                return res.data;
+            }
+
+            dispatch(set_create_class_error(res.data.msg));
+        }else{
+            dispatch(set_create_class_error(res));
+        }
+    }catch(e){
+        dispatch(set_create_class_error(e.message));
+        console.error(e);
+    }
+}
+
+export const set_create_class_error = (error) => {
+    return {type: SET_CREATE_CLASS_ERROR, payload: {error}};
+}
+
+export const edit_class_value = (keys=[], value) => {
+    return {type: EDIT_CLASS_VALUE, payload: {keys, value}};
 }

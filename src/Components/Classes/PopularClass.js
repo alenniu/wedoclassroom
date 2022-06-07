@@ -1,4 +1,5 @@
 import React from 'react';
+import { get_full_image_url } from '../../Utils';
 
 import "./PopularClass.css";
 
@@ -9,7 +10,7 @@ const PopularClass = ({_class}) => {
         <div className='popular-class-container'>
             <div className='left-column'>
                 <div className='class-image-container'>
-                    <img src={cover_image} />
+                    <img src={get_full_image_url(cover_image)} />
                 </div>
 
                 <button className='button primary fullwidth join'>JOIN CLASS</button>

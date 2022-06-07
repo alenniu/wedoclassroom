@@ -39,6 +39,7 @@ const class_schema = new schema({
     },
     schedules: [{ // If the different days start at different times, They must be put in a seperate schedule
         days: [Number],
+        timezone: String,
         daily_start_time: Number,
         daily_end_time: Number
     }],
@@ -46,10 +47,10 @@ const class_schema = new schema({
         type: Number,
         default: 0
     },
-    bgColor: {
+    bg_color: {
         type: String
     },
-    textColor: {
+    text_color: {
         type: String
     },
     cover_image: {

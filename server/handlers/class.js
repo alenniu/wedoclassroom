@@ -1,23 +1,27 @@
 import {Request, Response, NextFunction} from "express";
-import { electron } from "webpack";
 import { accept_request, create_class, decline_request, get_class, get_classes, get_class_attendance, get_user_classes, request_class, update_attendance } from "../functions/class";
 import { get_request } from "../functions/request";
 
 
 export const create_class_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {user} = req;
+        const {user, file} = req;
+        let {_class="{}"} = req.body;
 
+        _class = JSON.parse(_class)
+        
         if((user.type === "admin") || (user.type === "teacher")){
-            let {subject, tags=[], class_type="group", teacher} = req.body;
+            let {title, subject, description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[]} = _class;
+
+            const cover_image = file?`${file.destination}/${file.filename}`:"";
         
             if(user.type === "teacher"){
                 teacher = user;
             }
         
-            const _class = await create_class({subject, tags, teacher, class_type}, user);
+            const new_class = await create_class({title, subject, cover_image, description, teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules}, user);
 
-            return res.json({success: true, _class});
+            return res.json({success: true, _class: new_class});
         }else{
             throw new Error("Only admins or teachers can create classes");
         }

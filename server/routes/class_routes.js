@@ -3,12 +3,23 @@ const verify_admin = require("../middleware/verify_admin");
 const verify_user = require("../middleware/verify_user");
 const verify_student = require("../middleware/verify_student");
 const verify_teacher = require("../middleware/verify_teacher");
+const multer = require("multer");
+const { attachment_storage, class_cover_storage, MB } = require("../middleware/upload_middleware");
 
 const router = require("express").Router();
 
+const class_cover_upload = multer({storage: class_cover_storage, fileFilter: (req, file, cb) => {
+    // console.log(file);
+    if(true || file.size <= (MB * 10)){
+        cb(null, true);
+    }else{
+        cb(new Error("File too large. 10MB limit."), false);
+    }
+}, limits: {fileSize: MB * 5}});
+
 module.exports = (app) => {
 
-    router.route("/").get(verify_user, get_classes_handler).post(verify_user, create_class_handler);
+    router.route("/").get(verify_user, get_classes_handler).post(verify_user, class_cover_upload.single("cover"), create_class_handler);
 
     router.route("/attendance").get(verify_teacher, get_class_attendance_handler).post(verify_teacher, update_student_attendance_handle);
 

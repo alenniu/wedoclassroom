@@ -1,7 +1,7 @@
-import { EDIT_CLASS_VALUE, SET_CLASSES, SET_EDITING_CLASS, SET_POPULAR_CLASSES } from "../Actions/types";
+import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_EDITING_CLASS, SET_POPULAR_CLASSES } from "../Actions/types";
 import { update_object } from "../Utils";
 
-const INITIAL_STATE = {classes: [], total: 0, popular_classes: [], create: {}, edit: {}};
+const INITIAL_STATE = {classes: [], total: 0, popular_classes: [], create: {schedules: [{days: [], daily_start_time: new Date(), daily_end_time: new Date()}], error: ""}, edit: {error: ""}};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -31,6 +31,14 @@ export default (state=INITIAL_STATE, action) => {
 
         case SET_EDITING_CLASS:
             new_state.edit = payload._class;
+        break;
+
+        case CREATE_CLASS:
+            new_state.create = {schedules: [{days: [], daily_start_time: new Date(), daily_end_time: new Date()}], error: ""};
+        break;
+
+        case SET_CREATE_CLASS_ERROR:
+            new_state.create.error = payload.error;
         break;
 
         default:

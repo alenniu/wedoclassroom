@@ -11,6 +11,7 @@
   --tag-border-color: #CCEABB;
   --tag-border-width: 0px;
   --tag-text-color: #3F3F44;
+  --input-border-radius: 8px;
 }
 
 .App {
@@ -77,7 +78,7 @@
   width: 95%;
   max-width: 1290px;
   min-height: 100vh;
-  height: 100vh;
+  /* height: 100vh; */
   margin: 0 auto;
   color: #3F3F44;
 }
@@ -141,7 +142,7 @@
   margin-bottom: 10px;
 }
 
-.input-container > input, .input-container > select, .input-container > textarea, .input-container .MuiSelect-select{
+.input-container > input, .input-container > select, .input-container > textarea, .input-container .MuiSelect-select, .input-container .MuiTextField-root{
   padding: 10px;
   border-radius: 8px;
   height: 56px;
@@ -149,6 +150,15 @@
   border: none;
   background-color: #F6F6F6;
   box-shadow: 0px 0px 3px -1px rgba(0,0,0,0.3);
+}
+
+.input-container .MuiTextField-root{
+  border: none;
+  padding: 0;
+}
+
+.input-container .MuiOutlinedInput-notchedOutline{
+  border: none;
 }
 
 .input-container .input-adornment{

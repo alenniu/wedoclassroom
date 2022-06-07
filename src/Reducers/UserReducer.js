@@ -1,4 +1,4 @@
-import { SET_USER_REQUESTS, SET_USER_CLASSES } from "../Actions/types";
+import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS } from "../Actions/types";
 
 const INITIAL_STATE = {classes: [], total_classes: 0, requests: [], total_requests: 0};
 
@@ -18,6 +18,10 @@ export default (state=INITIAL_STATE, action) => {
             new_state.requests = payload.requests;
             new_state.total_requests = payload.total;
         break
+
+        case CREATE_CLASS:
+            new_state.classes.push(payload._class);
+        break;
 
         default:
             return state;
