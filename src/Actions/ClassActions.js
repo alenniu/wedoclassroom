@@ -1,9 +1,5 @@
 import { api } from "../Utils/api";
-<<<<<<< HEAD
-import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES } from "./types";
-=======
-import { SET_CLASSES, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS,ACCEPT_JOIN_REQUEST } from "./types";
->>>>>>> origin/alen-dev
+import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST } from "./types";
 
 export const set_classes = (classes = [], total = 0) => {
     return {
@@ -124,7 +120,6 @@ export const decline_join_request = (request) => async (dispatch) => {
     } catch (e) {
         console.error(e);
     }
-<<<<<<< HEAD
 }
 
 export const create_new_class = (_class_formdata) => async (dispatch) => {
@@ -155,6 +150,3 @@ export const set_create_class_error = (error) => {
 export const edit_class_value = (keys=[], value) => {
     return {type: EDIT_CLASS_VALUE, payload: {keys, value}};
 }
-=======
-};
->>>>>>> origin/alen-dev

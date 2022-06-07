@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 import React from 'react';
 import { get_full_image_url } from '../../Utils';
-=======
-import React from "react";
->>>>>>> origin/alen-dev
 
 import { connect } from "react-redux";
 import "./Class.css";
@@ -28,15 +24,9 @@ const Class = ({ _class, request_join_class }) => {
     const { daily_start_time = 7, daily_end_time = 9 } = schedule;
 
     return (
-<<<<<<< HEAD
         <div className='classes-class-container'>
             <div className='class-image-container'>
                 <img src={get_full_image_url(cover_image)} />
-=======
-        <div className="classes-class-container">
-            <div className="class-image-container">
-                <img src={cover_image} />
->>>>>>> origin/alen-dev
             </div>
 
             <div className="subject-tags-container">
