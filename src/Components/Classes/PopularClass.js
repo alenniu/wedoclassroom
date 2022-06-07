@@ -4,7 +4,7 @@ import { get_full_image_url } from '../../Utils';
 import "./PopularClass.css";
 
 const PopularClass = ({_class}) => {
-    const {_id, subject, students=[], schedule, tags, max_students=1, cover_image="/Assets/Images/AuthBackground.png"} = _class;
+    const {_id, subject, title, students=[], schedule, tags, max_students=1, cover_image="/Assets/Images/AuthBackground.png"} = _class;
     
     return (
         <div className='popular-class-container'>
@@ -17,7 +17,7 @@ const PopularClass = ({_class}) => {
             </div>
 
             <div className='right-column'>
-                <p className='class-subject'>{subject}</p>
+                <p className='class-subject'>{title || subject}</p>
 
                 <div className='tags'>{[...tags, ...tags].map((t) => <span key={t} className="class-tag">#{t}</span>)}</div>
 

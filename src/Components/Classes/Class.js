@@ -8,6 +8,7 @@ import { request_join_class } from "../../Actions";
 const Class = ({ _class, request_join_class }) => {
     const {
         _id,
+        title,
         students = [],
         subject,
         schedule = {},
@@ -30,7 +31,7 @@ const Class = ({ _class, request_join_class }) => {
             </div>
 
             <div className="subject-tags-container">
-                <p className="class-subject">{subject}</p>
+                <p className="class-subject">{title || subject}</p>
 
                 <div className="tags">
                     {[...tags, ...tags].map((t) => (
