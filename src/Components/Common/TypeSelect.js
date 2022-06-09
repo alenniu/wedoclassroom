@@ -24,7 +24,7 @@ const TypeSelect = ({options=[], value, textValue, placeholder="", disabled=fals
     const usedValue = value || currentValue;
     const usedText = textValue || text;
 
-    const selected_option = options.find((o) => o.value === currentValue);
+    const selected_option = options.find((o) => o.value === usedValue);
 
     const incrementSuggestionIndex = () => {
         setSuggestionIndex((i) => (i===(options.length-1)) ? 0 : i+1);

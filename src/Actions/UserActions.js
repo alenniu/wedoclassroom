@@ -1,13 +1,35 @@
 import { api } from "../Utils/api";
+import { get_class } from "./ClassActions";
 
-const { SET_CLASS, SET_USER_CLASSES, SET_USER_REQUESTS } = require("./types");
+const { SET_CLASS, SET_USER_CLASSES, SET_USER_REQUESTS, SET_USER_CLASS } = require("./types");
 
 export const set_user_classes = (classes=[], total=0) => {
     return {type: SET_USER_CLASSES, payload: {classes, total: total || classes.length}}
 }
 
+export const set_user_class = (_class={}) => {
+    return {type: SET_USER_CLASS, payload: {_class}}
+}
+
 export const set_user_requests = (requests=[], total=0) => {
     return {type: SET_USER_REQUESTS, payload: {requests, total: total || requests.length}}
+}
+
+export const get_user_class = (class_id) => async (dispatch) => {
+    try{
+        const data = await get_class(class_id)(dispatch);
+
+        if(data.success){
+            const {_class} = data;
+            dispatch(set_user_class(_class));
+
+            return data;
+        }
+
+        console.error(data);
+    }catch(e){
+        console.error(e);
+    }
 }
 
 export const get_my_classes = (limit=20, offset=0, search="") => async (dispatch) => {

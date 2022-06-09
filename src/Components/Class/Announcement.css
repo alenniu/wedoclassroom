@@ -1,0 +1,43 @@
+.announcement-container{
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 3px #bfbfbf, 0px 3px 3px #bfbfbf;
+    margin-bottom: 20px;
+    display: flex;
+}
+
+.announcement-container .user-image-container{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    margin-right: 20px;
+}
+
+.announcement-container .user-image-container img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.announcement-container .announcement-message{
+    margin-top: 20px;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+    line-height: 1.2;
+}
+
+.announcement-title .assignment{
+    color: blue;
+}
+
+.announcement-container .assignment-buttons .button{
+    min-width: 45%;
+}
+
+.announcement-container .assignment-buttons .time-left{
+    margin-right: 5%;
+    background-color: blanchedalmond!important;
+    color: brown;
+}

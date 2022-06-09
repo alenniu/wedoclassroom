@@ -5,6 +5,7 @@ import Tabs from '../Components/Common/Tabs';
 import Class from '../Components/Dashboard/Class';
 import "./Dashboard.css";
 import Schedule from '../Components/Dashboard/Schedule';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
     const [pageLimit, setPageLimit] = useState(20);
@@ -12,6 +13,8 @@ const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
     const [search, setSearch] = useState("");
 
     const [classtype, setClasstype] = useState("")
+    
+    const navigate = useNavigate();
 
     useEffect(() => {
         const init = async () => {
@@ -47,8 +50,8 @@ const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
                 <Tabs tabs={[{label: "All Classes", id: ""}, {label: "Group Lessons", id: "group"}, {label: "One on One", id: "private"}]} />
 
                 <ul className='class-list'>
-                    {[...classes, ...classes, ...classes, ...classes, ...classes, ...classes, ...classes, ...classes].map((c, i) => {
-                        return <li key={c.subject+i} className='class-item clickable'><Class _class={c} index={i} onPressTab={onPressTab} /></li>
+                    {[...classes, ...classes, ...classes, ...classes, ...classes, ...classes].map((c, i) => {
+                        return <li key={c._id + i} onClick={() => {navigate(`/dashboard/my-class/${c._id}`)}} className='class-item clickable'><Class _class={c} index={i} onPressTab={onPressTab} /></li>
                     })}
                 </ul>
             </div>

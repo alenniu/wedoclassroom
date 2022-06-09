@@ -23,6 +23,11 @@ const attachment_schema = new schema({
         type: schema.Types.ObjectId,
         ref: "class"
     },
+    assignment: {
+        type: schema.Types.ObjectId,
+        ref: "assignment",
+        default: null
+    },
     owner: {
         type: schema.Types.ObjectId,
         ref: "user"

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { create_new_class, edit_class_value, get_teachers, set_loading } from '../Actions';
+import { create_new_class, edit_class_value, get_teachers, set_loading, set_teachers } from '../Actions';
 import TypeSelect from '../Components/Common/TypeSelect';
 import { debounce, throttle } from '../Utils';
 import {RiImageAddLine, RiCloseCircleFill} from "react-icons/ri";
@@ -30,13 +30,18 @@ const class_type_options = [{label: "Group Class", value: "group"}, {label: "Pri
 
 const schedules = [{days: [], start_time: "", end_time: ""}];
 
-const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, is_teacher, get_teachers, edit_class_value, create_new_class, set_loading}) => {
+const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, is_teacher, get_teachers, edit_class_value, create_new_class, set_teachers, set_loading}) => {
     const [teacherSearch, setTeacherSearch] = useState("");
     const [coverPreview, setCoverPreview] = useState({file: null, url: ""});
     const [errors, setErrors] = useState({});
 
     const {title="", subject="", cover="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], error} = new_class;
 
+    useEffect(() => {
+        is_teacher && set_teachers([{...user}]);
+    }, []);
+
+    console.log(teachers);
     // console.log(new_class);
 
     const onChangeValueEvent = (keys=[], numeric=false) => (e, val) => {
@@ -257,7 +262,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
                                     <TimePicker
                                         // label="Start Time"
                                         value={daily_start_time}
-                                        onChange={(v) => onChangeValue(["schedules", i, "daily_start_time"])(v.getTime())}
+                                        onChange={(v) => onChangeValue(["schedules", i, "daily_start_time"])((v || (new Date())).getTime())}
                                         renderInput={(params) => <TextField {...params} />}
                                     />
                                     </LocalizationProvider>
@@ -269,11 +274,15 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
                                     <TimePicker
                                         // label="End Time"
                                         value={daily_end_time}
-                                        onChange={(v) => onChangeValue(["schedules", i, "daily_end_time"])(v.getTime())}
+                                        onChange={(v) => onChangeValue(["schedules", i, "daily_end_time"])((v || (new Date())).getTime())}
                                         renderInput={(params) => <TextField {...params} />}
                                     />
                                     </LocalizationProvider>
                                 </div>
+
+                                {(schedules.length > 1) && <div className='input-container' style={{verticalAlign: "bottom"}}>
+                                    <button className='button error fullheight fullwidth remove' onClick={() => {RemoveNewSchedule(i)}}>Remove</button>
+                                </div>}
                             </li>
                         )
                     })}
@@ -285,6 +294,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
                     <button onClick={createClass} className='button primary'>Create Class</button>
                 </div>
 
+                {error && <p className='error' style={{textAlign: "end"}}>{error}</p>}
             </form>
 
             <div className='misc-col'>
@@ -298,4 +308,4 @@ function map_state_to_props({App, Auth, Class, Admin}){
     return {user: App.user, teachers: Admin.teachers, total_teachers: Admin.total_teachers, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, new_class: Class.create};
 }
  
-export default connect(map_state_to_props, {get_teachers, edit_class_value, create_new_class, set_loading})(NewClass);
+export default connect(map_state_to_props, {get_teachers, edit_class_value, create_new_class, set_teachers, set_loading})(NewClass);

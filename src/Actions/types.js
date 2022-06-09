@@ -8,6 +8,7 @@ export const EDIT_AUTH_VALUE = "SET_AUTH_VALUE";
 
 export const SET_USER = "SET_USER";
 export const SET_LOADING = "SET_LOADING";
+export const SET_USER_CLASS = "SET_USER_CLASS";
 export const SET_USER_CLASSES = "SET_USER_CLASSES";
 export const SET_USER_REQUESTS = "SET_USER_REQUESTS";
 export const REQUEST_JOIN_CLASS = "REQUEST_JOIN_CLASS";

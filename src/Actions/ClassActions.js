@@ -12,8 +12,27 @@ export const set_popular_classes = (classes = []) => {
     return { type: SET_POPULAR_CLASSES, payload: { classes } };
 };
 
-export const get_classes =
-    (limit = 20, offset = 0, search = "", sort = "{}", filters = "{}") =>
+export const get_class = (class_id) => async (dispatch) => {
+    try{
+        const res = await api("get", `/api/classes/${class_id}`);
+
+        if(res && res.data){
+            if(!res.data.success){
+                console.error(res.data);
+            }
+
+            return res.data;
+        }else{
+            console.error(res);
+        }
+
+        return res;
+    }catch(e){
+        console.error(e);
+    }
+}
+
+export const get_classes = (limit = 20, offset = 0, search = "", sort = "{}", filters = "{}") =>
     async (dispatch) => {
         try {
             const res = await api(
@@ -37,8 +56,7 @@ export const get_classes =
         }
     };
 
-export const get_popular_classes =
-    (limit = 20, offset = 0, search = "", filters = "{}") =>
+export const get_popular_classes = (limit = 20, offset = 0, search = "", filters = "{}") =>
     async (dispatch) => {
         try {
             const res = await api(

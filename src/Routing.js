@@ -11,6 +11,7 @@ import Home from './Pages/Home';
 import Accounts from './Pages/Accounts';
 import Classes from './Pages/Classes';
 import NewClass from './Pages/NewClass';
+import Class from './Pages/Class';
 
 const routes = [
     {
@@ -33,6 +34,15 @@ const routes = [
             {
                 path: "/dashboard/classes",
                 component: Classes,
+                exact: true,
+                children: null,
+                isIndex: false,
+                teacherRequired: false,
+                adminRequired: false
+            },
+            {
+                path: "/dashboard/my-class/:id",
+                component: Class,
                 exact: true,
                 children: null,
                 isIndex: false,

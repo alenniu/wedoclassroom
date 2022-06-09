@@ -1,7 +1,7 @@
+import axios from "axios";
 import {Request, Response, NextFunction} from "express";
 import { accept_request, create_class, decline_request, get_class, get_classes, get_class_attendance, get_user_classes, request_class, update_attendance } from "../functions/class";
 import { get_request } from "../functions/request";
-
 
 export const create_class_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -36,7 +36,7 @@ export const request_class_handler = async (req: Request, res: Response, next: N
 
         let {_class} = req.body;
 
-        const current_class = await get_class(_class._id);
+        const current_class = await get_class(_class._id, user);
     
         
         const existing_request = await get_request({_class: current_class._id, student: user._id, accepted: false, declined: false});
@@ -65,7 +65,7 @@ export const accept_request_handler = async (req: Request, res: Response, next: 
         if((user.type === "admin") || (user.type === "teacher")){
             let {request} = req.body;
 
-            const _class = await get_class(request._class);
+            const _class = await get_class(request._class, user);
         
             if((user.type === "admin") || (user._id.toString() === _class.teacher._id.toString())){
                 const {request:updated_request, updated_class} = await accept_request({request_id: request._id}, user);
@@ -89,7 +89,7 @@ export const decline_request_handler = async (req: Request, res: Response, next:
         if((user.type === "admin") || (user.type === "teacher")){
             let {request} = req.body;
 
-            const _class = await get_class(request._class);
+            const _class = await get_class(request._class, user);
         
             if((user.type === "admin") || (user._id.toString() === _class.teacher._id.toString())){
                 const updated_request = await decline_request({request_id: request._id});
@@ -103,6 +103,26 @@ export const decline_request_handler = async (req: Request, res: Response, next:
         }
     }catch(e){
         return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const get_class_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        let {class_id} = req.params;
+
+        if(class_id){
+            const _class = await get_class(class_id, user);
+            if(_class){
+                return res.json({success: true, _class});
+            }else{
+                throw new Error("Class not found. If you are sure it exists, make sure you are a teacher/student of the class");
+            }
+        }else{
+            throw new Error("No class id provided");
+        }
+    }catch(e){
+        return res.status(400).json({msg: e.message, success: false});
     }
 }
 
@@ -147,7 +167,7 @@ export const get_class_attendance_handler = async (req: Request, res: Response, 
         const {user} = req;
         const {class_id} = req.query;
 
-        const current_class = await get_class(class_id);
+        const current_class = await get_class(class_id, user);
 
         if(current_class.teacher._id.toString() === user._id.toString()){
             const class_attendance = await get_class_attendance(current_class);
@@ -166,7 +186,7 @@ export const update_student_attendance_handle = async (req: Request, res: Respon
         const {user} = req;
         const {_class, student, remarks="", early, present} = req.body;
 
-        const current_class = await get_class(_class._id);
+        const current_class = await get_class(_class._id, user);
 
         if(current_class.teacher._id.toString() === user._id.toString()){
             const student_attendance = await update_attendance({_class: current_class, student, remarks, early, present});

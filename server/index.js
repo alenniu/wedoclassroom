@@ -12,14 +12,15 @@ const db_init = require("./database/init");
 const db = db_init();
 
 require("./database/schemas/users");
+require("./database/schemas/scores");
 require("./database/schemas/classes");
-require("./database/schemas/attachments");
-require("./database/schemas/assignments");
+require("./database/schemas/invoices");
 require("./database/schemas/requests");
 require("./database/schemas/schedule");
 require("./database/schemas/attendance");
-require("./database/schemas/scores");
-require("./database/schemas/invoices");
+require("./database/schemas/attachments");
+require("./database/schemas/assignments");
+require("./database/schemas/announcements");
 
 const app = express();
 const server = http.createServer(app);

@@ -106,7 +106,8 @@
   margin: 15px 0;
   width: 100%;
   display: inline-flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  /* flex-direction: column; */
   align-items: flex-start;
   text-align: left;
   transform: translateY(0);
@@ -140,6 +141,7 @@
 
 .input-container label{
   margin-bottom: 10px;
+  width: 100%;
 }
 
 .input-container > input, .input-container > select, .input-container > textarea, .input-container .MuiSelect-select, .input-container .MuiTextField-root{
@@ -209,23 +211,50 @@
   margin-left: 10px;
 }
 
+.button.primary{
+  background-color: #FDCB9E;
+  color: #3F3F44;
+}
+
+.button.primary:hover, .button.primary:focus{
+  background-color: #e4a771;
+}
+
+.button.secondary{
+  background-color: #CCEABB;
+  color: #3F3F44;
+}
+
+.button.secondary:hover, .button.secondary:focus{
+  background-color: #AACA99;
+}
+
 .button.clear{
   border: 2px solid #3F3F44;
   color: #3F3F44;
   background-color: transparent;
 }
 
-.button.primary{
-  background-color: #FDCB9E;
-  color: #3F3F44;
-}
-
-.button.primary:hover{
-  background-color: #e4a771;
-}
-
-.button.clear:hover{
+.button.clear:hover, .button.clear:focus{
   background-color: rgba(255,255,255,0.2);
+}
+
+.button.error{
+  background-color: #ff3366;
+  color: #FFF;
+}
+
+.button.error:hover, .button.error:focus{
+  background-color: #ff0066;
+}
+
+.button.warning{
+  background-color: #FFCC00;
+  color: #FFF;
+}
+
+.button.warning:hover, .button.warning:focus{
+  background-color: #DDAA00;
 }
 
 .button:disabled{

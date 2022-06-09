@@ -135,3 +135,7 @@
 .new-class .schedules li:last-of-type{
     border-bottom: none;
 }
+
+.new-class .schedules button.remove{
+    min-height:var(--input-height, 56px);
+}

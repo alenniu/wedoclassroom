@@ -1,4 +1,4 @@
-const { get_classes_handler, create_class_handler, request_class_handler, accept_request_handler, decline_request_handler, update_student_attendance_handle, get_class_attendance_handler } = require("../handlers/class");
+const { get_classes_handler, create_class_handler, request_class_handler, accept_request_handler, decline_request_handler, update_student_attendance_handle, get_class_attendance_handler, get_class_handler } = require("../handlers/class");
 const verify_admin = require("../middleware/verify_admin");
 const verify_user = require("../middleware/verify_user");
 const verify_student = require("../middleware/verify_student");
@@ -20,6 +20,8 @@ const class_cover_upload = multer({storage: class_cover_storage, fileFilter: (re
 module.exports = (app) => {
 
     router.route("/").get(verify_user, get_classes_handler).post(verify_user, class_cover_upload.single("cover"), create_class_handler);
+
+    router.route("/:class_id").get(verify_user, get_class_handler);
 
     router.route("/attendance").get(verify_teacher, get_class_attendance_handler).post(verify_teacher, update_student_attendance_handle);
 

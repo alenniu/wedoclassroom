@@ -10,9 +10,11 @@ const Request = Requests;
 const Attendances = mongoose.model("attendance");
 const Attendance = Attendances;
 
-async function get_class(class_id){
+async function get_class(class_id, user){
     try{
-        return Classes.findOne({_id: class_id});
+        const {_id, type} = user;
+
+        return Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: type === "admin"}}]}).populate("teacher");
     }catch(e){
         throw e;
     }
@@ -80,7 +82,7 @@ async function get_user_classes(user, limit=20, offset=0, search=""){
 async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[]}, creator){
     try{
         if(title && subject && class_type){
-            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, schedules, teacher: teacher?._id || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
+            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, schedules, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
 
             return new_class;
         }else{
