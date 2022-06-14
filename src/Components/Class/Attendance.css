@@ -1,0 +1,31 @@
+.page.class .attendance > h3{
+    margin-bottom: 30px;
+}
+
+.page.class .attendance-container{
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-top: 10px;
+    border: 1px solid #707070;
+    display: flex;
+    align-items: center;
+}
+
+.attendance-container .student-name, .attendance-container .input-container.attendance-select{
+    flex-basis: 50%;
+    margin: 0;
+}
+
+.attendance-container .input-container.attendance-select select{
+    height: 40px;
+    background-color: #BEBEBE;
+    box-shadow: none;
+}
+
+.attendance-container .input-container.attendance-select.on-time select{
+    background-color: var(--secondary-button-bgcolor);
+}
+
+.attendance-container .input-container.attendance-select.late select{
+    background-color: var(--error-button-bgcolor);
+}

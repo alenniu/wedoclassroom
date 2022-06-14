@@ -4,6 +4,12 @@
   --input-box-shadow: 0px 0px 3px -1px rgba(0,0,0,0.3);
   --primary-button-bgcolor: #FDCB9E;
   --primary-button-hover-bgcolor: #E4A771;
+  --secondary-button-bgcolor: #CCEABB;
+  --secondary-button-hover-bgcolor: #699F49;
+  --warning-button-bgcolor: #FFCC00;
+  --warning-button-hover-bgcolor: #DDAA00;
+  --error-button-bgcolor: #ff3366;
+  --error-button-hover-bgcolor: #ff0066;
   --text-color: #3F3F44;
   --active-nav-link-bgcolor: #CCEABB;
   --active-nav-link-text-color: #699F49;
@@ -212,12 +218,12 @@
 }
 
 .button.primary{
-  background-color: #FDCB9E;
+  background-color: var(--primary-button-bgcolor, #FDCB9E);
   color: #3F3F44;
 }
 
 .button.primary:hover, .button.primary:focus{
-  background-color: #e4a771;
+  background-color: var(--primary-button-hover-bgcolor, #e4a771);
 }
 
 .button.secondary{
