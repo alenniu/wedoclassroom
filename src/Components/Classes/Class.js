@@ -5,9 +5,10 @@ import { connect } from "react-redux";
 import "./Class.css";
 import { request_join_class } from "../../Actions";
 
-const Class = ({ _class, request_join_class }) => {
+const Class = ({ _class, onPressJoin, can_join=true, request_join_class }) => {
     const {
         _id,
+        price=0,
         title,
         students = [],
         subject,
@@ -17,10 +18,9 @@ const Class = ({ _class, request_join_class }) => {
         cover_image = "/Assets/Images/support-badge.svg",
     } = _class;
 
-    const onPressClass = async () => {
-        console.log(_class);
-        await request_join_class(_class);
-    };
+    const onJoin = () => {
+        typeof(onPressJoin) === "function" && onPressJoin(_class);
+    }
 
     const { daily_start_time = 7, daily_end_time = 9 } = schedule;
 
@@ -32,6 +32,7 @@ const Class = ({ _class, request_join_class }) => {
 
             <div className="subject-tags-container">
                 <p className="class-subject">{title || subject}</p>
+                <p className="class-subject">{price?price.toLocaleString(undefined, {style: "currency", currency: "USD"}):"Free"}</p>
 
                 <div className="tags">
                     {[...tags, ...tags].map((t) => (
@@ -47,7 +48,7 @@ const Class = ({ _class, request_join_class }) => {
                     {daily_start_time} - {daily_end_time}PM
                 </p>
 
-                <button className="button primary join" onClick={onPressClass}>
+                <button disabled={!can_join} className="button primary join" onClick={onJoin}>
                     JOIN
                 </button>
             </div>
@@ -55,9 +56,4 @@ const Class = ({ _class, request_join_class }) => {
     );
 };
 
-function map_state_to_props({ User }) {
-    return { classes: User.classes, total: User.total_classes };
-}
-
-// export default Class;
-export default connect(map_state_to_props, { request_join_class })(Class);
+export default Class;

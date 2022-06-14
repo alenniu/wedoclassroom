@@ -67,6 +67,9 @@ const class_schema = new schema({
         type: Number,
         default: 0,
         required: true
+    },
+    stripe_product_price_id: {
+        type: String
     }
 }, {timestamps: true});
 

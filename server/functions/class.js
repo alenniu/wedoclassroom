@@ -14,7 +14,7 @@ async function get_class(class_id, user){
     try{
         const {_id, type} = user;
 
-        return Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: type === "admin"}}]}).populate("teacher");
+        return Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: type === "admin"}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
     }catch(e){
         throw e;
     }
@@ -96,7 +96,7 @@ async function create_class({title, subject, cover_image="", description, teache
 async function add_student_to_class({student_id, class_id}){
     try{
         if(student_id && class_id){
-            const updated_class = await Classes.findOneAndUpdate({_id: class_id}, {$push: {students: student_id}}, {new: true, upsert: false});
+            const updated_class = await Classes.findOneAndUpdate({_id: class_id}, {$push: {students: student_id}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"}).populate({path: "students", select: "-password"});
 
             return updated_class;
         }else{
@@ -110,7 +110,7 @@ async function add_student_to_class({student_id, class_id}){
 async function add_teacher_to_class({teacher_id, class_id}){
     try{
         if(teacher_id && class_id){
-            const updated_class = await Classes.findOneAndUpdate({_id: class_id}, {$set: {teacher: teacher_id}}, {new: true, upsert: false});
+            const updated_class = await Classes.findOneAndUpdate({_id: class_id}, {$set: {teacher: teacher_id}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"}).populate({path: "students", select: "-password"});
 
             return updated_class;
         }else{
@@ -142,7 +142,7 @@ async function accept_request({request_id}, handler){ //handler is the user acce
         if(request_id){
             const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: true, declined: false, handled_by: handler._id}}, {new: true, upsert: false, });
 
-            const updated_class = await add_student_to_class({student_id: request.student, class_id: request._class})
+            const updated_class = await add_student_to_class({student_id: request.student, class_id: request._class}).populate({path: "teacher", select: "-password"}).populate({path: "students", select: "-password"})
 
             return {request, updated_class};
         }else{
@@ -188,7 +188,7 @@ async function update_attendance({_class, student, remarks="", early, present}){
 async function add_attachment_to_class({attachment, class_id}){
     try{
         if(attachment && class_id){
-            const updated_class = await Classes.findOneAndUpdate({_id: class_id}, {$push: attachment._id});
+            const updated_class = await Classes.findOneAndUpdate({_id: class_id}, {$push: attachment._id}).populate({path: "teacher", select: "-password"}).populate({path: "students", select: "-password"});
 
             return updated_class;
         }else{

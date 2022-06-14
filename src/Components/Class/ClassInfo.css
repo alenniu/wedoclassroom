@@ -1,0 +1,30 @@
+.page.class .class-info p{
+    font-weight: 300;
+    margin: 10px 0;
+}
+
+.page.class .class-info a.meeting-link{
+    color: blue;
+    text-decoration: underline;
+}
+
+.page.class .class-info .info-title{
+    font-weight: 700;
+    margin-right: 5px;
+}
+
+.page.class .class-info .schedule{
+    display: block;
+    text-indent: 20px;
+    font-weight: 300;
+}
+
+
+.page.class .upcoming-assignments{
+    margin-top: 100px;
+}
+
+.upcoming-assignments .assignment{
+    color: blue;
+    margin-top: 15px;
+}

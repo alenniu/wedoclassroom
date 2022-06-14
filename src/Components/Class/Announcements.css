@@ -1,0 +1,21 @@
+.page.class .input-container.announcement{
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.page.class .input-container textarea{
+    display: inline-block;
+    flex: 1;
+    width: unset;
+    height: 70px;
+    margin-right: 20px;
+    resize: vertical;
+}
+
+.page.class .input-container button{
+    display: inline-block;
+    width: unset;
+    height: 70px;
+    min-width: 150px;
+    vertical-align: bottom;
+}

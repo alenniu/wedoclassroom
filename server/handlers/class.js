@@ -1,7 +1,11 @@
 import axios from "axios";
+import mongoose from "mongoose";
 import {Request, Response, NextFunction} from "express";
 import { accept_request, create_class, decline_request, get_class, get_classes, get_class_attendance, get_user_classes, request_class, update_attendance } from "../functions/class";
 import { get_request } from "../functions/request";
+
+const Classes = mongoose.model("class");
+const Class = Classes;
 
 export const create_class_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -36,7 +40,7 @@ export const request_class_handler = async (req: Request, res: Response, next: N
 
         let {_class} = req.body;
 
-        const current_class = await get_class(_class._id, user);
+        const current_class = await Classes.findOne({_id: _class._id});
     
         
         const existing_request = await get_request({_class: current_class._id, student: user._id, accepted: false, declined: false});

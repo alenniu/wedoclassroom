@@ -84,7 +84,7 @@ async function get_requests(user, limit=20, offset=0, sort={}, filters={}){
         total = await Requests.count(query);
 
         if(total){
-            requests = await Requests.find(query).sort(sort).limit(limit).skip(offset).lean(true);
+            requests = await Requests.find(query).populate({path: "student", select: "-password"}).sort(sort).limit(limit).skip(offset).lean(true);
         }
 
         return {requests, total};

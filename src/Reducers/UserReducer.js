@@ -1,6 +1,6 @@
-import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS } from "../Actions/types";
+import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS, SET_CLASS_REQUESTS } from "../Actions/types";
 
-const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, requests: [], total_requests: 0};
+const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, current_class_requests: [], total_class_requests: 0, requests: [], total_requests: 0};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -21,6 +21,11 @@ export default (state=INITIAL_STATE, action) => {
         case SET_USER_REQUESTS:
             new_state.requests = payload.requests;
             new_state.total_requests = payload.total;
+        break
+
+        case SET_CLASS_REQUESTS:
+            new_state.current_class_requests = payload.requests;
+            new_state.total_class_requests = payload.total;
         break
 
         case CREATE_CLASS:

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {BsCurrencyDollar} from "react-icons/bs";
 import { connect } from 'react-redux';
-import { get_classes, get_popular_classes, get_my_requests, set_loading } from '../Actions';
+import { get_classes, get_popular_classes, get_my_requests, set_loading, request_join_class } from '../Actions';
 import Class from '../Components/Classes/Class';
 import PopularClass from '../Components/Classes/PopularClass';
 import Tabs from '../Components/Common/Tabs';
 
 import "./Classes.css";
 
-const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_requests=0, get_classes, get_popular_classes, get_my_requests, set_loading}) => {
+const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_requests=0, get_classes, get_popular_classes, request_join_class, get_my_requests, set_loading, is_student}) => {
     const [pageLimit, setPageLimit] = useState(20);
     const [page, setPage] = useState(0);
     const [search, setSearch] = useState("");
@@ -41,14 +41,22 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
         setClasstype(id);
     }
 
+    const joinClass = async (_class) => {
+        set_loading(true);
+        await request_join_class(_class);
+        set_loading(false);
+    }
+
     return (
         <div className='page classes'>
             <div className='main-col'>
                 <Tabs tabs={[{label: "Popular Classes", id: ""}, {label: "Group Classes", id: "group"}, {label: "Private Classes", id: "private"}]} />
                 <ul className='popular-class-list'>
                     {[...popular_classes, ...popular_classes, ...popular_classes, ...popular_classes, ...popular_classes, ...popular_classes].map((c) => {
+                        const already_requested = requests.some((r) => r._class === c._id);
+
                         return (
-                            <li key={c._id}><PopularClass _class={c} /></li>
+                            <li key={c._id}><PopularClass _class={c} onPressJoin={joinClass} can_join={is_student && !already_requested} /></li>
                         )
                     })}
                 </ul>
@@ -90,15 +98,19 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
 
             <div>
                 <ul className='classes-list'>
-                    {[...classes, ...classes, ...classes, ...classes, ...classes, ...classes].map((c) => <li key={c._id}><Class _class={c} /></li>)}
+                    {[...classes, ...classes, ...classes, ...classes, ...classes, ...classes].map((c) => {
+                        const already_requested = requests.some((r) => r._class === c._id);
+
+                        return <li key={c._id}><Class _class={c} can_join={is_student && !already_requested} onPressJoin={joinClass} /></li>
+                    })}
                 </ul>
             </div>
         </div>
     );
 }
 
-function map_state_to_props({User, Class}){
-    return {classes: Class.classes, total: Class.total, popular_classes: Class.popular_classes, requests: User.requests, total_requests: User.total_requests}
+function map_state_to_props({Auth, User, Class}){
+    return {classes: Class.classes, total: Class.total, popular_classes: Class.popular_classes, requests: User.requests, total_requests: User.total_requests, is_student: Auth.is_student}
 }
 
-export default connect(map_state_to_props, {get_classes, get_popular_classes, get_my_requests, set_loading})(Classes);
+export default connect(map_state_to_props, {get_classes, request_join_class, get_popular_classes, get_my_requests, set_loading})(Classes);

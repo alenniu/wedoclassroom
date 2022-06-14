@@ -9,4 +9,5 @@ table th:hover .sort-icon-container:not(.visible){
 
 table .sort-icon-container.no-sort{
     display: none;
+    pointer-events: none;
 }
