@@ -6,6 +6,10 @@ const assignment_schema = new schema({
         type: schema.Types.ObjectId,
         ref: "class"
     },
+    teacher: {
+        type: schema.Types.ObjectId,
+        ref: "user"
+    },
     title: {
         type: String
     },
