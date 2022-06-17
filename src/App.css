@@ -218,6 +218,8 @@
   background-color: white;
   border: 1px solid var(--file-input-border-color, #99C183);
   margin-right: 20px;
+  flex-shrink: 0;
+  aspect-ratio: 1;
 }
 
 .input-container.file-input label{

@@ -1,3 +1,6 @@
+import { TextField } from '@mui/material';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { create_announcement, create_assignment, edit_class_announcement, edit_class_assignment, set_loading } from '../../Actions';
@@ -50,26 +53,52 @@ const Announcements = ({_class={}, announcement={}, assignment={}, tab, user={},
                     {announcement.error && <p className='error'>{announcement.error}</p>}
                 </div>
                 :
-                <form onSubmit={(e) => {e.preventDefault()}} enctype="multipart/form-data">
-                    <div className='input-container announcement'>
-                        <label>Post a new assignment</label>
+                <form className='assignment-form' onSubmit={(e) => {e.preventDefault()}} enctype="multipart/form-data">
+                    <div className='assignment-inputs'>
+                        <div className='input-container'>
+                            <label>Assignment Title</label>
 
-                        <textarea placeholder='Type Here' />
+                            <input type="text" value={assignment.title || ""} onChange={onEditAssignment(["title"])} placeholder='Title' />
+                        </div>
+
+                        <div className='input-container'>
+                            <label>Due Date</label>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DateTimePicker
+                                // label="Due Date"
+                                value={assignment.due_date || Date.now()}
+                                onChange={(v) => edit_class_assignment(["due_date"], v?.getTime() || 0)}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                            </LocalizationProvider>
+                        </div>
+                        
+                        <div className='input-container'>
+                            <label>Instrutions</label>
+
+                            <textarea value={assignment.description || ""} onChange={onEditAssignment(["description"])} placeholder='Type Here' />
+                        </div>
+
+                        <div className='input-container file-input'>
+                            <label>Attachment</label>
+
+                            <input type="file" multiple />
+
+                            <FileUploadDropArea />
+                        </div>
                     </div>
 
-                    <div className='input-container file-input'>
-                        <label>Attachment</label>
-
-                        <input type="file" multiple />
-
-                        <FileUploadDropArea />
+                    <div className='assignment-submit'>
+                        <button className='button secondary'>Post</button>
                     </div>
 
-                    {(assignment.attachments || []).map((a) => {
-                        <small>attachment</small>
-                    })}
+                    <div className='assignment-attachments'>
+                        {(assignment.attachments || []).map((a) => {
+                            <small>attachment</small>
+                        })}
 
-                    {assignment.error && <p className='error'>{assignment.error}</p>}
+                        {assignment.error && <p className='error'>{assignment.error}</p>}
+                    </div>
                 </form>
             )}
 

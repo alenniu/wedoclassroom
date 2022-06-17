@@ -1,9 +1,9 @@
 .page.class .input-container.announcement{
     align-items: flex-end;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
 }
 
-.page.class .input-container textarea{
+.page.class .input-container.announcement textarea{
     display: inline-block;
     flex: 1;
     width: unset;
@@ -12,10 +12,47 @@
     resize: vertical;
 }
 
-.page.class .input-container button{
+.page.class .input-container button.button{
     display: inline-block;
     width: unset;
     height: 70px;
     min-width: 150px;
     vertical-align: bottom;
+}
+
+.page.class form.assignment-form{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 50px;
+}
+
+.page.class form.assignment-form .assignment-inputs{
+    width: calc(100% - 150px);
+}
+
+.page.class form.assignment-form .assignment-submit{
+    margin-left: 10px;
+    margin-bottom: 20px;
+    align-self: flex-end;
+}
+
+.page.class form.assignment-form .assignment-submit button{
+    width: 130px;
+    padding-block: 20px;
+}
+
+.page.class form.assignment-form .input-container{
+    width: 48%;
+    vertical-align: bottom;
+    margin-top: 0px;
+}
+
+.page.class form.assignment-form .input-container textarea{
+    height: 120px;
+    resize: vertical;
+}
+
+.page.class form.assignment-form .input-container:nth-child(odd){
+    margin-right: 4%;
 }
