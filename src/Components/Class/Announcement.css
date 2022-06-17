@@ -21,15 +21,23 @@
     object-fit: cover;
 }
 
+.announcement-container .announcement-title{
+    font-size: 14px;
+}
+
 .announcement-container .announcement-message{
     margin-top: 20px;
-    margin-bottom: 10px;
     white-space: pre-wrap;
     line-height: 1.2;
+    font-size: 14px;
 }
 
 .announcement-title .assignment{
     color: blue;
+}
+
+.announcement-container .assignment-buttons{
+    margin-top: 20px;
 }
 
 .announcement-container .assignment-buttons .button{

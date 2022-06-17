@@ -13,6 +13,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import "./NewClass.css";
 import { ListInput } from '../Components/Common/ListInput';
 import { DAYS } from '../Data';
+import FileUploadDropArea from '../Components/Common/FileUploadDropArea';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -41,7 +42,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
         is_teacher && set_teachers([{...user}]);
     }, []);
 
-    console.log(teachers);
+    // console.log(teachers);
     // console.log(new_class);
 
     const onChangeValueEvent = (keys=[], numeric=false) => (e, val) => {
@@ -160,14 +161,15 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
                     <label>Cover Image</label>
                     
                     <input type="file" multiple={false} onChange={onSelectImage} />
-                    <div className='upload-content-container'>
+                    <FileUploadDropArea title='Upload Cover Image' />
+                    {/* <div className='upload-content-container'>
                         <span className='add-icon-container'><RiImageAddLine size={"24px"} /></span>
 
                         <div>
                             <p className='upload-cover-text'>Upload Cover Image</p>
                             <p className='upload-drop-text'>Drop your file here or browse</p>
                         </div>
-                    </div>
+                    </div> */}
                     {coverPreview.url && <div className='cover-preview'>
                         <img src={coverPreview.url} />
                         <RiCloseCircleFill color='red' size={20} className='clickable remove' onClick={onClickRemoveCover} />

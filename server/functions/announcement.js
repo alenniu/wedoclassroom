@@ -12,6 +12,9 @@ async function create_announcement({_class, title, message, assignment=null}, us
 
             const new_announcement = await ((new Announcement({_class: _class._id, user: user._id, assignment: assignment?._id, title, message})).save());
 
+            await new_announcement.populate({path: "user", select: "-password"});
+            await new_announcement.populate({path: "assignment", select: "title description"});
+
             return new_announcement;   
         }
 
@@ -45,7 +48,7 @@ async function get_announcement(announcement_id){
 
 async function get_class_announcements({class_id, user}, limit=20, offset=0, sort={}, filters={}){
     try{
-        if(_class && _class._id){
+        if(class_id){
             const current_class = await get_class(class_id, user);
 
             if(current_class){
@@ -53,17 +56,17 @@ async function get_class_announcements({class_id, user}, limit=20, offset=0, sor
                 let total = 0; 
                 
                 total = await Announcements.count({...filters});
-                announcements = await Announcements.find({...filters}).limit(limit).skip(offset).sort(sort).lean(true);
+                announcements = await Announcements.find({...filters}).populate({path: "user", select: "-password"}).populate({path: "assignment"}).limit(limit).skip(offset).sort(sort).lean(true);
 
                 return {total, announcements};
             }
-
+            
             throw new Error("Class not found");
         }
 
         throw new Error("_class must be provided");
     }catch(e){
-
+        throw e;
     }
 }
 

@@ -24,7 +24,7 @@ const ClassInfo = ({_class={}, assignments=[]}) => {
                 {assignments.map((a) => {
                     return (
                         <div>
-                            <p>DUE TOMORROW</p>
+                            <p className='due-date'>Due Tomorrow</p>
                             <p className='assignment'>{a.title}</p>
                         </div>
                     )

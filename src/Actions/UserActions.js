@@ -1,7 +1,7 @@
 import { api } from "../Utils/api";
 import { get_class } from "./ClassActions";
 
-const { SET_CLASS, SET_USER_CLASSES, SET_USER_REQUESTS, SET_USER_CLASS, SET_CLASS_REQUESTS } = require("./types");
+const { SET_CLASS, SET_USER_CLASSES, SET_USER_REQUESTS, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS } = require("./types");
 
 export const set_user_classes = (classes=[], total=0) => {
     return {type: SET_USER_CLASSES, payload: {classes, total: total || classes.length}}
@@ -17,6 +17,10 @@ export const set_user_requests = (requests=[], total=0) => {
 
 export const set_class_requests = (requests=[], total=0) => {
     return {type: SET_CLASS_REQUESTS, payload: {requests, total: total || requests.length}}
+}
+
+export const set_user_assignments = (assignments=[], total=0) => {
+    return {type: SET_USER_ASSIGNMENTS, payload: {assignments, total: total || assignments.length}}
 }
 
 export const get_user_class = (class_id) => async (dispatch) => {
@@ -91,5 +95,26 @@ export const get_my_requests = (limit=20, offset=0, sort="{}", filters="{}") => 
         }
     }catch(e){
         console.error(e);
+    }
+}
+
+export const get_user_assignments = (limit=20, offset=0, search="", sort="{}", filters="{}") => async (dispatch) => {
+    try{
+        const res = await api("get", `/api/assignments/class`, {params: {limit, offset, search, sort, filters}});
+        if(res.data){
+            if(res.data.success){
+                const {assignments=[], total=0} = res.data;
+
+                dispatch(set_user_assignments(assignments, total));
+
+                return res.data;
+            }
+
+            console.log(res.data);
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+
     }
 }

@@ -15,7 +15,7 @@ const announcement_schema = new schema({
         ref: "assignment"
     },
     title: {
-        Types: String
+        type: String
     },
     message: {
         type: String

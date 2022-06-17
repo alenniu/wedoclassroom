@@ -1,7 +1,7 @@
-import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_EDITING_CLASS, SET_POPULAR_CLASSES } from "../Actions/types";
+import { CREATE_CLASS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, EDIT_CLASS_VALUE, SET_CLASSES, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_CREATE_CLASS_ERROR, SET_EDITING_CLASS, SET_POPULAR_CLASSES } from "../Actions/types";
 import { update_object } from "../Utils";
 
-const INITIAL_STATE = {classes: [], total: 0, popular_classes: [], create: {schedules: [{days: [], daily_start_time: new Date(), daily_end_time: new Date()}], error: ""}, edit: {error: ""}};
+const INITIAL_STATE = {classes: [], total: 0, popular_classes: [], create: {schedules: [{days: [], daily_start_time: new Date(), daily_end_time: new Date()}], error: ""}, edit: {error: ""}, announcement: {error: ""}, assignment: {error: ""}};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -33,12 +33,48 @@ export default (state=INITIAL_STATE, action) => {
             new_state.edit = payload._class;
         break;
 
+        case EDIT_CLASS_ANNOUNCEMENT:{
+            const {keys=[], value} = payload;
+            
+            new_state.announcement = {...new_state.announcement};
+            new_state.announcement.error = "";
+
+            update_object(keys, value, new_state.announcement);
+        }
+        break;
+        
+        case EDIT_CLASS_ASSIGNMENT:{
+            const {keys=[], value} = payload;
+            
+            new_state.assignment = {...new_state.assignment};
+            new_state.assignment.error = "";
+
+            update_object(keys, value, new_state.assignment);
+        }
+        break;
+
+        case SET_CLASS_ANNOUNCEMENT_ERROR:
+            new_state.announcement.error = payload.error;
+        break;
+
+        case SET_CLASS_ASSIGNMENT_ERROR:
+            new_state.assignment.error = payload.error;
+        break;
+
         case CREATE_CLASS:
             new_state.create = {schedules: [{days: [], daily_start_time: new Date(), daily_end_time: new Date()}], error: ""};
         break;
 
         case SET_CREATE_CLASS_ERROR:
             new_state.create.error = payload.error;
+        break;
+
+        case CREATE_CLASS_ANNOUNCEMENT:
+            new_state.announcement = {error: ""}
+        break;
+            
+        case CREATE_CLASS_ASSIGNMENT:        
+            new_state.assignment = {error: ""}
         break;
 
         default:

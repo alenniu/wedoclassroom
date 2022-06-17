@@ -4,7 +4,7 @@
 }
 
 .page.class .class-info a.meeting-link{
-    color: blue;
+    color: #1B1BBA;
     text-decoration: underline;
 }
 
@@ -24,7 +24,11 @@
     margin-top: 100px;
 }
 
-.upcoming-assignments .assignment{
-    color: blue;
-    margin-top: 15px;
+.page.class .upcoming-assignments p.assignment, .page.class .upcoming-assignments p.due-date{
+    font-size: 14px;
+}
+
+.page.class .upcoming-assignments p.assignment{
+    color: #1B1BBA;
+    font-weight: 700;
 }

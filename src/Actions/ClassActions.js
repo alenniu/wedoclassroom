@@ -1,5 +1,6 @@
+import axios from "axios";
 import { api } from "../Utils/api";
-import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST } from "./types";
+import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_CLASS, SET_CURRENT_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR } from "./types";
 
 export const set_classes = (classes = [], total = 0) => {
     return {
@@ -11,6 +12,30 @@ export const set_classes = (classes = [], total = 0) => {
 export const set_popular_classes = (classes = []) => {
     return { type: SET_POPULAR_CLASSES, payload: { classes } };
 };
+
+export const set_class_announcements = (announcements=[], total=0) => {
+    return {type: SET_CLASS_ANNOUNCEMENTS, payload: {announcements, total: total || announcements.length}};
+}
+
+export const set_class_assignments = (assignments=[], total=0) => {
+    return {type: SET_CLASS_ASSIGNMENTS, payload: {assignments, total: total || assignments.length}};
+}
+
+export const edit_class_announcement = (keys=[], value) => {
+    return  {type: EDIT_CLASS_ANNOUNCEMENT, payload: {keys, value}};
+}
+
+export const edit_class_assignment = (keys=[], value) => {
+    return  {type: EDIT_CLASS_ASSIGNMENT, payload: {keys, value}};
+}
+
+export const set_class_announcement_error = (error) => {
+    return {type: SET_CLASS_ANNOUNCEMENT_ERROR, payload: {error}};
+}
+
+export const set_class_assignment_error = (error) => {
+    return {type: SET_CLASS_ASSIGNMENT_ERROR, payload: {error}};
+}
 
 export const get_class = (class_id) => async (dispatch) => {
     try{
@@ -167,4 +192,97 @@ export const set_create_class_error = (error) => {
 
 export const edit_class_value = (keys=[], value) => {
     return {type: EDIT_CLASS_VALUE, payload: {keys, value}};
+}
+
+export const get_class_announcements = (class_id, limit=20, offset=0, sort="{}", filters="{}") => async (dispatch) => {
+    try{
+        const res = await api("get", `/api/announcements/class`, {params: { class_id, limit, offset, sort, filters}});
+        
+        if(res.data){
+            if(res.data.success){
+                const {announcements=[], total=0} = res.data;
+
+                dispatch(set_class_announcements(announcements, total));
+
+                return res.data;
+            }
+
+            console.log(res.data);
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.error(e);
+    }
+}
+
+export const get_class_assignments = (class_id, limit=20, offset=0, search="", sort="{}", filters="{}") => async (dispatch) => {
+    try{
+        const res = await api("get", `/api/assignments/class`, {params: { class_id, limit, offset, search, sort, filters}});
+        if(res.data){
+            if(res.data.success){
+                const {assignments=[], total=0} = res.data;
+
+                dispatch(set_class_assignments(assignments, total));
+
+                return res.data;
+            }
+
+            console.log(res.data);
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.error(e);
+    }
+}
+
+export const create_assignment = (assignment_formData) => async (dispatch) => {
+    try{
+        const res = await api("post", "/api/assignments", assignment_formData);
+
+        if(res.data){
+            if(res.data.success){
+                const {assignment} = res.data;
+                
+                dispatch({type: CREATE_CLASS_ASSIGNMENT, payload: {assignment}});
+
+                return res.data;
+            }
+
+            console.error(res.data);
+            dispatch(set_class_assignment_error(res.data.msg));
+        }else{
+            console.error(res);
+            dispatch(set_class_assignment_error(res));
+        }
+    }catch(e){
+        console.error(e);
+        dispatch(set_class_assignment_error(e.message));
+    }
+}
+
+export const create_announcement = ({_class, title, message, assignment=null}) => async (dispatch) => {
+    try{
+        const res = await api("post", "/api/announcements", {_class, title, message, assignment});
+
+        if(res.data){
+            if(res.data.success){
+                const {announcement} = res.data;
+                
+                dispatch({type: CREATE_CLASS_ANNOUNCEMENT, payload: {announcement}});
+
+                return res.data;
+            }
+
+            console.error(res.data);
+            dispatch(set_class_announcement_error(res.data.msg));
+        }else{
+            console.error(res);
+            dispatch(set_class_announcement_error(res));
+        }
+    }catch(e){
+        console.error(e);
+        dispatch(set_class_announcement_error(e.message));
+    }
 }

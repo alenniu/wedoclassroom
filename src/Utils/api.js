@@ -14,12 +14,12 @@ export async function api(method, path){
         const additional_args = [];
         
         if(method === "get" || method === "delete"){
-            const config = arguments[2] || {withCredentials: true};
+            const config =  {withCredentials: true, ...(arguments[2] || {})};
             additional_args.push(config);
 
         }else if(method === "post" || method === "put"){
             const body = arguments[2] || {};
-            const config = arguments[3] || {withCredentials: true};
+            const config = {withCredentials: true, ...(arguments[3] || {})};
             additional_args.push(body, config)
         }else{
             console.error(`unsupported method "${method}"`)

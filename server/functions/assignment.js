@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const { create_announcement } = require("./announcement");
+const { escape_regex } = require("./utils");
 
 const Assignments = mongoose.model("assignment");
 const Assignment = Assignments;
@@ -8,11 +10,15 @@ async function create_assignment({_class, title, description, attachments=[], st
         if(_class && title && description && due_date){
             const new_assignment = await ((new Assignment({_class: _class._id, title, description, attachments, teacher: user._id, students, due_date})).save())
             
+            await new_assignment.populate({path: "teacher", select: "-password"})
+            await new_assignment.populate({path: "attachments"});
+
             return new_assignment;
         }
 
         throw new Error("_class, title, description and due_date must be provided");
     }catch(e){
+        console.error(e);
         throw e;
     }
 }
@@ -46,8 +52,11 @@ async function get_assignments(user, limit=20, offset=0, search="", sort={}, fil
             // query.description = search_regex;
         }
 
+        total = await Assignments.count(query);
+        if(total){
+            assignments = await Assignments.find(query).populate({path: "teacher", select: "-password"}).populate({path: "attachments"}).limit(limit).skip(offset).sort(sort).lean(true);
+        }
 
-        Assignments.find(query).limit(limit).skip(offset).sort(sort).lean(true);
         return {total, assignments};
     }catch(e){
         throw e;
@@ -69,7 +78,12 @@ async function get_class_assignments({class_id, user}, limit=20, offset=0, searc
         }
 
 
-        Assignments.find(query).limit(limit).skip(offset).sort(sort).lean(true);
+        total = await Assignments.count(query);
+
+        if(total){
+            assignments = await Assignments.find(query).populate({path: "teacher", select: "-password"}).populate({path: "attachments"}).limit(limit).skip(offset).sort(sort).lean(true);
+        }
+        
         return {total, assignments};
     }catch(e){
         throw e;

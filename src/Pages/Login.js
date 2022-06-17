@@ -5,10 +5,10 @@ import {BsImageFill, BsEye, BsEyeSlash} from "react-icons/bs";
 import "./Auth.css";
 import "./Login.css";
 import { connect } from 'react-redux';
-import { check_login, edit_auth_value, login, set_loading } from '../Actions';
+import { check_login, edit_auth_value, get_user_assignments, login, set_loading } from '../Actions';
 import { onPressReturn, validate_email, validate_password } from '../Utils';
 
-const Login = ({email, error, logged_in, is_admin, user, login, check_login, set_loading, edit_auth_value}) => {
+const Login = ({email, error, logged_in, is_admin, user, login, check_login, get_user_assignments, set_loading, edit_auth_value}) => {
     const navigate = useNavigate()
     const [errors, setErrors] = useState({});
     
@@ -33,6 +33,7 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, set
     useEffect(() => {
         const from = query.get("from");
         if(logged_in && user){
+            get_user_assignments()
             if(is_admin){
                 navigate(from || "/dashboard/");
             }else{
@@ -160,4 +161,4 @@ function map_state_to_props({Auth, App}){
     return {email: Auth.email, logged_in: Auth.logged_in, is_admin: Auth.is_admin, user: App.user, error: Auth.error}
 }
 
-export default connect(map_state_to_props, {login, check_login, edit_auth_value, set_loading})(Login);
+export default connect(map_state_to_props, {login, check_login, get_user_assignments, edit_auth_value, set_loading})(Login);
