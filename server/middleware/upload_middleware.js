@@ -34,16 +34,18 @@ module.exports.class_cover_storage = multer.diskStorage({
     filename
 });
 
-module.exports.attachment_storage = multer.diskStorage({
+module.exports.assignment_attachment_storage = multer.diskStorage({
     destination: (req, file, cb) => {
         let {user} = req;
-        let {_class="{}"} = req.body;
+        let {_class="{}", assignment="{}"} = req.body;
 
         _class = JSON.parse(_class);
+        assignment = JSON.parse(assignment);
 
         const {subject} = _class;
+        const {title} = assignment;
 
-        const attachment_directory = `./uploads/ATTACHMENTS/${sanitize_file_path_component(user.name.first)}-${sanitize_file_path_component(user.name.last)}/${sanitize_file_path_component(subject)}`;
+        const attachment_directory = `./uploads/ATTACHMENTS/${sanitize_file_path_component(user.name.first)}-${sanitize_file_path_component(user.name.last)}/${sanitize_file_path_component(subject)}/${sanitize_file_path_component(title)}`;
         
         create_directory(attachment_directory);
         cb(null, attachment_directory);

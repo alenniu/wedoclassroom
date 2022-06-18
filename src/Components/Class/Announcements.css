@@ -56,3 +56,49 @@
 .page.class form.assignment-form .input-container:nth-child(odd){
     margin-right: 4%;
 }
+
+.page.class form.assignment-form .assignment-attachments{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+form.assignment-form .assignment-attachments li{
+    position: relative;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    width: 200px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+}
+
+form.assignment-form .assignment-attachments .attachment-preview{
+    display: inline-flex;
+    width: 100%;
+    height: 75px;
+    font-size: 50px;
+    border-radius: 8px 8px 0 0;
+    background-color: rgba(0,0,0,0.8);
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    color: var(--file-input-text-color, limegreen);
+}
+
+form.assignment-form .assignment-attachments .remove{
+    position: absolute;
+    top: -10px;
+    right: -10px;
+}
+
+form.assignment-form .assignment-attachments .attachment-preview img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+form.assignment-form .assignment-attachments .attachment-name{
+    padding: 15px 5px;
+    text-align: center;
+}

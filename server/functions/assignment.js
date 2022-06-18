@@ -27,7 +27,7 @@ async function update_assignment(assignment, user){
     try{
         const {_id} = assignment;
         if(_id, title && description && due_date){
-            const updated_assignment = await Assignments.updateOne({_id}, {$set: {title, description, attachments, students, due_date}}, {new: true, upsert: false});
+            const updated_assignment = await Assignments.updateOne({_id}, {$set: {title, description, attachments, students, due_date}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"}).populate({path: "attachments"});
             
             return updated_assignment;
         }
@@ -83,7 +83,7 @@ async function get_class_assignments({class_id, user}, limit=20, offset=0, searc
         if(total){
             assignments = await Assignments.find(query).populate({path: "teacher", select: "-password"}).populate({path: "attachments"}).limit(limit).skip(offset).sort(sort).lean(true);
         }
-        
+
         return {total, assignments};
     }catch(e){
         throw e;

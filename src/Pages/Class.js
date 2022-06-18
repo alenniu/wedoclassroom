@@ -22,6 +22,7 @@ const Class = ({_class, announcements=[], assignments=[], user, is_teacher, is_a
 
     const [assignmentLimit, setAssignmentLimit] = useState(20);
     const [assignmentPage, setAssignmentPage] = useState(0);
+    const [assignmentSearch, setAssignmentSearch] = useState("");
     const [assignmentSort, setAssignmentSort] = useState({createdAt: "desc"});
     const [assignmentFilters, setAssignmentFilters] = useState({});
 
@@ -41,7 +42,7 @@ const Class = ({_class, announcements=[], assignments=[], user, is_teacher, is_a
             set_loading(true);
             if(id && (class_id !== id)){
                 await get_current_class(id);
-                await get_class_assignments(id, assignmentLimit, assignmentPage * assignmentLimit, JSON.stringify(assignmentSort), JSON.stringify(assignmentFilters));
+                await get_class_assignments(id, assignmentLimit, assignmentPage * assignmentLimit, assignmentSearch, JSON.stringify(assignmentSort), JSON.stringify(assignmentFilters));
                 await get_class_announcements(id, announcementLimit, announcementPage * announcementLimit, JSON.stringify(announcementSort), JSON.stringify(announcementFilters));
                 await get_class_requests(20, 0, undefined, {_id: id});
             }

@@ -3,6 +3,7 @@ import {Request, Response, NextFunction} from "express";
 import { create_announcement } from "../functions/announcement";
 import { get_class } from "../functions/class";
 import { create_assignment, delete_assignment, get_assignments, get_class_assignments, update_assignment } from "../functions/assignment";
+import { create_attachment } from "../functions/attachment";
 
 export const get_assignments_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -42,20 +43,40 @@ export const get_class_assignments_handler = async (req: Request, res: Response,
 
 export const create_assignment_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {user} = req;
-        const {_class, title, description, due_date, attachments=[], students=[]} = req.body;
+        const {user, files=[]} = req;
+        let {_class="{}", assignment="{}"} = req.body;
+
+        _class = JSON.parse(_class);
+        assignment = JSON.parse(assignment);
+
+        const {title, description, due_date, attachments=[], students=[]} = assignment;
+
+        for(const file of files){
+            const attachment_index = attachments.findIndex((a) => a === file.originalname);
+            
+            if(attachment_index !== -1){
+                const url = `${file.destination}/${file.filename}`;
+                const a = attachments[attachment_index];
+
+                const attachment = await create_attachment({name: file.originalname, url, filetype: file.mimetype, _class, is_link: false}, user);
+                
+                attachments[attachment_index] = attachment._id;
+            }
+        }
+
         const current_class = await get_class(_class._id, user);
 
         if((user._id.toString() === current_class.teacher._id.toString()) ||  (user.type === "admin")){
             const new_assignment = await create_assignment({_class, title, description, due_date, attachments, students}, user);
 
-            const new_announcement = await create_announcement({_class, assignment: new_assignment});
+            const new_announcement = await create_announcement({_class, assignment: new_assignment}, user);
     
             return res.json({success: true, assignment: new_assignment, announcement: new_announcement});
         }
 
         throw new Error("Not authorized to use resource");
     }catch(e){
+        console.error(e);
         return res.status(400).json({success: false, msg: e.message});
     }
 }

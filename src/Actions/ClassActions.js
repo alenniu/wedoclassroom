@@ -243,9 +243,10 @@ export const create_assignment = (assignment_formData) => async (dispatch) => {
 
         if(res.data){
             if(res.data.success){
-                const {assignment} = res.data;
+                const {assignment, announcement} = res.data;
                 
-                dispatch({type: CREATE_CLASS_ASSIGNMENT, payload: {assignment}});
+                dispatch({type: CREATE_CLASS_ASSIGNMENT, payload: {assignment, announcement}});
+                dispatch({type: CREATE_CLASS_ANNOUNCEMENT, payload: {announcement}});
 
                 return res.data;
             }

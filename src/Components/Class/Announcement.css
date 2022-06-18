@@ -21,6 +21,10 @@
     object-fit: cover;
 }
 
+.announcement-container .announcement-content{
+    width: 100%;
+}
+
 .announcement-container .announcement-title{
     font-size: 14px;
 }
