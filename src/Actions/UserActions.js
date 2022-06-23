@@ -1,26 +1,30 @@
 import { api } from "../Utils/api";
 import { get_class } from "./ClassActions";
 
-const { SET_CLASS, SET_USER_CLASSES, SET_USER_REQUESTS, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS } = require("./types");
+const { SET_CLASS, SET_USER_CLASSES, SET_USER_REQUESTS, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE } = require("./types");
 
 export const set_user_classes = (classes=[], total=0) => {
-    return {type: SET_USER_CLASSES, payload: {classes, total: total || classes.length}}
+    return {type: SET_USER_CLASSES, payload: {classes, total: total || classes.length}};
 }
 
 export const set_user_class = (_class={}) => {
-    return {type: SET_USER_CLASS, payload: {_class}}
+    return {type: SET_USER_CLASS, payload: {_class}};
 }
 
 export const set_user_requests = (requests=[], total=0) => {
-    return {type: SET_USER_REQUESTS, payload: {requests, total: total || requests.length}}
+    return {type: SET_USER_REQUESTS, payload: {requests, total: total || requests.length}};
 }
 
 export const set_class_requests = (requests=[], total=0) => {
-    return {type: SET_CLASS_REQUESTS, payload: {requests, total: total || requests.length}}
+    return {type: SET_CLASS_REQUESTS, payload: {requests, total: total || requests.length}};
 }
 
 export const set_user_assignments = (assignments=[], total=0) => {
-    return {type: SET_USER_ASSIGNMENTS, payload: {assignments, total: total || assignments.length}}
+    return {type: SET_USER_ASSIGNMENTS, payload: {assignments, total: total || assignments.length}};
+}
+
+export const set_class_attendance = (attendance=[]) => {
+    return {type: SET_CLASS_ATTENDANCE, payload: {attendance}};
 }
 
 export const get_user_class = (class_id) => async (dispatch) => {
@@ -116,5 +120,46 @@ export const get_user_assignments = (limit=20, offset=0, search="", sort="{}", f
         }
     }catch(e){
 
+    }
+}
+
+export const get_class_attendance = (class_id) => async (dispatch) => {
+    try{
+        const res = await api("get", "/api/classes/attendance", {params: {class_id}});
+
+        if(res.data){
+            if(res.data.success){
+                const {attendance} = res.data;
+                dispatch(set_class_attendance(attendance))
+                return res.data;
+            }
+
+            console.error(res.data);
+        }else{
+            console.error(res);
+        }  
+    }catch(e){
+        console.error(e);
+    }
+}
+
+export const update_student_class_attendance = ({_class, student, remarks="", early=false, present=false}) => async (dispatch) => {
+    try{
+        const res = await api("post", "/api/classes/attendance", {_class, student, remarks, early, present});
+
+        if(res.data){
+            if(res.data.success){
+                const {student_attendance} = res.data;
+                dispatch({type: UPDATE_STUDENT_CLASS_ATTENDANCE, payload: {student_attendance}});
+
+                return res.data;
+            }
+
+            console.error(res.data);
+        }else{
+            console.error(res);
+        }
+    }catch(e){
+        console.error(e);
     }
 }

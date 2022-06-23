@@ -1,6 +1,6 @@
-import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS } from "../Actions/types";
+import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE } from "../Actions/types";
 
-const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, current_class_requests: [], total_class_requests: 0, requests: [], total_requests: 0, assignments: [], total_assignments: 0};
+const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, current_class_requests: [], total_class_requests: 0, requests: [], total_requests: 0, assignments: [], total_assignments: 0, class_attendance: []};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -27,6 +27,24 @@ export default (state=INITIAL_STATE, action) => {
         case SET_USER_ASSIGNMENTS:
             new_state.assignments = payload.assignments;
             new_state.total_assignments = payload.total;
+        break;
+
+        case SET_CLASS_ATTENDANCE:
+            new_state.class_attendance = payload.attendance;
+        break;
+
+        case UPDATE_STUDENT_CLASS_ATTENDANCE:{
+            const {student_attendance} = payload;
+            const updated_index = new_state.class_attendance.findIndex((a) => a._id === student_attendance._id);
+
+            if(updated_index !== -1){
+                new_state.class_attendance[updated_index] = student_attendance;
+            }else{
+                new_state.class_attendance.push(student_attendance);
+            }
+
+            new_state.class_attendance = [...new_state.class_attendance];
+        }
         break;
 
         case CREATE_CLASS:

@@ -18,6 +18,7 @@ const assignment_attactment_upload = multer({storage: assignment_attachment_stor
 module.exports = (app) => {
 
     router.route("/class").get(verify_user, get_class_assignments_handler);
+    
     router.route("/").get(verify_user, get_assignments_handler).post(verify_user, assignment_attactment_upload.array("attachments"), create_assignment_handler).put(verify_user, update_assignment_handler).delete(verify_user, delete_assignment_handler);
 
     app.use("/api/assignments", router);

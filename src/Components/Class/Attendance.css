@@ -1,14 +1,17 @@
 .page.class .attendance > h3{
-    margin-bottom: 30px;
+    margin-bottom: 10px;
+    margin-top: 30px;
 }
 
 .page.class .attendance-container{
+    position: relative;
     padding: 8px 12px;
     border-radius: 8px;
     margin-top: 10px;
     border: 1px solid #707070;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .attendance-container .student-name, .attendance-container .input-container.attendance-select{
@@ -28,4 +31,23 @@
 
 .attendance-container .input-container.attendance-select.late select{
     background-color: var(--error-button-bgcolor);
+}
+
+.attendance-container .input-container.remarks{
+    display: block;
+    width: 100%;
+}
+
+.attendance-container .edit-icon{
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    box-shadow: 0 0 5px grey;
 }

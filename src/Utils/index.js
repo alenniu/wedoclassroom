@@ -1,4 +1,5 @@
 import config from "../Config";
+import { DAY, HOUR, MINUTE, SECOND } from "../Data";
 
 const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -147,4 +148,23 @@ export const randomColor = () => "#" + Math.floor(Math.random()*16777215).toStri
 
 export const ranges_overlaps = (r1, r2) => {
     return r1.min <= r2.max && r2.min <= r1.max
+}
+
+export const get_time_left = (til=0, from=Date.now()) => {
+    from = (new Date(from)).getTime();
+    til = (new Date(til)).getTime();
+
+    let duration = til - from;
+    let timeLeft = duration;
+
+    const days = Math.floor(timeLeft / DAY);
+    timeLeft -= (DAY * days);
+    const hours = Math.floor(timeLeft / HOUR);
+    timeLeft -= (HOUR * hours);
+    const minutes = Math.floor(timeLeft / MINUTE);
+    timeLeft -= (MINUTE * minutes);
+    const seconds = Math.floor(timeLeft / SECOND);
+    timeLeft -= (SECOND * seconds);
+
+    return {days, hours, minutes, seconds, milliseconds: timeLeft, duration};
 }

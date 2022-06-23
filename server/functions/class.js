@@ -16,6 +16,7 @@ async function get_class(class_id, user){
 
         return Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: type === "admin"}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
     }catch(e){
+        console.error(e);
         throw e;
     }
 }
@@ -171,13 +172,14 @@ async function get_class_attendance(_class){
     try{
         return await Attendances.find({_class: _class._id}).lean(true);
     }catch(e){
+        console.log(e);
         throw e;
     }
 }
 
 async function update_attendance({_class, student, remarks="", early, present}){
     try{
-        const student_attendance = await Attendances.findOneAndUpdate({_class: _class._id, student: student._id}, {$set: {remarks, early, present}}, {upsert: true, new: true});
+        const student_attendance = await Attendances.findOneAndUpdate({_class: _class._id, student: student}, {$set: {remarks, early, present}}, {upsert: true, new: true});
 
         return student_attendance;
     }catch(e){

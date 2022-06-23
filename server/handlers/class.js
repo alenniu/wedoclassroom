@@ -176,11 +176,12 @@ export const get_class_attendance_handler = async (req: Request, res: Response, 
         if(current_class.teacher._id.toString() === user._id.toString()){
             const class_attendance = await get_class_attendance(current_class);
 
-            return res.json({success: true, class_attendance});
+            return res.json({success: true, attendance: class_attendance});
         }else{
             return res.status(400).json({success: false, msg: "Only the class teacher can get class attendance"})
         }
     }catch(e){
+        console.log(e);
         return res.status(400).json({success: false, msg: e.message});
     }
 }
@@ -195,7 +196,7 @@ export const update_student_attendance_handle = async (req: Request, res: Respon
         if(current_class.teacher._id.toString() === user._id.toString()){
             const student_attendance = await update_attendance({_class: current_class, student, remarks, early, present});
 
-            return res.json({success: true, attendance: student_attendance});
+            return res.json({success: true, student_attendance});
         }else{
             return res.status(400).json({success: false, msg: "Only the class teacher can update student attendance"})
         }

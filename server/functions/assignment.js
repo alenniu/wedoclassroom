@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const { create_announcement } = require("./announcement");
 const { escape_regex } = require("./utils");
 
+const Submissions = mongoose.model("submission");
+const Submission = Submissions;
+
 const Assignments = mongoose.model("assignment");
 const Assignment = Assignments;
 
@@ -102,8 +105,29 @@ async function delete_assignment(assignment, user){
     }
 }
 
+async function submit_assignment({assignment={}, attachments=[]}, user){
+    try{
+        if(assignment && assignment._id && assignment._class){
+            const new_submission = await ((new Submission({_class: assignment._class, assignment: assignment._id, attachments, student: user._id})).save());
+
+            await new_submission.populate({path: "student", select: "-password"});
+            await new_submission.populate({path: "attachments"});
+
+            const updated_assignment = await Assignments.findOneAndUpdate({_id: assignment._id}, {$push: {submissions: new_submission._id}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"}).populate({path: "attachments"});
+
+            return {new_submission, updated_assignment};
+        }
+
+        throw new Error("Assignment object with _class and _id must be provided");
+    }catch(e){
+        console.error(e);
+        throw new Error(e);
+    }
+};
+
 module.exports.get_assignments = get_assignments;
 module.exports.create_assignment = create_assignment;
 module.exports.update_assignment = update_assignment;
 module.exports.delete_assignment = delete_assignment;
+module.exports.submit_assignment = submit_assignment;
 module.exports.get_class_assignments = get_class_assignments;

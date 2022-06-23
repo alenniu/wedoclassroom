@@ -75,7 +75,7 @@ const Announcements = ({_class={}, announcement={}, assignment={}, tab, user={},
         const formData = new FormData();
 
         formData.append("_class", JSON.stringify(_class))
-        formData.append("assignment", JSON.stringify(assignment))
+        formData.append("assignment", JSON.stringify({...assignment, students: _class.students.map((s) => s._id)}));
 
         assingmentAttachments.forEach((a) => {
             formData.append("attachments", a.file);

@@ -13,7 +13,7 @@ async function create_announcement({_class, title, message, assignment=null}, us
             const new_announcement = await ((new Announcement({_class: _class._id, user: user._id, assignment: assignment?._id, title, message})).save());
 
             await new_announcement.populate({path: "user", select: "-password"});
-            await new_announcement.populate({path: "assignment", select: "title description"});
+            await new_announcement.populate({path: "assignment"});
 
             return new_announcement;   
         }
@@ -60,7 +60,7 @@ async function get_class_announcements({class_id, user}, limit=20, offset=0, sor
 
                 return {total, announcements};
             }
-            
+
             throw new Error("Class not found");
         }
 

@@ -20,6 +20,7 @@ require("./database/schemas/schedule");
 require("./database/schemas/attendance");
 require("./database/schemas/attachments");
 require("./database/schemas/assignments");
+require("./database/schemas/submissions");
 require("./database/schemas/announcements");
 
 const app = express();

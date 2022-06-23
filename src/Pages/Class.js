@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { accept_join_request, decline_join_request, get_class_announcements, get_class_assignments, get_class_requests, get_current_class, set_loading } from '../Actions';
+import { accept_join_request, decline_join_request, get_class_announcements, get_class_assignments, get_class_attendance, get_class_requests, get_current_class, set_loading } from '../Actions';
 import Announcements from '../Components/Class/Announcements';
 import Attendance from '../Components/Class/Attendance';
 import ClassInfo from '../Components/Class/ClassInfo';
@@ -15,7 +15,7 @@ const test_assignments = [{_id: "12345", title: "Read Chapter 5", description: "
 const test_announcements = [{title: "", message: "Hello All, Welcome to my class. First lets start by each killing a fellow classmate. Cuts the class in half early on.", assignment: null, createdAt: Date.now()}, {title: "", message: "", assignment: "12345", createdAt: Date.now()}];
 
 
-const Class = ({_class, announcements=[], assignments=[], user, is_teacher, is_admin, requests=[], accept_join_request, decline_join_request, get_current_class, get_class_announcements, get_class_assignments, get_class_requests, set_loading}) => {
+const Class = ({_class, announcements=[], assignments=[], attendance=[], user, is_teacher, is_admin, requests=[], accept_join_request, decline_join_request, get_current_class, get_class_announcements, get_class_assignments, get_class_requests, get_class_attendance, set_loading}) => {
     const [tab, setTab] = useState("announcements")
     const {_id:class_id="", title, subject, teacher, meeting_link="", schedules=[]} = _class;
     const {id} = useParams();
@@ -45,6 +45,7 @@ const Class = ({_class, announcements=[], assignments=[], user, is_teacher, is_a
                 await get_class_assignments(id, assignmentLimit, assignmentPage * assignmentLimit, assignmentSearch, JSON.stringify(assignmentSort), JSON.stringify(assignmentFilters));
                 await get_class_announcements(id, announcementLimit, announcementPage * announcementLimit, JSON.stringify(announcementSort), JSON.stringify(announcementFilters));
                 await get_class_requests(20, 0, undefined, {_id: id});
+                is_teacher && await get_class_attendance(id);
             }
             set_loading(false);
         }
@@ -82,14 +83,14 @@ const Class = ({_class, announcements=[], assignments=[], user, is_teacher, is_a
             </div>
 
             <div className='misc-col'>
-            {(tab !== "students")?<ClassInfo _class={_class} assignments={[...assignments, ...test_assignments]} />:<Attendance _class={_class} attendance={[]} />}
+            {(tab !== "students")?<ClassInfo _class={_class} assignments={[...assignments, ...test_assignments]} />:<Attendance _class={_class} attendance={attendance} />}
             </div>
         </div>
     );
 }
 
 function map_state_to_props({App, User, Auth}){
-    return {_class: App.current_class, user: App.user, is_teacher: Auth.is_teacher, is_admin: Auth.is_admin, requests: User.current_class_requests, announcements: App.class_announcements, assignments: App.class_assignments}
+    return {_class: App.current_class, user: App.user, is_teacher: Auth.is_teacher, is_admin: Auth.is_admin, requests: User.current_class_requests, announcements: App.class_announcements, assignments: App.class_assignments, attendance: User.class_attendance}
 }
 
-export default connect(map_state_to_props, {get_current_class, get_class_announcements, get_class_assignments, accept_join_request, decline_join_request, get_class_requests, set_loading})(Class);
+export default connect(map_state_to_props, {get_current_class, get_class_announcements, get_class_assignments, accept_join_request, decline_join_request, get_class_requests, get_class_attendance, set_loading})(Class);

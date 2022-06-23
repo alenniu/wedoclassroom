@@ -21,11 +21,12 @@ module.exports = (app) => {
 
     router.route("/").get(verify_user, get_classes_handler).post(verify_user, class_cover_upload.single("cover"), create_class_handler);
 
-    router.route("/:class_id").get(verify_user, get_class_handler);
-
+    
     router.route("/attendance").get(verify_teacher, get_class_attendance_handler).post(verify_teacher, update_student_attendance_handle);
-
+    
     router.route("/request").post(verify_student, request_class_handler);
+    
+    router.route("/:class_id").get(verify_user, get_class_handler);
 
     router.route("/request/accept").post(verify_user, accept_request_handler);
     router.route("/request/decline").post(verify_user, decline_request_handler);

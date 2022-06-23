@@ -1,36 +1,27 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
-const assignment_schema = new schema({
+const submission_schema = new schema({
     _class: {
         type: schema.Types.ObjectId,
         ref: "class"
     },
-    teacher: {
+    assignment: {
         type: schema.Types.ObjectId,
-        ref: "user"
-    },
-    title: {
-        type: String
-    },
-    description: {
-        type: String,
+        ref: "assignment"
     },
     attachments: [{
         type: schema.Types.ObjectId,
         ref: "attachment"
     }],
-    students: [{
+    student: {
         type: schema.Types.ObjectId,
         ref: "user"
-    }],
-    due_date: {
-        type: Date
     },
-    submissions: [{
+    score: {
         type: schema.Types.ObjectId,
-        ref: "submission"
-    }]
+        ref: "score"
+    }
 }, {timestamps: true});
 
-mongoose.model("assignment", assignment_schema, "assignments");
+mongoose.model("submission", submission_schema, "submissions");
