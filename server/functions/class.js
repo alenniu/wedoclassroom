@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { create_stripe_payment_intent, create_stripe_customer } = require("./stripe");
 const { escape_regex } = require("./utils");
 
 const Classes = mongoose.model("class");
@@ -168,9 +169,40 @@ async function decline_request({request_id}, handler){ //handler is the user acc
     }
 }
 
-async function get_class_attendance(_class){
+async function get_class_attendance(_class, filters={}){
     try{
-        return await Attendances.find({_class: _class._id}).lean(true);
+        return await Attendances.find({...filters, _class: _class._id}).lean(true);
+    }catch(e){
+        console.log(e);
+        throw e;
+    }
+}
+
+async function get_class_payment_intent(class_id, user){
+    try{
+        const _class = await Classes.findOne({_id: class_id});
+        if(_class){
+            if(!user.stripe_customer_id){
+                const {name: {first, last}, email, phone} = user;
+
+                const stripe_customer = await create_stripe_customer({name: `${first} ${last}`, email, phone});
+
+                user.stripe_customer_id = stripe_customer.id;
+
+                await user.save();
+            }
+
+            const {price=0, title, description} = _class;
+            if(price){
+                const payment_intent = await create_stripe_payment_intent({amount: price * 100, customer: user.stripe_customer_id, description, receipt_email: user.email, statement_descriptor: title});
+
+                return payment_intent;
+            }
+            
+            throw new Error(`Class price not found`);
+        }
+
+        throw new Error(`No class with id: "${class_id}" found`);
     }catch(e){
         console.log(e);
         throw e;
@@ -201,6 +233,8 @@ async function add_attachment_to_class({attachment, class_id}){
     }
 }
 
+
+
 module.exports.get_class = get_class;
 module.exports.get_classes = get_classes;
 module.exports.create_class = create_class;
@@ -212,3 +246,4 @@ module.exports.update_attendance = update_attendance;
 module.exports.add_teacher_to_class = add_teacher_to_class;
 module.exports.get_class_attendance = get_class_attendance;
 module.exports.add_attachment_to_class = add_attachment_to_class;
+module.exports.get_class_payment_intent = get_class_payment_intent;

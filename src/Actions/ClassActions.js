@@ -105,6 +105,29 @@ export const get_popular_classes = (limit = 20, offset = 0, search = "", filters
         }
     };
 
+
+export const get_class_client_secret = (class_id) => async (dispatch) => {
+    try {
+        const res = await api("get", "/api/classes/class/client_secret", {params: {class_id}});
+
+        if (res.data) {
+            if (res.data.success) {
+                const { client_secret } = res.data;
+
+                return res.data;
+            }
+            console.log(res.data);
+        } else {
+            console.log(res);
+        }
+
+        return res?.data;
+    } catch (e) {
+        console.error(e);
+        return e.message;
+    }
+};
+
 export const request_join_class = (_class) => async (dispatch) => {
     try {
         const res = await api("post", "/api/classes/request", { _class });

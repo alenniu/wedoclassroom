@@ -36,6 +36,8 @@
 .attendance-container .input-container.remarks{
     display: block;
     width: 100%;
+    overflow: hidden;
+    transform: none;
 }
 
 .attendance-container .edit-icon{

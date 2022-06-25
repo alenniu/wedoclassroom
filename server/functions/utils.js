@@ -185,3 +185,7 @@ module.exports.escape_regex = (str="") => {
 module.exports.ranges_overlaps = (r1, r2) => {
     return r1.min <= r2.max && r2.min <= r1.max
 }
+
+module.exports.sanitize_statement_descriptor = (s) => {
+    return s.replace(/['"]/ig, " ")
+}

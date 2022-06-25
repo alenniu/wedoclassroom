@@ -1,4 +1,5 @@
 const {STRIPE_SECRET_KEY, STRIPE_GROUP_CLASS_PRICE_ID, WEB_ADDRESS} = require("../config");
+const { sanitize_statement_descriptor } = require("./utils");
 const stripe = require("stripe")(STRIPE_SECRET_KEY);
 
 async function create_stripe_session({customer_email, line_items=[], mode="payment", success_url=WEB_ADDRESS, cancel_url=WEB_ADDRESS, billing_address_collection="auto", automatic_tax={enabled: true}}){
@@ -38,7 +39,7 @@ async function create_stripe_payment_intent({amount, currency="usd", customer, d
             currency,
             customer,
             description,
-            statement_descriptor,
+            statement_descriptor: sanitize_statement_descriptor(statement_descriptor),
             payment_method,
             // payment_method_types,
             receipt_email,

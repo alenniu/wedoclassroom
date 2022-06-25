@@ -25,7 +25,7 @@ const PopularClass = ({_class, onPressJoin, can_join=true}) => {
                 <p className="class-subject">{price?price.toLocaleString(undefined, {style: "currency", currency: "USD"}):"Free"}</p>
 
 
-                <div className='tags'>{[...tags, ...tags].map((t) => <span key={t} className="class-tag">#{t}</span>)}</div>
+                <div className='tags'>{tags.map((t) => <span key={t} className="class-tag">#{t}</span>)}</div>
 
                 <p className='class-capacity'>{students.length}/{max_students} Students</p>
             </div>

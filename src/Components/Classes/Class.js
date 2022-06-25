@@ -35,7 +35,7 @@ const Class = ({ _class, onPressJoin, can_join=true, request_join_class }) => {
                 <p className="class-subject">{price?price.toLocaleString(undefined, {style: "currency", currency: "USD"}):"Free"}</p>
 
                 <div className="tags">
-                    {[...tags, ...tags].map((t) => (
+                    {tags.map((t) => (
                         <span key={t} className="class-tag">
                             #{t}
                         </span>

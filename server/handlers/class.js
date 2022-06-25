@@ -1,7 +1,7 @@
 import axios from "axios";
 import mongoose from "mongoose";
 import {Request, Response, NextFunction} from "express";
-import { accept_request, create_class, decline_request, get_class, get_classes, get_class_attendance, get_user_classes, request_class, update_attendance } from "../functions/class";
+import { accept_request, create_class, decline_request, get_class, get_classes, get_class_attendance, get_class_payment_intent, get_user_classes, request_class, update_attendance } from "../functions/class";
 import { get_request } from "../functions/request";
 
 const Classes = mongoose.model("class");
@@ -179,6 +179,24 @@ export const get_class_attendance_handler = async (req: Request, res: Response, 
             return res.json({success: true, attendance: class_attendance});
         }else{
             return res.status(400).json({success: false, msg: "Only the class teacher can get class attendance"})
+        }
+    }catch(e){
+        console.log(e);
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const get_class_client_secret_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {class_id} = req.query;
+        
+        if(class_id){
+            const payment_intent = await get_class_payment_intent(class_id, user);
+
+            return res.json({success: true, client_secret: payment_intent.client_secret});
+        }else{
+            return res.status(400).json({success: false, msg: "class_id must be provided"});
         }
     }catch(e){
         console.log(e);
