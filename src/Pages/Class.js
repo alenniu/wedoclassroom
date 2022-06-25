@@ -7,6 +7,7 @@ import Attendance from '../Components/Class/Attendance';
 import ClassInfo from '../Components/Class/ClassInfo';
 import Students from '../Components/Class/Students';
 import Tabs from '../Components/Common/Tabs';
+import { HOUR } from '../Data';
 
 import "./Class.css";
 
@@ -30,6 +31,8 @@ const Class = ({_class, announcements=[], assignments=[], attendance=[], user, i
     const [announcementPage, setAnnouncementPage] = useState(0);
     const [announcementSort, setAnnouncementSort] = useState({createdAt: "desc"});
     const [announcementFilters, setAnnouncementFilters] = useState({});
+
+    const [attendanceDay, setAttendanceDay] = useState(new Date());
     
     const teacher_only_tabs = is_teacher?[{label: "Students", id: "students"}]:[];
 
@@ -45,7 +48,12 @@ const Class = ({_class, announcements=[], assignments=[], attendance=[], user, i
                 await get_class_assignments(id, assignmentLimit, assignmentPage * assignmentLimit, assignmentSearch, JSON.stringify(assignmentSort), JSON.stringify(assignmentFilters));
                 await get_class_announcements(id, announcementLimit, announcementPage * announcementLimit, JSON.stringify(announcementSort), JSON.stringify(announcementFilters));
                 await get_class_requests(20, 0, undefined, {_id: id});
-                is_teacher && await get_class_attendance(id);
+
+                if(is_teacher){
+                    const day_start = attendanceDay.setHours(0, 0 ,0, 1);
+    
+                    await get_class_attendance(id, JSON.stringify({createdAt: {$gte: day_start, $lte: (day_start + (HOUR * 24))}}));
+                }
             }
             set_loading(false);
         }

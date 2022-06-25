@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {MdEdit} from "react-icons/md"
-import { set_loading, update_student_class_attendance } from '../../Actions';
+import { set_loading, create_student_class_attendance, update_student_class_attendance } from '../../Actions';
 
 import "./Attendance.css";
 
-const Attendance = ({_class={}, attendance=[], update_student_class_attendance, set_loading}) => {
+const Attendance = ({_class={}, attendance=[], create_student_class_attendance, update_student_class_attendance, set_loading}) => {
     const [editingAttendance, setEditingAttendance] = useState(null);
 
     const {students=[]} = _class;
@@ -30,6 +30,19 @@ const Attendance = ({_class={}, attendance=[], update_student_class_attendance, 
 
     const cancelEditAttendance = () => {
         setEditingAttendance(null);
+    }
+
+    const createAttendance = async () => {
+        if(editingAttendance){
+            set_loading(true);
+            
+            const {early, present, remarks, student} = editingAttendance;
+            
+            await create_student_class_attendance({_class, student, early, present, remarks })
+            setEditingAttendance(null);
+
+            set_loading(false);
+        }
     }
 
     const updateAttendance = async () => {
@@ -112,7 +125,7 @@ const Attendance = ({_class={}, attendance=[], update_student_class_attendance, 
 
                             {editing && <div style={{textAlign: "end", width: "100%"}}>
                                 <button className='button error' onClick={cancelEditAttendance}>Cancel</button>
-                                <button className='button primary' onClick={updateAttendance} style={{marginLeft: 20}}>Save</button>
+                                <button className='button primary' onClick={createAttendance} style={{marginLeft: 20}}>Save</button>
                             </div>}
 
                             <span className='edit-icon clickable' onClick={() => {onSelectAttendance(value, _id, remarks)}}><MdEdit size={14} /></span>
@@ -124,4 +137,4 @@ const Attendance = ({_class={}, attendance=[], update_student_class_attendance, 
     );
 }
 
-export default connect(null, {update_student_class_attendance, set_loading})(Attendance);
+export default connect(null, {create_student_class_attendance, update_student_class_attendance, set_loading})(Attendance);

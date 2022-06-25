@@ -1,7 +1,7 @@
 import axios from "axios";
 import mongoose from "mongoose";
 import {Request, Response, NextFunction} from "express";
-import { accept_request, create_class, decline_request, get_class, get_classes, get_class_attendance, get_class_payment_intent, get_user_classes, request_class, update_attendance } from "../functions/class";
+import { accept_request, create_attendance, create_class, decline_request, get_class, get_classes, get_class_attendance, get_class_payment_intent, get_user_classes, request_class, update_attendance } from "../functions/class";
 import { get_request } from "../functions/request";
 
 const Classes = mongoose.model("class");
@@ -169,12 +169,14 @@ export const get_user_classes_handler = async (req: Request, res: Response, next
 export const get_class_attendance_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {user} = req;
-        const {class_id} = req.query;
+        let {class_id, filters="{}"} = req.query;
+        
+        filters = JSON.parse(filters);
 
         const current_class = await get_class(class_id, user);
 
         if(current_class.teacher._id.toString() === user._id.toString()){
-            const class_attendance = await get_class_attendance(current_class);
+            const class_attendance = await get_class_attendance(current_class, filters);
 
             return res.json({success: true, attendance: class_attendance});
         }else{
@@ -186,20 +188,21 @@ export const get_class_attendance_handler = async (req: Request, res: Response, 
     }
 }
 
-export const get_class_client_secret_handler = async (req: Request, res: Response, next: NextFunction) => {
+export const create_student_attendance_handle = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {user} = req;
-        const {class_id} = req.query;
-        
-        if(class_id){
-            const payment_intent = await get_class_payment_intent(class_id, user);
+        const {_class, student, remarks="", early, present} = req.body;
 
-            return res.json({success: true, client_secret: payment_intent.client_secret});
+        const current_class = await get_class(_class._id, user);
+
+        if(current_class.teacher._id.toString() === user._id.toString()){
+            const student_attendance = await create_attendance({_class: current_class, student, remarks, early, present});
+
+            return res.json({success: true, student_attendance});
         }else{
-            return res.status(400).json({success: false, msg: "class_id must be provided"});
+            return res.status(400).json({success: false, msg: "Only the class teacher can update student attendance"})
         }
     }catch(e){
-        console.log(e);
         return res.status(400).json({success: false, msg: e.message});
     }
 }
@@ -219,6 +222,24 @@ export const update_student_attendance_handle = async (req: Request, res: Respon
             return res.status(400).json({success: false, msg: "Only the class teacher can update student attendance"})
         }
     }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const get_class_client_secret_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {class_id} = req.query;
+        
+        if(class_id){
+            const payment_intent = await get_class_payment_intent(class_id, user);
+
+            return res.json({success: true, client_secret: payment_intent.client_secret});
+        }else{
+            return res.status(400).json({success: false, msg: "class_id must be provided"});
+        }
+    }catch(e){
+        console.log(e);
         return res.status(400).json({success: false, msg: e.message});
     }
 }

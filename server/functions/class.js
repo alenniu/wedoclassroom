@@ -209,6 +209,16 @@ async function get_class_payment_intent(class_id, user){
     }
 }
 
+async function create_attendance({_class, student, remarks="", early, present}){
+    try{
+        const student_attendance = await ((new Attendances({_class: _class._id, student: student, remarks, early, present})).save());
+
+        return student_attendance;
+    }catch(e){
+        throw e;
+    }
+}
+
 async function update_attendance({_class, student, remarks="", early, present}){
     try{
         const student_attendance = await Attendances.findOneAndUpdate({_class: _class._id, student: student}, {$set: {remarks, early, present}}, {upsert: true, new: true});
@@ -243,6 +253,7 @@ module.exports.accept_request = accept_request;
 module.exports.decline_request = decline_request;
 module.exports.get_user_classes = get_user_classes;
 module.exports.update_attendance = update_attendance;
+module.exports.create_attendance = create_attendance;
 module.exports.add_teacher_to_class = add_teacher_to_class;
 module.exports.get_class_attendance = get_class_attendance;
 module.exports.add_attachment_to_class = add_attachment_to_class;

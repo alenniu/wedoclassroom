@@ -123,9 +123,9 @@ export const get_user_assignments = (limit=20, offset=0, search="", sort="{}", f
     }
 }
 
-export const get_class_attendance = (class_id) => async (dispatch) => {
+export const get_class_attendance = (class_id, filters) => async (dispatch) => {
     try{
-        const res = await api("get", "/api/classes/attendance", {params: {class_id}});
+        const res = await api("get", "/api/classes/attendance", {params: {class_id, filters}});
 
         if(res.data){
             if(res.data.success){
@@ -143,9 +143,30 @@ export const get_class_attendance = (class_id) => async (dispatch) => {
     }
 }
 
-export const update_student_class_attendance = ({_class, student, remarks="", early=false, present=false}) => async (dispatch) => {
+export const create_student_class_attendance = ({_class, student, remarks="", early=false, present=false}) => async (dispatch) => {
     try{
         const res = await api("post", "/api/classes/attendance", {_class, student, remarks, early, present});
+
+        if(res.data){
+            if(res.data.success){
+                const {student_attendance} = res.data;
+                dispatch({type: UPDATE_STUDENT_CLASS_ATTENDANCE, payload: {student_attendance}});
+
+                return res.data;
+            }
+
+            console.error(res.data);
+        }else{
+            console.error(res);
+        }
+    }catch(e){
+        console.error(e);
+    }
+}
+
+export const update_student_class_attendance = ({_class, student, remarks="", early=false, present=false}) => async (dispatch) => {
+    try{
+        const res = await api("put", "/api/classes/attendance", {_class, student, remarks, early, present});
 
         if(res.data){
             if(res.data.success){
