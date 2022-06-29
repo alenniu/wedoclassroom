@@ -12,6 +12,7 @@ import Accounts from './Pages/Accounts';
 import Classes from './Pages/Classes';
 import NewClass from './Pages/NewClass';
 import Class from './Pages/Class';
+import { get_config } from './Actions';
 
 const routes = [
     {
@@ -144,9 +145,9 @@ function map_state_to_props({Auth}){
     return {authenticated: Auth.logged_in, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student};
 }
 
-export default connect(map_state_to_props, {})(({authenticated=false, is_admin=false, is_teacher=false, is_student=false}) => {
+export default connect(map_state_to_props, {get_config})(({authenticated=false, is_admin=false, is_teacher=false, is_student=false, get_config}) => {
     useEffect(() => {
-        // check_login();
+        get_config();
     }, []);
 
     return (

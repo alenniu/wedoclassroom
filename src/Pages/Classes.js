@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Slide, Box } from '@mui/material';
 import {BsCurrencyDollar} from "react-icons/bs";
 import { connect } from 'react-redux';
-import { get_classes, get_popular_classes, get_my_requests, get_class_client_secret, set_loading, request_join_class } from '../Actions';
+import { get_classes, get_popular_classes, get_my_requests, get_class_client_secret, set_loading, request_join_class, get_classes_by_subject } from '../Actions';
 import Class from '../Components/Classes/Class';
 import PopularClass from '../Components/Classes/PopularClass';
 import Tabs from '../Components/Common/Tabs';
@@ -88,7 +88,9 @@ const Checkout = ({_class, isLoading, setIsLoading, error, setError, open, onPay
     );
 }
 
-const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_requests=0, get_classes, get_popular_classes, request_join_class, get_my_requests, get_class_client_secret, set_loading, is_student}) => {
+const SUBJECTS = ["Math", "English"];
+
+const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_requests=0, app_config, get_classes, get_classes_by_subject, get_popular_classes, request_join_class, get_my_requests, get_class_client_secret, set_loading, is_student}) => {
 
     // const stripe = useStripe();
     // const elements = useElements();
@@ -104,16 +106,20 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
     const [classtype, setClasstype] = useState("")
 
     useEffect(() => {
-        const init = async () => {
-            set_loading(true);
-            await get_popular_classes(10, 0);
-            await get_classes(pageLimit, page);
-            await get_my_requests(100, 0, "{}", `{"accepted": false, "rejected": false}`)
-            set_loading(false);
+        if(app_config){
+            const init = async () => {
+                set_loading(true);
+                
+                await get_popular_classes(10, 0);
+                await get_my_requests(100, 0, "{}", `{"accepted": false, "rejected": false}`)
+                SUBJECTS.map((subject) => {get_classes_by_subject(pageLimit, page, search, "{}", "{}", subject)});
+                
+                set_loading(false);
+            }
+    
+            init();
         }
-
-        init();
-    }, []);
+    }, [app_config]);
 
     useEffect(() => {
         const init = async () => {
@@ -124,29 +130,6 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
 
         init();
     }, [classtype]);
-
-    // useEffect(() => {
-    //     if (!stripe || !clientSecret) {
-    //       return;
-    //     }
-
-    //     // stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-    //     //   switch (paymentIntent.status) {
-    //     //     case "succeeded":
-    //     //       setError("Payment succeeded!");
-    //     //       break;
-    //     //     case "processing":
-    //     //       setError("Your payment is processing.");
-    //     //       break;
-    //     //     case "requires_payment_method":
-    //     //       setError("Your payment was not successful, please try again.");
-    //     //       break;
-    //     //     default:
-    //     //       setError("Something went wrong.");
-    //     //       break;
-    //     //   }
-    //     // });
-    // }, [stripe]);
 
     const onPressTab = (e, {label, id}, index) => {
         setClasstype(id);
@@ -203,7 +186,7 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
             <div className='main-col'>
                 <Tabs tabs={[{label: "Popular Classes", id: ""}, {label: "Group Classes", id: "group"}, {label: "Private Classes", id: "private"}]} />
                 <ul className='popular-class-list'>
-                    {[...popular_classes, ...popular_classes, ...popular_classes, ...popular_classes, ...popular_classes, ...popular_classes].map((c, i) => {
+                    {popular_classes.map((c, i) => {
                         const already_requested = requests.some((r) => r._class === c._id);
 
                         return (
@@ -247,15 +230,22 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
                 <button className='button primary'>Filter Classes</button>
             </div>
 
-            <div>
-                <ul className='classes-list'>
-                    {[...classes, ...classes, ...classes, ...classes, ...classes, ...classes].map((c, i) => {
-                        const already_requested = requests.some((r) => r._class === c._id);
+            {
+                Object.entries(classes).map(([subject, {classes=[], total=0}], i) => {
+                    return (
+                    <div>
+                        <h3 className='list-subject'>{subject}</h3>    
+                        <ul className='classes-list' key={subject}>
+                            {classes.map((c, i) => {
+                                const already_requested = requests.some((r) => r._class === c._id);
 
-                        return <li key={c._id+i}><Class _class={c} can_join={is_student && !already_requested} onPressJoin={onPressJoinClass} /></li>
-                    })}
-                </ul>
-            </div>
+                                return <li key={c._id+i}><Class _class={c} can_join={is_student && !already_requested} onPressJoin={onPressJoinClass} /></li>
+                            })}
+                        </ul>
+                    </div>
+                    )
+                })
+            }
         </div>
         <Modal open={!!(clientSecret || error)} onClose={closePaymentModal}>
             <Box sx={style}>
@@ -274,23 +264,8 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
     );
 }
 
-// const Classes_ = (props) => {
-//     const appearance = {
-//         theme: 'stripe',
-//       };
-//       const options = {
-//         // clientSecret,
-//         appearance,
-//       };
-//     return (
-//         <Elements options={options} stripe={stripePromise}>
-//             <Classes_ {...props} />
-//         </Elements>
-//     )
-// }
-
-function map_state_to_props({Auth, User, Class}){
-    return {classes: Class.classes, total: Class.total, popular_classes: Class.popular_classes, requests: User.requests, total_requests: User.total_requests, is_student: Auth.is_student}
+function map_state_to_props({App, Auth, User, Class}){
+    return {app_config: App.config, classes: Class.subject_classes, total: Class.total, popular_classes: Class.popular_classes, requests: User.requests, total_requests: User.total_requests, is_student: Auth.is_student}
 }
 
-export default connect(map_state_to_props, {get_classes, request_join_class, get_popular_classes, get_my_requests, get_class_client_secret, set_loading})(Classes);
+export default connect(map_state_to_props, {get_classes, get_classes_by_subject, request_join_class, get_popular_classes, get_my_requests, get_class_client_secret, set_loading})(Classes);

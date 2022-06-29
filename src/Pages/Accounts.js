@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { create_account, edit_new_account, get_accounts, set_loading } from '../Actions';
+import { cancel_account_edit, create_account, edit_new_account, get_accounts, init_edit_account, set_loading, update_account } from '../Actions';
 import Tabs from '../Components/Common/Tabs';
 import Class from '../Components/Dashboard/Class';
 import {BsEye, BsEyeSlash} from "react-icons/bs";
@@ -10,7 +10,7 @@ import "./Accounts.css";
 import TableHead from '../Components/Common/TableHead';
 import { password_requirements, validate_email, validate_name, validate_password } from '../Utils';
 
-const Accounts = ({accounts=[], total=0, name={}, email="", phone="", type="", error, get_accounts, create_account, edit_new_account, set_loading}) => {
+const Accounts = ({accounts=[], total=0, new_account={}, edit_account={}, editing_account, get_accounts, create_account, update_account, edit_new_account, init_edit_account, cancel_account_edit, set_loading}) => {
     const [pageLimit, setPageLimit] = useState(20);
     const [page, setPage] = useState(0);
     const [search, setSearch] = useState("");
@@ -23,7 +23,7 @@ const Accounts = ({accounts=[], total=0, name={}, email="", phone="", type="", e
     const [password, setPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [errors, setErrors] = useState({});
-
+    const {name={}, email="", phone="", type="", error} = editing_account?edit_account:new_account
     const {first="", last=""} = name;
 
     useEffect(() => {
@@ -90,7 +90,7 @@ const Accounts = ({accounts=[], total=0, name={}, email="", phone="", type="", e
         
         if(!validate_name(name.last)){is_valid=false; setErrors((e) => ({...e, "name.last": "Not a valid name, At least 2 character"}))}
         
-        if(!validate_password(password)){is_valid=false; setErrors((e) => ({...e, password: `Not a valid password, ${password_requirements}`}))}
+        if((!editing_account || password) && !validate_password(password)){is_valid=false; setErrors((e) => ({...e, password: `Not a valid password, ${password_requirements}`}))}
         
         return is_valid;
     }
@@ -99,6 +99,17 @@ const Accounts = ({accounts=[], total=0, name={}, email="", phone="", type="", e
         set_loading(true);
         if(validate_fields()){
             if(await create_account({name, email, phone, type, password})){
+                setPassword("");
+                await get_accounts(pageLimit, page, search, sort, accountType?JSON.stringify({type: accountType}):undefined);
+            }
+        }
+        set_loading(false);
+    }
+
+    const onPressEditAccount = async () => {
+        set_loading(true);
+        if(validate_fields()){
+            if(await update_account({...edit_account, password: password || undefined})){
                 setPassword("");
                 await get_accounts(pageLimit, page, search, sort, accountType?JSON.stringify({type: accountType}):undefined);
             }
@@ -119,7 +130,7 @@ const Accounts = ({accounts=[], total=0, name={}, email="", phone="", type="", e
                             const {_id, name={}, email, phone, type, createdAt} = a;
 
                             return (
-                                <tr key={_id}>
+                                <tr key={_id} onClick={() => {init_edit_account(a); setPassword("")}}>
                                     <td>{name.first} {name.last}</td>
                                     <td>{email}</td>
                                     <td>{phone || <span style={{opacity: 0.5}}>No Phone</span>}</td>
@@ -133,7 +144,7 @@ const Accounts = ({accounts=[], total=0, name={}, email="", phone="", type="", e
             </div>
 
             <div className='misc-col'>
-                <h2>New Account</h2>
+                <h2>{editing_account?"Edit":"New"} Account</h2>
                 <div className='input-container fullwidth'>
                     <input type="text" value={first} onChange={onChangeValue(["name", "first"])} placeholder='First Name' />
                     {errors["name.first"] && <p className='error'>{errors["name.first"]}</p>}
@@ -165,14 +176,15 @@ const Accounts = ({accounts=[], total=0, name={}, email="", phone="", type="", e
                 </div>
 
                 <div className='input-container fullwidth'>
-                    <input type={passwordVisible?"text":"password"} value={password} onChange={onChangePassword} placeholder='Your Password' />
+                    <input type={passwordVisible?"text":"password"} value={password} onChange={onChangePassword} placeholder={editing_account?"Leave blank to keep current password":'Your Password'} />
                     <div className='input-adornment end' style={{backgroundColor: "transparent"}}>
                         <span className='clickable' onClick={onClickPasswordEye}>{passwordVisible?<BsEye />:<BsEyeSlash />}</span>
                     </div>
                 </div>
                 {errors["password"] && <p className='error'>{errors["password"]}</p>}
 
-                <button className='button primary fullwidth' onClick={onPressCreateAccount}>Create Account</button>
+                {editing_account && <button style={{marginBottom: 20}} className='button error fullwidth' onClick={() => {cancel_account_edit(); setPassword("")}}>Cancel Edit</button>}
+                <button className='button primary fullwidth' onClick={editing_account?onPressEditAccount:onPressCreateAccount}>{editing_account?"Edit":"Create"} Account</button>
                 {error && <p className='error'>{error}</p>}
             </div>
         </div>
@@ -180,7 +192,7 @@ const Accounts = ({accounts=[], total=0, name={}, email="", phone="", type="", e
 }
 
 function map_state_to_props({User, Admin}){
-    return {accounts: Admin.accounts, total: Admin.total_accounts, classes: User.classes, total_classes: User.total_classes, name: Admin.new_account.name, email: Admin.new_account.email, phone: Admin.new_account.phone, type: Admin.new_account.type, error: Admin.new_account.error}
+    return {accounts: Admin.accounts, total: Admin.total_accounts, classes: User.classes, total_classes: User.total_classes, new_account: Admin.new_account, edit_account: Admin.edit_account, editing_account: Admin.editing_account}
 }
 
-export default connect(map_state_to_props, {create_account, edit_new_account, get_accounts, set_loading})(Accounts);
+export default connect(map_state_to_props, {create_account, update_account, init_edit_account, cancel_account_edit, edit_new_account, get_accounts, set_loading})(Accounts);

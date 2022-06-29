@@ -1,6 +1,6 @@
-import { CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, LOGOUT, SET_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, SET_CURRENT_CLASS, SET_LOADING, SET_USER } from "../Actions/types";
+import { CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, LOGOUT, SET_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, SET_CONFIG, SET_CURRENT_CLASS, SET_LOADING, SET_USER } from "../Actions/types";
 
-const INITIAL_STATE = {user: null, current_class: {}, class_assignments: [], total_class_assignments: 0, class_announcements: [], total_class_announcements: 0, loading: false};
+const INITIAL_STATE = {user: null, current_class: {}, class_assignments: [], total_class_assignments: 0, class_announcements: [], total_class_announcements: 0, loading: false, config: null};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -19,6 +19,10 @@ export default (state=INITIAL_STATE, action) => {
 
         case SET_LOADING:
             new_state.loading = payload.loading;
+        break;
+
+        case SET_CONFIG:
+            new_state.config = payload.config;
         break;
 
         case SET_CLASS:

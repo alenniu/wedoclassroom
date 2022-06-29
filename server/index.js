@@ -13,6 +13,7 @@ const db = db_init();
 
 require("./database/schemas/users");
 require("./database/schemas/scores");
+require("./database/schemas/config");
 require("./database/schemas/classes");
 require("./database/schemas/invoices");
 require("./database/schemas/requests");
@@ -62,6 +63,7 @@ require("./routes/user_routes")(app);
 require("./routes/admin_routes")(app);
 require("./routes/class_routes")(app);
 require("./routes/stripe_routes")(app);
+require("./routes/config_routes")(app);
 require("./routes/assignment_routes")(app);
 require("./routes/announcement_routes")(app);
 

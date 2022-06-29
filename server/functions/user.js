@@ -32,9 +32,9 @@ async function create_user({name, email, phone, password, birth=Date.now(), type
         if((type !== "student") || (admin_user && mongoose.isValidObjectId(admin_user._id))){
             if(validate_email(email) && validate_password(password) && birth && type && name.first && name.last){
                 const hashed_password = hash_password(password);
-        
+                
                 const new_user = await (new User({name, email, phone, password: hashed_password, birth: new Date(birth), type, activated: false, role, created_by: admin_user})).save();
-    
+                
                 return new_user;
             }else{
                 throw new Error("name, valid email, valid password, birth and account type must be provided. " + password_requirements);
@@ -50,16 +50,20 @@ async function create_user({name, email, phone, password, birth=Date.now(), type
 
 async function update_user(user, existing_user){
     const {_id} = user;
-
+    
     existing_user = existing_user || await user_exists("_id", _id);
     
     if(existing_user){
         try{
             delete user._id;
-            delete user.email;
-            delete user.password;
+            // delete user.email;
+            if(user.password){
+                user.password = hash_password(user.password);
+            }else{
+                delete user.password;
+            }
             
-            return await Users.findOneAndUpdate({_id: existing_user._id}, {$set: user}, {new: true, upsert: false});
+            return await Users.findOneAndUpdate({_id: existing_user._id}, {$set: user}, {new: true, upsert: false}).select({password: 0});
         }catch(e){
             console.error(e);
             throw new Error(e);

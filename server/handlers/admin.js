@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from "express";
 import { get_accounts, get_admins, get_students, get_teachers } from "../functions/admin";
 import { add_teacher_to_class, get_classes } from "../functions/class";
 
-const { create_user } = require("../functions/user");
+const { create_user, update_user } = require("../functions/user");
 
 export const admin_create_user_handler = async (req: Request, res: Response, next: NextFunction) => {
     const {user} = req;
@@ -14,6 +14,21 @@ export const admin_create_user_handler = async (req: Request, res: Response, nex
         delete new_user.password;
 
         return res.json({success: true, new_user});
+    }catch(e){
+        return res.status(400).json({success: true, msg: e.message});
+    }
+}
+
+export const admin_update_user_handler = async (req: Request, res: Response, next: NextFunction) => {
+    const {user} = req;
+    const {account} = req.body;
+
+    try{
+        const updated_user = await update_user(account);
+
+        delete updated_user.password;
+
+        return res.json({success: true, updated_user});
     }catch(e){
         return res.status(400).json({success: true, msg: e.message});
     }

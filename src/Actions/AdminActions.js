@@ -1,6 +1,7 @@
 import { validate_email, validate_password } from "../Utils";
 import { api } from "../Utils/api";
-import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT } from "./types";
+import { set_config } from "./AppActions";
+import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT } from "./types";
 
 export const set_admins = (admins=[], total=0) => {
     return {type: SET_ADMINS, payload: {admins, total: total || admins.length}};
@@ -20,6 +21,14 @@ export const set_accounts = (accounts=[], total=0) => {
 
 export const set_create_account_error = (error) => {
     return {type: SET_CREATE_ACCOUNT_ERROR, payload: {error}};
+}
+
+export const init_edit_account = ({_id, name, email, phone, type}) => {
+    return {type: INIT_EDIT_ACCOUNT, payload:{account: {_id, name, email, phone, type}}};
+}
+
+export const cancel_account_edit = () => {
+    return {type: CANCEL_ACCOUNT_EDIT};
 }
 
 export const edit_new_account = (keys=[], value) => {
@@ -114,10 +123,10 @@ export const get_accounts = (limit=20, offset=0, search="", sort="{}", filters="
     }
 }
 
-export const create_account = ({name, email, phone, type, password}) => async (dispatch) => {
+export const create_account = ({name, photo_url, email, phone, type, password}) => async (dispatch) => {
     try{
         if(name && name.first && name.last && validate_email(email) && validate_password(password) && type){
-            const res = await api("post", "/api/admin/accounts", {name, email, phone, type, password});
+            const res = await api("post", "/api/admin/accounts", {name, photo_url, email, phone, type, password});
 
             if(res.data){
                 if(res.data.success){
@@ -139,5 +148,55 @@ export const create_account = ({name, email, phone, type, password}) => async (d
     }catch(e){
         console.error(e);
         dispatch(set_create_account_error(e.message));
+    }
+}
+
+export const update_account = (account) => async (dispatch) => {
+    try{
+        if(account.name && account.name.first && account.name.last && validate_email(account.email) && (!account.password || validate_password(account.password)) && account.type){
+            const res = await api("put", "/api/admin/accounts", {account});
+
+            if(res.data){
+                if(res.data.success){
+                    const {updated_user} = res.data;
+
+                    dispatch({type: EDIT_ACCOUNT, payload: {account: updated_user}});
+                    return res.data;
+                }
+
+                console.log(res.data);
+                dispatch(set_create_account_error(res.data.msg));
+            }else{
+                console.log(res);
+                dispatch(set_create_account_error(res));
+            }
+        }else{
+            throw new Error("name (first and last), valid email, valid password and account type must be provided");
+        }
+    }catch(e){
+        console.error(e);
+        dispatch(set_create_account_error(e.message));
+    }
+}
+
+export const update_config = (updated_config) => async (dispatch) => {
+    try{
+        const res = await api("put", "/api/config", {updated_config});
+    
+        if(res && res.data){
+            if(res.data.success){
+                const {config} = res.data;
+                
+                dispatch(set_config(config));
+    
+                return res.data;
+            }
+    
+            console.error(res.data);
+        }else{
+            console.error(res);
+        }
+    }catch(e){
+        console.error(e);
     }
 }

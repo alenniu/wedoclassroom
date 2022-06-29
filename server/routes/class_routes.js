@@ -1,4 +1,4 @@
-const { get_classes_handler, create_class_handler, request_class_handler, accept_request_handler, decline_request_handler, update_student_attendance_handle, get_class_attendance_handler, get_class_handler, get_class_client_secret_handler, create_student_attendance_handle } = require("../handlers/class");
+const { get_classes_handler, create_class_handler, request_class_handler, accept_request_handler, decline_request_handler, update_student_attendance_handle, get_class_attendance_handler, get_class_handler, get_class_client_secret_handler, create_student_attendance_handle, get_classes_by_subject_handler } = require("../handlers/class");
 const verify_admin = require("../middleware/verify_admin");
 const verify_user = require("../middleware/verify_user");
 const verify_student = require("../middleware/verify_student");
@@ -28,10 +28,13 @@ module.exports = (app) => {
     
     router.route("/class/client_secret").get(verify_student, get_class_client_secret_handler);
 
-    router.route("/:class_id").get(verify_user, get_class_handler);
-
     router.route("/request/accept").post(verify_user, accept_request_handler);
     router.route("/request/decline").post(verify_user, decline_request_handler);
+    
+    router.route("/subject/:subject").get(verify_user, get_classes_by_subject_handler);
+
+    router.route("/:class_id").get(verify_user, get_class_handler);
+
 
     app.use("/api/classes", router);
 }

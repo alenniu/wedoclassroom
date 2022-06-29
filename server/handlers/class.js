@@ -148,6 +148,28 @@ export const get_classes_handler = async (req: Request, res: Response, next: Nex
     }
 }
 
+export const get_classes_by_subject_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {subject} = req.params;
+
+        let {limit=20, offset=0, search="", sort="{}", filters="{}"} = req.query;
+
+        limit = Number(limit) || 20;
+        offset = Number(offset) || 0;
+        sort = JSON.parse(sort) || {};
+        filters = JSON.parse(filters) || {};
+
+        filters.subject = subject
+        
+        const {classes, total} = await get_classes(limit, offset, search, sort, filters);
+
+        return res.json({classes, total, subject, success: true})
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
 export const get_user_classes_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {user} = req;

@@ -1,11 +1,18 @@
 import axios from "axios";
 import { api } from "../Utils/api";
-import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_CLASS, SET_CURRENT_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR } from "./types";
+import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_CLASS, SET_CURRENT_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_SUBJECT_CLASSES } from "./types";
 
 export const set_classes = (classes = [], total = 0) => {
     return {
         type: SET_CLASSES,
         payload: { classes, total: total || classes.length },
+    };
+};
+
+export const set_subject_classes = (classes = [], total = 0, subject) => {
+    return {
+        type: SET_SUBJECT_CLASSES,
+        payload: { classes, total: total || classes.length, subject },
     };
 };
 
@@ -57,29 +64,51 @@ export const get_class = (class_id) => async (dispatch) => {
     }
 }
 
-export const get_classes = (limit = 20, offset = 0, search = "", sort = "{}", filters = "{}") =>
-    async (dispatch) => {
-        try {
-            const res = await api(
-                "get",
-                `/api/classes?limit=${limit}&offset=${offset}&search=${search}&sort=${sort}&filters=${filters}`
-            );
+export const get_classes = (limit = 20, offset = 0, search = "", sort = "{}", filters = "{}") => async (dispatch) => {
+    try {
+        const res = await api(
+            "get",
+            `/api/classes?limit=${limit}&offset=${offset}&search=${search}&sort=${sort}&filters=${filters}`
+        );
 
-            if (res.data) {
-                if (res.data.success) {
-                    const { classes = [], total = 0 } = res.data;
-                    dispatch(set_classes(classes, total));
-                    return res.data;
-                }
-
-                console.log(res.data);
-            } else {
-                console.log(res);
+        if (res.data) {
+            if (res.data.success) {
+                const { classes = [], total = 0 } = res.data;
+                dispatch(set_classes(classes, total));
+                return res.data;
             }
-        } catch (e) {
-            console.error(e);
+
+            console.log(res.data);
+        } else {
+            console.log(res);
         }
-    };
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+export const get_classes_by_subject = (limit = 20, offset = 0, search = "", sort = "{}", filters = "{}", subject) => async (dispatch) => {
+    try {
+        const res = await api(
+            "get",
+            `/api/classes/subject/${subject}?limit=${limit}&offset=${offset}&search=${search}&sort=${sort}&filters=${filters}`
+        );
+
+        if (res.data) {
+            if (res.data.success) {
+                const { classes = [], total = 0 } = res.data;
+                total && dispatch(set_subject_classes(classes, total, subject));
+                return res.data;
+            }
+
+            console.log(res.data);
+        } else {
+            console.log(res);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+};
 
 export const get_popular_classes = (limit = 20, offset = 0, search = "", filters = "{}") =>
     async (dispatch) => {
