@@ -1,7 +1,13 @@
 :root{
+  --class-bg-color: white;
+  --class-border: none;
+  --class-box-shadow: 1px 1px 5px grey;
+  --bg-color: white;
   --input-height: 56px;
+  --support-bg-color: #F6F6F6;
   --input-bgcolor: #F6F6F6;
-  --input-box-shadow: 0px 0px 3px -1px rgba(0,0,0,0.3);
+  --input-text-color: #3f3f3f;
+  --input-box-shadow: 0px 0px 3px rgba(0,0,0,0.3);
   --primary-button-bgcolor: #FDCB9E;
   --primary-button-hover-bgcolor: #E4A771;
   --secondary-button-bgcolor: #CCEABB;
@@ -20,7 +26,37 @@
   --input-border-radius: 8px;
   --file-input-border-color: #99C183;
   --file-input-text-color: #99C183;
+  --file-input-bg-color: rgba(245, 249, 242, 0.8);
+  --table-border: none;
+  --table-row-border: 2px solid #efefef;
+  --table-box-shadow: 1px 1px 5px #bfbfbf;
+  background-color: var(--bg-color, white);
 }
+
+@media screen and (prefers-color-scheme: dark){
+  :root{
+    --bg-color: #121212;
+    --class-bg-color: #2c2c2d;
+    --class-border: 1px solid #3f3f43;
+    --class-box-shadow: 0 0 1px rgba(255,255,255, 0.5);
+    --input-bgcolor: #565656;
+    --input-box-shadow: 0px 0px 3px rgba(255,255,255,0.3);
+    --text-color: #DFDFF4;
+    /* --tag-text-color: #DFDFF4; */
+    --input-text-color: #DFDFF4;
+    --file-input-bg-color: rgba(45, 49, 42, 0.8);
+    --support-bg-color: #565656;
+    --table-border: 2px solid #3f3f43;
+    --table-box-shadow: none;
+    --table-row-border: 2px solid #3f3f43;
+    background-color: var(--bg-color, black);
+  }
+  
+  p,h1,h2,h3,h4,h5,h6{
+    color: var(--text-color, #DFDFF4)
+  }
+}
+
 
 input:focus, textarea:focus{
   outline: none;
@@ -31,6 +67,7 @@ input:focus-visible, textarea:focus-visible{
 }
 
 .App {
+  background-color: var(--bg-color, white);
   font-family: "Worker Sans", sans-serif;
 }
 
@@ -96,7 +133,7 @@ input:focus-visible, textarea:focus-visible{
   min-height: 100vh;
   /* height: 100vh; */
   margin: 0 auto;
-  color: #3F3F44;
+  color: var(--text-color, #3F3F44);
 }
 
 .circle{
@@ -166,8 +203,13 @@ input:focus-visible, textarea:focus-visible{
   height: 56px;
   width: 100%;
   border: none;
-  background-color: #F6F6F6;
-  box-shadow: 0px 0px 3px -1px rgba(0,0,0,0.3);
+  background-color: var(--input-bgcolor, #F6F6F6);
+  box-shadow: var(--input-box-shadow, 0px 0px 3px -1px rgba(0,0,0,0.3));
+  color: var(--text-color, #3F3F44);
+}
+
+.input-container  .MuiTextField-root input, .input-container  .MuiTextField-root button{
+  color: var(--text-color, #3F3F44);
 }
 
 .input-container .MuiTextField-root{
@@ -186,9 +228,10 @@ input:focus-visible, textarea:focus-visible{
 .input-container input[type="file"]{
   /* border: 2px dashed #CCEABB; */
   min-height: 120px;
-  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23CCEABB' stroke-width='3' stroke-dasharray='14%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-  background-color: rgba(245, 249, 242, 0.8);
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%2399C183' stroke-width='3' stroke-dasharray='14%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+  background-color: var(--file-input-bg-color, rgba(245, 249, 242, 0.8));
   color: transparent;
+  box-shadow: none;
 }
 
 .input-container.file-input .upload-content-container{
@@ -209,11 +252,13 @@ input:focus-visible, textarea:focus-visible{
   margin-bottom: 15px;
   font-size: 12px;
   font-weight: 600;
+  color: var(--file-input-text-color, #99C183);
 }
 
 .input-container.file-input .upload-content-container p.upload-drop-text{
   font-size: 12px;
   font-weight: 300;
+  color: var(--file-input-text-color, #99C183);
 }
 
 .input-container.file-input .upload-content-container .add-icon-container{
@@ -223,8 +268,8 @@ input:focus-visible, textarea:focus-visible{
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  background-color: white;
-  border: 1px solid var(--file-input-border-color, #99C183);
+  background-color: var(--bg-color, white);
+  border: 2px solid var(--file-input-border-color, #99C183);
   margin-right: 20px;
   flex-shrink: 0;
   aspect-ratio: 1;
@@ -306,7 +351,7 @@ input:focus-visible, textarea:focus-visible{
 
 .button.clear{
   border: 2px solid #3F3F44;
-  color: #3F3F44;
+  color: var(--text-color, #3F3F44);
   background-color: transparent;
 }
 
@@ -335,6 +380,38 @@ input:focus-visible, textarea:focus-visible{
 .button:disabled{
   background-color: #ccc!important;
   cursor: default;
+}
+
+table{
+  border-radius: 5px 5px 5px 5px;
+  width: 100%;
+  box-shadow: var(--table-box-shadow, 1px 1px 5px #bfbfbf);
+  /* padding: 0 20px; */
+  border-spacing: 0px;
+  border: var(--table-border, none);
+}
+
+table th{
+  padding: 20px 0;
+  text-align: left;
+  border-bottom: var(--table-row-border, 1px solid #efefef);
+}
+
+table th:first-of-type, table tbody td:first-of-type{
+  padding-left: 20px;
+}
+
+table th:last-of-type, table tbody td:last-of-type{
+  padding-right: 20px;
+}
+
+table tbody td{
+  border-bottom: var(--table-row-border, 1px solid #efefef);
+  padding: 20px 0;
+}
+
+table tbody tr:last-of-type td{
+  border-bottom: none;
 }
 
 .checkbox-container {

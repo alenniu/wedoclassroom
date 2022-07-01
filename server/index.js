@@ -18,6 +18,7 @@ require("./database/schemas/classes");
 require("./database/schemas/invoices");
 require("./database/schemas/requests");
 require("./database/schemas/schedule");
+require("./database/schemas/purchases");
 require("./database/schemas/attendance");
 require("./database/schemas/attachments");
 require("./database/schemas/assignments");

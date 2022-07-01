@@ -4,6 +4,9 @@
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
+    border: var(--class-border, none);
+    box-shadow: var(--class-box-shadow, 1px 1px 5px grey);
+    background-color: var(--class-bg-color, white);
     /* align-items: center; */
 }
 
@@ -60,4 +63,5 @@
     text-align: center;
     font-size: 12px;
     font-weight: 600;
+    color: #3f3f44;
 }

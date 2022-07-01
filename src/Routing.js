@@ -13,6 +13,7 @@ import Classes from './Pages/Classes';
 import NewClass from './Pages/NewClass';
 import Class from './Pages/Class';
 import { get_config } from './Actions';
+import Payments from './Pages/Payments';
 
 const routes = [
     {
@@ -61,7 +62,7 @@ const routes = [
             },
             {
                 path: "/dashboard/payments",
-                component: Dashboard,
+                component: Payments,
                 exact: true,
                 children: null,
                 isIndex: false,

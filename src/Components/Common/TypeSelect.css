@@ -26,7 +26,7 @@
     position: absolute;
     top: calc(100% + 8px);
     width: 100%;
-    background-color: #f6f6f6;
+    background-color: var(--input-bgcolor, #f6f6f6);
     padding: 10px 0;
     border-radius: 8px;
     max-height: 300px;

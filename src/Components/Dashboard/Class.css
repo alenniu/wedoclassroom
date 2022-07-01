@@ -1,7 +1,9 @@
 .dashboard-class-container{
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 1px 1px 5px grey;
+    border: var(--class-border, none);
+    box-shadow: var(--class-box-shadow, 1px 1px 5px grey);
+    background-color: var(--class-bg-color, white);
 }
 
 .dashboard-class-container .class-subject{
@@ -14,7 +16,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    color: rgba(63, 63, 68, .45);
+    opacity: 0.6;
     font-size: 15px;
     font-weight: 600;
 }
