@@ -20,6 +20,10 @@ const attendance_schema = new schema({
     present: {
         type: Boolean,
         default: false
+    },
+    session: {
+        type: schema.Types.ObjectId,
+        ref: "class_session"
     }
 }, {timestamps: true});
 

@@ -1,9 +1,11 @@
 .announcement-container{
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0px 0px 3px #bfbfbf, 0px 3px 3px #bfbfbf;
     margin-bottom: 20px;
     display: flex;
+    border: var(--class-border, none);
+    box-shadow: var(--class-box-shadow, 1px 1px 5px grey);
+    background-color: var(--class-bg-color, white);
 }
 
 .announcement-container .user-image-container{

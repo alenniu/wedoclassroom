@@ -4,7 +4,7 @@
 }
 
 .page.class .class-info a.meeting-link{
-    color: #1B1BBA;
+    color: var(--link-color, #1B1BBA);
     text-decoration: underline;
 }
 
@@ -26,9 +26,10 @@
 
 .page.class .upcoming-assignments p.assignment, .page.class .upcoming-assignments p.due-date{
     font-size: 14px;
+    text-transform: capitalize;
 }
 
 .page.class .upcoming-assignments p.assignment{
-    color: #1B1BBA;
+    color: var(--link-color, #1B1BBA);
     font-weight: 700;
 }

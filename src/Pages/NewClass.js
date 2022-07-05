@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { create_new_class, edit_class_value, get_teachers, set_loading, set_teachers } from '../Actions';
 import TypeSelect from '../Components/Common/TypeSelect';
-import { debounce, throttle } from '../Utils';
+import { debounce, get_full_image_url, throttle } from '../Utils';
 import {RiImageAddLine, RiCloseCircleFill} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
 import {TextField} from '@mui/material';
@@ -19,7 +19,7 @@ const RenderTeacherOption = ({label, value, teacher}) => {
     return (
         <div style={{display: "flex", alignItems: "center"}}>
             <div className='teacher-image-container' style={{height: "30px", width: "30px", overflow: 'hidden', backgroundColor: "black", borderRadius: "50%", marginRight: "10px"}}>
-                <img src='/Assets/Images/AuthBackground.png' style={{height: "100%", width: "100%", objectFit: "cover"}} />
+                <img src={get_full_image_url(teacher.photo_url || '/Assets/Images/AuthBackground.png')} style={{height: "100%", width: "100%", objectFit: "cover"}} />
             </div>
 
             <span>{label}</span>
@@ -136,13 +136,13 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
         set_loading(false);
     }
 
-    const searchTeachers = useCallback(debounce(() => {
-        get_teachers(20, 0, teacherSearch);
-    }), [teacherSearch]);
+    const searchTeachers = useCallback(debounce((s) => {
+        get_teachers(20, 0, s);
+    }), []);
 
     useEffect(() => {
         if(is_admin){
-            searchTeachers()
+            searchTeachers(teacherSearch);
         }
     }, [teacherSearch, is_admin]);
 

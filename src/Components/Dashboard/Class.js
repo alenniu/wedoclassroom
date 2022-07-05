@@ -4,7 +4,7 @@ import { get_full_image_url } from '../../Utils';
 import "./Class.css"
 
 const Class = ({_class={}, index=0}) => {
-    const {subject, cover_image="/Assets/Images/AuthBackground.png"} = _class;
+    const {subject, cover_image="/Assets/Images/AuthBackground.png", current_session} = _class;
 
     return ( 
         <div className='dashboard-class-container'>
@@ -14,6 +14,8 @@ const Class = ({_class={}, index=0}) => {
             <div className='class-image'>
                 <img src={get_full_image_url(cover_image)} />
             </div>
+
+            {current_session && <div className='active-class' />}
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE } from "../Actions/types";
+import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE, DECLINE_JOIN_REQUEST } from "../Actions/types";
 
 const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, current_class_requests: [], total_class_requests: 0, requests: [], total_requests: 0, assignments: [], total_assignments: 0, class_attendance: []};
 
@@ -57,9 +57,18 @@ export default (state=INITIAL_STATE, action) => {
         break
 
         case ACCEPT_JOIN_REQUEST:
-            const index = new_state.classes.findIndex(x => x._id === payload.class._id)
-            new_state.classes[index] = payload.class
-        break
+            new_state.classes = new_state.classes.map(x => (x._id === payload._class._id)?payload._class:x);
+
+            new_state.requests = new_state.requests.filter(r => r._id !== payload.request._id);
+            
+            new_state.current_class_requests = new_state.current_class_requests.filter(r => r._id !== payload.request._id);
+        break;
+            
+        case DECLINE_JOIN_REQUEST:
+            new_state.requests = new_state.requests.filter(r => r._id !== payload.request._id);
+
+            new_state.current_class_requests = new_state.current_class_requests.filter(r => r._id !== payload.request._id);
+        break;
 
         default:
             return state;

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { api } from "../Utils/api";
-import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_CLASS, SET_CURRENT_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_SUBJECT_CLASSES } from "./types";
+import { set_class } from "./AppActions";
+import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_CLASS, SET_CURRENT_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_SUBJECT_CLASSES, DECLINE_JOIN_REQUEST } from "./types";
 
 export const set_classes = (classes = [], total = 0) => {
     return {
@@ -185,7 +186,8 @@ export const accept_join_request = (request) => async (dispatch) => {
             if (res.data.success) {
                 const { updated_request, updated_class } = res.data;
                 // console.log(request);
-                dispatch({type: ACCEPT_JOIN_REQUEST, payload: {class: updated_class}});
+                dispatch({type: ACCEPT_JOIN_REQUEST, payload: {_class: updated_class, request: updated_request}});
+                dispatch(set_class(updated_class));
                 return res.data;
             }
             console.log(res.data);
@@ -205,7 +207,7 @@ export const decline_join_request = (request) => async (dispatch) => {
             if (res.data.success) {
                 const { updated_request } = res.data;
                 // console.log(request);
-                // dispatch({type: REQUEST_JOIN_CLASS, payload: {request: request}});
+                dispatch({type: DECLINE_JOIN_REQUEST, payload: {request: updated_request}});
                 return res.data;
             }
             console.log(res.data);
@@ -337,5 +339,85 @@ export const create_announcement = ({_class, title, message, assignment=null}) =
     }catch(e){
         console.error(e);
         dispatch(set_class_announcement_error(e.message));
+    }
+}
+
+export const start_class = ({_class, meeting_link=""}) => async (dispatch) => {
+    try{
+        const res = await api("post", `/api/classes/start/${_class._id}`, {meeting_link});
+
+        if(res && res.data){
+            if(res.data.success){
+                const {updated_class, new_session} = res.data;
+
+                dispatch(set_class(updated_class));
+                
+                return res.data;
+            }
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.error(e);
+    }
+}
+
+export const end_class = ({_class}) => async (dispatch) => {
+    try{
+        const res = await api("post", `/api/classes/end/${_class._id}`);
+        
+        if(res && res.data){
+            if(res.data.success){
+                const {updated_class} = res.data;
+                
+                dispatch(set_class(updated_class));
+                
+                return res.data;
+            }
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.error(e);
+    }
+}
+
+export const set_meeting_link = ({_class, meeting_link}) => async (dispatch) => {
+    try{
+        const res = await api("post", `/api/classes/set_meeting_link/${_class._id}`, {meeting_link});
+        
+        if(res && res.data){
+            if(res.data.success){
+                const {updated_class} = res.data;
+                
+                dispatch(set_class(updated_class));
+                
+                return res.data;
+            }
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.error(e);
+    }
+}
+
+export const remove_student_from_class = ({student_id, _class}) => async (dispatch) => {
+    try{
+        const res = await api("delete", `/api/classes/student/${_class._id}`, {params: {student_id}});
+        
+        if(res && res.data){
+            if(res.data.success){
+                const {updated_class} = res.data;
+                
+                dispatch(set_class(updated_class));
+                
+                return res.data;
+            }
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.log(e);
     }
 }

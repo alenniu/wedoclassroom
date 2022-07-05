@@ -60,6 +60,10 @@ const class_schema = new schema({
         type: Number,
         default: 1
     },
+    is_full: {
+        type: Boolean,
+        default: false
+    },
     level: {
         type: String
     },
@@ -70,6 +74,11 @@ const class_schema = new schema({
     },
     stripe_product_price_id: {
         type: String
+    },
+    current_session: {
+        type: schema.Types.ObjectId,
+        ref: "class_session",
+        default: null
     }
 }, {timestamps: true});
 

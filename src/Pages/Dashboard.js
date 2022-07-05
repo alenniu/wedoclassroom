@@ -50,7 +50,7 @@ const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
                 <Tabs tabs={[{label: "All Classes", id: ""}, {label: "Group Lessons", id: "group"}, {label: "One on One", id: "private"}]} />
 
                 <ul className='class-list'>
-                    {[...classes, ...classes, ...classes, ...classes, ...classes, ...classes].map((c, i) => {
+                    {classes.map((c, i) => {
                         return <li key={c._id + i} onClick={() => {navigate(`/dashboard/my-class/${c._id}`)}} className='class-item clickable'><Class _class={c} index={i} onPressTab={onPressTab} /></li>
                     })}
                 </ul>

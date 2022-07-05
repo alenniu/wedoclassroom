@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line} from "react-icons/ri";
+import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line, RiTimeLine} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
 import { logout, set_loading } from '../../Actions';
 
@@ -77,6 +77,10 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_lo
 
                         {is_admin && <li className='nav-link'>
                             <NavLink to="/dashboard/accounts" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>Accounts</span></NavLink>
+                        </li>}
+
+                        {is_admin && <li className='nav-link'>
+                            <NavLink to="/dashboard/sessions" className="button"><RiTimeLine className='link-icon' size={"20px"} /><span className='link-label'>Session</span></NavLink>
                         </li>}
                     </ul>
 

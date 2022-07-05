@@ -1,9 +1,9 @@
-import { CANCEL_ACCOUNT_EDIT, CREATE_ACCOUNT, EDIT_ACCOUNT, EDIT_NEW_ACCOUNT, INIT_EDIT_ACCOUNT, SET_ACCOUNTS, SET_ADMINS, SET_CREATE_ACCOUNT_ERROR, SET_STUDENTS, SET_TEACHERS } from "../Actions/types";
+import { CANCEL_ACCOUNT_EDIT, CREATE_ACCOUNT, EDIT_ACCOUNT, EDIT_NEW_ACCOUNT, INIT_EDIT_ACCOUNT, SET_ACCOUNTS, SET_ADMINS, SET_CREATE_ACCOUNT_ERROR, SET_SESSIONS, SET_STUDENTS, SET_TEACHERS } from "../Actions/types";
 import { update_object } from "../Utils";
 
 const NEW_ACCOUNT_PROPS = {name: {first: "", last: ""}, email: "", phone: "", type: ""}
 
-const INITIAL_STATE = {accounts: [], total_accounts: 0, teachers: [], total_teachers: 0, students: [], total_students: 0, admins: [], total_admins: 0, edit_account: {error: ""}, editing_account: false, new_account: {error: ""}};
+const INITIAL_STATE = {accounts: [], total_accounts: 0, sessions: [], total_sessions: 0, teachers: [], total_teachers: 0, students: [], total_students: 0, admins: [], total_admins: 0, edit_account: {error: ""}, editing_account: false, new_account: {error: ""}};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -20,6 +20,11 @@ export default (state=INITIAL_STATE, action) => {
         case SET_TEACHERS:
             new_state.teachers = payload.teachers;
             new_state.total_teachers = payload.total;
+        break;
+
+        case SET_SESSIONS:
+            new_state.sessions = payload.sessions;
+            new_state.total_sessions = payload.total;
         break;
 
         case SET_STUDENTS:

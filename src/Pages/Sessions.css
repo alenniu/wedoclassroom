@@ -1,0 +1,10 @@
+.page.sessions .main-col{
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.page.sessions .input-container.select{
+    width: 300px;
+    max-width: 80%;
+    align-self: flex-end;
+}

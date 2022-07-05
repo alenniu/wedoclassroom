@@ -18,11 +18,13 @@ require("./database/schemas/classes");
 require("./database/schemas/invoices");
 require("./database/schemas/requests");
 require("./database/schemas/schedule");
+require("./database/schemas/sessions");
 require("./database/schemas/purchases");
 require("./database/schemas/attendance");
 require("./database/schemas/attachments");
 require("./database/schemas/assignments");
 require("./database/schemas/submissions");
+require("./database/schemas/withdrawals");
 require("./database/schemas/announcements");
 
 const app = express();
@@ -65,6 +67,7 @@ require("./routes/admin_routes")(app);
 require("./routes/class_routes")(app);
 require("./routes/stripe_routes")(app);
 require("./routes/config_routes")(app);
+require("./routes/session_routes")(app);
 require("./routes/assignment_routes")(app);
 require("./routes/announcement_routes")(app);
 

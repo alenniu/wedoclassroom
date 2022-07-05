@@ -14,6 +14,7 @@ import NewClass from './Pages/NewClass';
 import Class from './Pages/Class';
 import { get_config } from './Actions';
 import Payments from './Pages/Payments';
+import Sessions from './Pages/Sessions';
 
 const routes = [
     {
@@ -72,6 +73,15 @@ const routes = [
             {
                 path: "/dashboard/accounts",
                 component: Accounts,
+                exact: true,
+                children: null,
+                isIndex: false,
+                teacherRequired: false,
+                adminRequired: true
+            },
+            {
+                path: "/dashboard/sessions",
+                component: Sessions,
                 exact: true,
                 children: null,
                 isIndex: false,

@@ -1,4 +1,6 @@
+const session = require("express-session");
 const mongoose = require("mongoose");
+const { create_session, end_session, update_session } = require("./session");
 const { create_stripe_payment_intent, create_stripe_customer } = require("./stripe");
 const { escape_regex } = require("./utils");
 
@@ -15,7 +17,7 @@ async function get_class(class_id, user){
     try{
         const {_id, type} = user;
 
-        return Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: type === "admin"}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
+        return await Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: type === "admin"}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"}).populate({path: "current_session", populate: {path: "students", select: "-password"}});
     }catch(e){
         console.error(e);
         throw e;
@@ -32,15 +34,15 @@ async function get_classes(limit=20, offset=0, search="", sort={}, filters={}){
 
             const search_regex = new RegExp(`${escaped_search}`, "i");
 
-            total = await Classes.count({...filters, $or: [{subject: search_regex}, {tags: search_regex}]});
+            total = await Classes.count({is_full: false, ...filters, $or: [{subject: search_regex}, {tags: search_regex}]});
 
             if(total){
-                classes = await Classes.find({...filters, $or: [{subject: search_regex}, {tags: search_regex}]}).sort(sort).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find({is_full: false, ...filters, $or: [{subject: search_regex}, {tags: search_regex}]}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }else{
-            total = await Classes.count({...filters});
+            total = await Classes.count({is_full: false, ...filters});
             if(total){
-                classes = await Classes.find({...filters}).sort(sort).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find({is_full: false, ...filters}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }
 
@@ -81,10 +83,57 @@ async function get_user_classes(user, limit=20, offset=0, search=""){
     }
 }
 
+async function set_meeting_link({_class, meeting_link}, user){
+    try{
+        _class.meeting_link = meeting_link;
+        await _class.save();
+
+        if(_class.current_session){
+            /* const updated_session = */ await update_session({_id: _class.session, meeting_link}, user); 
+        }
+
+        return _class;
+    }catch(e){
+        throw e;
+    }
+}
+
+async function start_class({_class, meeting_link=""}, user){
+    try{
+        if(!_class.current_session){
+            const new_session = await create_session({_class: _class, meeting_link}, user);
+
+            const updated_class = await Classes.findOneAndUpdate({_id: _class._id}, {$set: {current_session: new_session._id, meeting_link}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
+
+            return {new_session, updated_class}
+        }
+
+        throw new Error("Class has already been started");
+    }catch(e){
+        throw e;
+    }
+}
+
+async function end_class({_class}, user){
+    try{
+        if(_class.current_session){
+            const updated_session = await end_session({_class: _class}, user);
+
+            const updated_class = await Classes.findOneAndUpdate({_id: _class._id}, {$set: {meeting_link: "", current_session: null}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
+
+            return {updated_class, updated_session};
+        }
+
+        throw new Error("Class has already been started");
+    }catch(e){
+        throw e;
+    }
+}
+
 async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[]}, creator){
     try{
         if(title && subject && class_type){
-            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, schedules, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
+            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, schedules, is_full: false, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
 
             return new_class;
         }else{
@@ -98,9 +147,36 @@ async function create_class({title, subject, cover_image="", description, teache
 async function add_student_to_class({student_id, class_id}){
     try{
         if(student_id && class_id){
-            const updated_class = await Classes.findOneAndUpdate({_id: class_id}, {$push: {students: student_id}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"}).populate({path: "students", select: "-password"});
+            const updated_class = await Classes.findOneAndUpdate({_id: class_id, students: {$ne: student_id}}, {$push: {students: student_id}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"}).populate({path: "students", select: "-password"});
 
-            return updated_class;
+            if(updated_class){
+                if(updated_class.max_students <= updated_class.students.length){
+                    updated_class.is_full = true;
+                    await updated_class.save();
+                }
+    
+                return updated_class;
+            }else{
+                throw new Error("student may already be in class");
+            }
+        }else{
+            throw new Error("student_id and class_id must be provided")
+        }
+    }catch(e){
+        throw e;
+    }
+}
+
+async function remove_student_from_class({student_id, class_id}){
+    try{
+        if(student_id && class_id){
+            const updated_class = await Classes.findOneAndUpdate({_id: class_id, students: student_id}, {$pull: {students: student_id}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"}).populate({path: "students", select: "-password"});
+
+            if(updated_class){
+                return updated_class;
+            }else{
+                throw new Error("student may already be removed from class");
+            }
         }else{
             throw new Error("student_id and class_id must be provided")
         }
@@ -144,7 +220,7 @@ async function accept_request({request_id}, handler){ //handler is the user acce
         if(request_id){
             const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: true, declined: false, handled_by: handler._id}}, {new: true, upsert: false, });
 
-            const updated_class = await add_student_to_class({student_id: request.student, class_id: request._class}).populate({path: "teacher", select: "-password"}).populate({path: "students", select: "-password"})
+            const updated_class = await add_student_to_class({student_id: request.student, class_id: request._class});
 
             return {request, updated_class};
         }else{
@@ -246,15 +322,19 @@ async function add_attachment_to_class({attachment, class_id}){
 
 
 module.exports.get_class = get_class;
+module.exports.end_class = end_class;
 module.exports.get_classes = get_classes;
+module.exports.start_class = start_class;
 module.exports.create_class = create_class;
 module.exports.request_class = request_class;
 module.exports.accept_request = accept_request;
 module.exports.decline_request = decline_request;
 module.exports.get_user_classes = get_user_classes;
+module.exports.set_meeting_link = set_meeting_link;
 module.exports.update_attendance = update_attendance;
 module.exports.create_attendance = create_attendance;
 module.exports.add_teacher_to_class = add_teacher_to_class;
 module.exports.get_class_attendance = get_class_attendance;
 module.exports.add_attachment_to_class = add_attachment_to_class;
 module.exports.get_class_payment_intent = get_class_payment_intent;
+module.exports.remove_student_from_class = remove_student_from_class;

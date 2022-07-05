@@ -1,7 +1,7 @@
 import { validate_email, validate_password } from "../Utils";
 import { api } from "../Utils/api";
 import { set_config } from "./AppActions";
-import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT } from "./types";
+import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS } from "./types";
 
 export const set_admins = (admins=[], total=0) => {
     return {type: SET_ADMINS, payload: {admins, total: total || admins.length}};
@@ -9,6 +9,10 @@ export const set_admins = (admins=[], total=0) => {
 
 export const set_teachers = (teachers=[], total=0) => {
     return {type: SET_TEACHERS, payload: {teachers, total: total || teachers.length}};
+}
+
+export const set_sessions = (sessions=[], total=0) => {
+    return {type: SET_SESSIONS, payload: {sessions, total: total || sessions.length}};
 }
 
 export const set_students = (students=[], total=0) => {
@@ -188,6 +192,28 @@ export const update_config = (updated_config) => async (dispatch) => {
                 const {config} = res.data;
                 
                 dispatch(set_config(config));
+    
+                return res.data;
+            }
+    
+            console.error(res.data);
+        }else{
+            console.error(res);
+        }
+    }catch(e){
+        console.error(e);
+    }
+}
+
+export const get_sessions = (limit=20, offset, sort="{}", filters="{}") => async (dispatch) => {
+    try{
+        const res = await api("get", "/api/sessions", {params: {limit, offset, sort, filters}});
+    
+        if(res && res.data){
+            if(res.data.success){
+                const {sessions, total} = res.data;
+                
+                dispatch(set_sessions(sessions, total));
     
                 return res.data;
             }

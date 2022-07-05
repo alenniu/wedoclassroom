@@ -1,7 +1,7 @@
 import axios from "axios";
 import mongoose from "mongoose";
 import {Request, Response, NextFunction} from "express";
-import { accept_request, create_attendance, create_class, decline_request, get_class, get_classes, get_class_attendance, get_class_payment_intent, get_user_classes, request_class, update_attendance } from "../functions/class";
+import { accept_request, create_attendance, create_class, decline_request, end_class, get_class, get_classes, get_class_attendance, get_class_payment_intent, get_user_classes, remove_student_from_class, request_class, set_meeting_link, start_class, update_attendance } from "../functions/class";
 import { get_request } from "../functions/request";
 
 const Classes = mongoose.model("class");
@@ -28,6 +28,65 @@ export const create_class_handler = async (req: Request, res: Response, next: Ne
             return res.json({success: true, _class: new_class});
         }else{
             throw new Error("Only admins or teachers can create classes");
+        }
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const start_class_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {class_id} = req.params;
+        const {meeting_link=""} = req.body;
+        
+        const current_class = await get_class(class_id, user);
+
+        if(current_class){
+            const {updated_class, new_session} = await start_class({_class: current_class, meeting_link}, user);
+
+            return res.json({success: true, updated_class, new_session});
+        }else{
+            throw new Error("only class teachers can start class");
+        }
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const end_class_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {class_id} = req.params;
+        
+        const current_class = await get_class(class_id, user);
+
+        if(current_class){
+            const {updated_class, updated_session} = await end_class({_class: current_class}, user);
+
+            return res.json({success: true, updated_class, updated_session});
+        }else{
+            throw new Error("only class teachers can start class");
+        }
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const set_class_meeting_link_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {class_id} = req.params;
+        const {meeting_link=""} = req.body;
+        
+        const current_class = await get_class(class_id, user);
+
+        if(current_class){
+            const updated_class = await set_meeting_link({_class: current_class, meeting_link}, user);
+
+            return res.json({success: true, updated_class});
+        }else{
+            throw new Error("only class teachers can start class");
         }
     }catch(e){
         return res.status(400).json({success: false, msg: e.message});
@@ -80,6 +139,31 @@ export const accept_request_handler = async (req: Request, res: Response, next: 
             }
         }else{
             throw new Error("Only admins or teachers can accept requests");
+        }
+    }catch(e){
+        console.error(e);
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const remove_class_student_request_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        const {class_id} = req.params;
+        const {student_id} = req.query;
+
+        if((user.type === "admin") || (user.type === "teacher")){
+            const _class = await get_class(class_id, user);
+        
+            if((user.type === "admin") || (user._id.toString() === _class.teacher._id.toString())){
+                const updated_class = await remove_student_from_class({class_id, student_id});
+
+                return res.json({success: true, updated_class});
+            }else{
+                throw new Error("Only this class' teacher or an admin can remove a student");
+            }
+        }else{
+            throw new Error("Only admins or teachers can remove students");
         }
     }catch(e){
         console.error(e);

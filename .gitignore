@@ -10,7 +10,6 @@
 
 # production
 /build
-
 # misc
 .DS_Store
 .env.local
@@ -27,3 +26,4 @@ server/config/keys.js
 /server-build
 
 **/uploads
+commands.txt

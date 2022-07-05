@@ -1,24 +1,22 @@
+import { Modal } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { accept_join_request, decline_join_request, get_class_announcements, get_class_assignments, get_class_attendance, get_class_requests, get_current_class, set_loading } from '../Actions';
+import { accept_join_request, decline_join_request, end_class, get_class_announcements, get_class_assignments, get_class_attendance, get_class_requests, get_current_class, remove_student_from_class, set_loading, set_meeting_link, start_class } from '../Actions';
 import Announcements from '../Components/Class/Announcements';
 import Attendance from '../Components/Class/Attendance';
 import ClassInfo from '../Components/Class/ClassInfo';
 import Students from '../Components/Class/Students';
 import Tabs from '../Components/Common/Tabs';
 import { HOUR } from '../Data';
+import { is_full_url } from '../Utils';
+
 
 import "./Class.css";
 
-const test_assignments = [{_id: "12345", title: "Read Chapter 5", description: "Instructions:\nPlease Read \"How to kill and never get caught\" and perform the things described in the book", due_date: Date.now() - 5 * 3600000}];
-
-const test_announcements = [{title: "", message: "Hello All, Welcome to my class. First lets start by each killing a fellow classmate. Cuts the class in half early on.", assignment: null, createdAt: Date.now()}, {title: "", message: "", assignment: "12345", createdAt: Date.now()}];
-
-
-const Class = ({_class, announcements=[], assignments=[], attendance=[], user, is_teacher, is_admin, requests=[], accept_join_request, decline_join_request, get_current_class, get_class_announcements, get_class_assignments, get_class_requests, get_class_attendance, set_loading}) => {
+const Class = ({_class, announcements=[], assignments=[], attendance=[], user, is_teacher, is_admin, requests=[], accept_join_request, decline_join_request, get_current_class, get_class_announcements, get_class_assignments, get_class_requests, get_class_attendance, start_class, end_class, set_meeting_link, remove_student_from_class, set_loading}) => {
     const [tab, setTab] = useState("announcements")
-    const {_id:class_id="", title, subject, teacher, meeting_link="", schedules=[]} = _class;
+    const {_id:class_id="", title, subject, teacher, meeting_link="", schedules=[], current_session} = _class;
     const {id} = useParams();
 
     const [assignmentLimit, setAssignmentLimit] = useState(20);
@@ -32,12 +30,16 @@ const Class = ({_class, announcements=[], assignments=[], attendance=[], user, i
     const [announcementSort, setAnnouncementSort] = useState({createdAt: "desc"});
     const [announcementFilters, setAnnouncementFilters] = useState({});
 
+    const [showStartModal, setShowStartModal] = useState(false);
+    const [newMeetingLink, setNewMeetingLink] = useState("");
+    const [newMeetingLinkError, setNewMeetingLinkError] = useState("");
+
     const [attendanceDay, setAttendanceDay] = useState(new Date());
     
     const teacher_only_tabs = is_teacher?[{label: "Students", id: "students"}]:[];
 
     const current_announcements = useMemo(() => {
-        return (tab === "assignments")?[...announcements, ...test_announcements].filter((a) => a.assignment):[...announcements, ...test_announcements];
+        return (tab === "assignments")?announcements.filter((a) => a.assignment):announcements;
     }, [tab, announcements]);
 
     useEffect(() => {
@@ -49,17 +51,22 @@ const Class = ({_class, announcements=[], assignments=[], attendance=[], user, i
                 await get_class_announcements(id, announcementLimit, announcementPage * announcementLimit, JSON.stringify(announcementSort), JSON.stringify(announcementFilters));
                 await get_class_requests(20, 0, undefined, {_id: id});
 
-                if(is_teacher){
-                    const day_start = attendanceDay.setHours(0, 0 ,0, 1);
-    
-                    await get_class_attendance(id, JSON.stringify({createdAt: {$gte: day_start, $lte: (day_start + (HOUR * 24))}}));
-                }
             }
             set_loading(false);
         }
-
+        
         init();
     }, []);
+    
+    useEffect(() => {
+        if(class_id === id && is_teacher && current_session){
+            get_class_attendance(id, JSON.stringify({current_session: current_session._id}));
+        }
+    }, [_class, is_teacher]);
+
+    useEffect(() => {
+        setNewMeetingLinkError("");
+    }, [newMeetingLink])
 
     const onPressTab = (e, {label, id}, index) => {
         setTab(id);
@@ -77,22 +84,79 @@ const Class = ({_class, announcements=[], assignments=[], attendance=[], user, i
         set_loading(false);
     }
 
-    const onRemoveStudent = async () => {
+    const onRemoveStudent = async (student) => {
+        set_loading(true);
+        await remove_student_from_class({_class, student_id: student._id})
+        set_loading(false);
+    }
 
+    const openStartModal = () => {
+        setShowStartModal(true);
+    }
+    
+    const closeStartModal = () => {
+        setShowStartModal(false);
+    }
+
+    const startClass = async () => {
+        set_loading(true);
+        if(!newMeetingLink || is_full_url(newMeetingLink)){
+            await start_class({_class, meeting_link: newMeetingLink});
+            setNewMeetingLink("");
+            closeStartModal();
+        }else{
+            setNewMeetingLinkError("Must be a valid url");
+        }
+        set_loading(false);
+    }
+    
+    const endClass = async () => {
+        set_loading(true);
+        await end_class({_class});
+        set_loading(false);
+    }
+    
+    const setMeetingLink = async () => {
+        set_loading(true);
+        if(is_full_url(newMeetingLink)){
+            await set_meeting_link({_class, meeting_link: newMeetingLink});
+            setNewMeetingLink("");
+        }else{
+            setNewMeetingLinkError("Must be a valid url");
+        }
+        set_loading(false);
     }
 
     return (
         <div className='page class'>
             <div className='main-col'>
+                <div className='page-title'>
+                    <h2>{title}</h2>
+
+                    {is_teacher && <button onClick={current_session?endClass:openStartModal} className={`button ${current_session?"error":"primary"}`} >{current_session?"End Class":"Start Class"}</button>}
+                </div>
                 <Tabs tabs={[{label: "Announcements", id: "announcements"}, {label: "Assignments", id: "assignments"}, ...teacher_only_tabs]} onPressTab={onPressTab} />
 
-                {(tab !== "students")?<Announcements _class={_class} user={user} announcements={current_announcements} assignments={[...assignments, ...test_assignments]} is_teacher={is_teacher} tab={tab} />:<Students _class={_class} attendance={[]} requests={requests} onAcceptRequest={onAcceptRequest} onDeclineRequest={onDeclineRequest} onRemoveStudent={onRemoveStudent} />}
+                {(tab !== "students")?<Announcements _class={_class} user={user} announcements={current_announcements} assignments={assignments} is_teacher={is_teacher} tab={tab} />:<Students _class={_class} requests={requests} onAcceptRequest={onAcceptRequest} onDeclineRequest={onDeclineRequest} onRemoveStudent={onRemoveStudent} />}
 
             </div>
 
             <div className='misc-col'>
-            {(tab !== "students")?<ClassInfo _class={_class} assignments={[...assignments, ...test_assignments]} />:<Attendance _class={_class} attendance={attendance} />}
+            {(tab !== "students")?<ClassInfo _class={_class} assignments={assignments} />:<Attendance _class={_class} attendance={attendance} />}
             </div>
+
+            <Modal sx={{display: "grid", placeItems: "center"}} open={showStartModal} onClose={closeStartModal}>
+                <div className='start-class-modal'>
+                    <h1 style={{textAlign: "center"}}>Meeting Link</h1>
+
+                    <div className='input-container fullwidth meeting'>
+                        <input type="url" placeholder='Video Conference URL' value={newMeetingLink} onChange={(e) => {setNewMeetingLink(e.target.value)}} />
+                        {newMeetingLinkError && <p className='error'>{newMeetingLinkError}</p>}
+                    </div>
+
+                    <button className='button primary fullwidth' onClick={startClass}>Start Class</button>
+                </div>
+            </Modal>
         </div>
     );
 }
@@ -101,4 +165,4 @@ function map_state_to_props({App, User, Auth}){
     return {_class: App.current_class, user: App.user, is_teacher: Auth.is_teacher, is_admin: Auth.is_admin, requests: User.current_class_requests, announcements: App.class_announcements, assignments: App.class_assignments, attendance: User.class_attendance}
 }
 
-export default connect(map_state_to_props, {get_current_class, get_class_announcements, get_class_assignments, accept_join_request, decline_join_request, get_class_requests, get_class_attendance, set_loading})(Class);
+export default connect(map_state_to_props, {get_current_class, get_class_announcements, get_class_assignments, accept_join_request, decline_join_request, get_class_requests, get_class_attendance, start_class, end_class, set_meeting_link, remove_student_from_class, set_loading})(Class);

@@ -5,7 +5,7 @@ nav.admin-nav{
     width: 280px;
     height: 100%;
     min-height: 100vh;
-    border-right: 1px solid rgb(63, 63, 68, 0.1);
+    border-right: var(--nav-border, (1px solid rgb(63, 63, 68, 0.1)));
     /* background-color: blue; */
 }
 
@@ -75,6 +75,10 @@ nav.admin-nav{
 .admin-page-container header.admin-header{
     height: 90px;
     display: flex;
+    /* position: sticky;
+    top: 0;
+    background-color: var(--bg-color, white);
+    z-index: 100; */
 }
 
 .admin-page-container .admin-header .dashboard-greeting-action{

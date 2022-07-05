@@ -165,7 +165,7 @@ const Announcements = ({_class={}, announcement={}, assignment={}, tab, user={},
             {announcements.map((a) => {
                 const assignment = assignments.find((ass) => ass._id === a.assignment);
 
-                return <Announcement announcement={a} _class={_class} user={user} assignment={assignment} />
+                return <Announcement key={a._id} announcement={a} _class={_class} user={user} assignment={assignment} />
             })} 
         </div>
     );

@@ -1,6 +1,8 @@
 import React from 'react';
 import { DAYS } from '../../Data';
 
+import {formatDistance, formatRelative} from "date-fns"
+
 import "./ClassInfo.css";
 
 const ClassInfo = ({_class={}, assignments=[]}) => {
@@ -22,9 +24,10 @@ const ClassInfo = ({_class={}, assignments=[]}) => {
             <div className='upcoming-assignments'>
                 <h3 style={{margin: "20px 0"}}>Upcoming Assignments</h3>
                 {assignments.map((a) => {
+                    
                     return (
                         <div>
-                            <p className='due-date'>Due Tomorrow</p>
+                            <p className='due-date'>Due {formatDistance(new Date(a.due_date), new Date(), {addSuffix: true})}</p>
                             <p className='assignment'>{a.title}</p>
                         </div>
                     )

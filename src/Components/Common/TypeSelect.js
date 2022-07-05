@@ -12,7 +12,7 @@ const KEY_ENTER = 13;
 const KEY_SHIFT = 16;
 const KEY_ESCAPE = 27;
 
-const TypeSelect = ({options=[], value, textValue, placeholder="", disabled=false, onChange, onChangeText, renderOption, renderSelected, DrowDownIcon=RiArrowDownSLine }) => {
+const TypeSelect = ({options=[], value, textValue, placeholder="Select", disabled=false, onChange, onChangeText, renderOption, renderSelected, placeholderAsOption=true, DrowDownIcon=RiArrowDownSLine }) => {
     const [open, setOpen] = useState(false);
     const [text, setText] = useState("");
     const [currentValue, setCurrentValue] = useState(undefined);
@@ -110,10 +110,14 @@ const TypeSelect = ({options=[], value, textValue, placeholder="", disabled=fals
         return <span className='option selected'>{render?render(option):label}</span>
     };
 
-    const renderOpt = (option, index) => {
+    const Option = ({option, index}) => {
         const {label, value} = option;
         const render = (typeof(renderOption) === "function") && renderOption;
         const suggested = index === suggestionIndex;
+
+        if(placeholderAsOption && (index === 0)){
+            return <span key={value} className={`option clickable ${suggested?"suggested":""}`} onClick={() => onSelectValue(value, index)}>{label}</span>    
+        }
 
         return <span key={value} className={`option clickable ${suggested?"suggested":""}`} onClick={() => onSelectValue(value, index)}>{render?render(option):label}</span>
     };
@@ -123,13 +127,15 @@ const TypeSelect = ({options=[], value, textValue, placeholder="", disabled=fals
         <div ref={containerRef} className={`type-select-container ${open?"open":"close"} ${disabled?"disabled":""}`}>
             <div className='input-container'>
                 <input type="text" disabled={disabled} value={usedText} ref={inputRef} onChange={onNewText} onFocus={openSelect} placeholder={!selected_option && placeholder} onKeyDown={onKeyPress} />
+
                 {!open && selected_option && renderSel(selected_option)}
+
                 <div className='input-adornment end clickable' style={{backgroundColor: "transparent"}} onClick={toggleSelect}>
                     <DrowDownIcon size={"16px"} pointerEvents="none" />
                 </div>
             </div>
 
-            {open && <div className='options-container'>{options.map(renderOpt)}</div>}
+            {open && <div className='options-container'>{(placeholderAsOption?[{label: placeholder, value: null}, ...options]:options).map((o, i) => <Option option={o} index={i} />)}</div>}
         </div>
     );
 }

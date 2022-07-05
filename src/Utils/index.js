@@ -168,3 +168,7 @@ export const get_time_left = (til=0, from=Date.now()) => {
 
     return {days, hours, minutes, seconds, milliseconds: timeLeft, duration};
 }
+
+export const toMoneyString = (amount=0, locale="en-US", currency="USD") => {
+    return amount.toLocaleString(locale, {style: "currency", currency});
+} 
