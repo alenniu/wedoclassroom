@@ -1,10 +1,12 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import "./Home.css";
 
 const Home = () => {
     return (
         <div>
-            <h1>Home Page</h1>
+            <Navigate to="/login" replace />
+            {/* <h1>Home Page</h1> */}
         </div>
     );
 }
