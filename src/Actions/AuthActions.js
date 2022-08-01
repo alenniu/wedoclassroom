@@ -18,7 +18,7 @@ export const register = ({name, email, password, phone, type="admin", role="", a
                 if(res.data.success){
                     const {type} = res.data.user;
 
-                    dispatch({type: REGISTER, payload: {user: res.data.user, is_admin: type === "admin", is_teacher: type === "teacher", is_student: type === "student"}})
+                    dispatch({type: REGISTER, payload: {user: res.data.user, is_admin: type === "admin", is_teacher: type === "teacher", is_student: type === "student", is_sales: type === "sales"}})
                     dispatch({type: SET_USER, payload: {user: res.data.user}});
                     
                     return res.data
@@ -45,7 +45,7 @@ export const login = ({email, password, is_sso}) => async (dispatch) => {
                 if(res.data.success){
                     const {type} = res.data.user;
 
-                    dispatch({type: LOGIN, payload: {user: res.data.user, is_admin: type === "admin", is_teacher: type === "teacher", is_student: type === "student"}});
+                    dispatch({type: LOGIN, payload: {user: res.data.user, is_admin: type === "admin", is_teacher: type === "teacher", is_student: type === "student", is_sales: type === "sales"}});
                     dispatch({type: SET_USER, payload: {user: res.data.user}});
                     
                     return res.data;
@@ -95,7 +95,7 @@ export const check_login = () => async (dispatch) => {
                 if(res.data.logged_in){
                     const {type} = res.data.user;
 
-                    dispatch({type: LOGIN, payload: {user: res.data.user, is_admin: type === "admin", is_teacher: type === "teacher", is_student: type === "student"}})
+                    dispatch({type: LOGIN, payload: {user: res.data.user, is_admin: type === "admin", is_teacher: type === "teacher", is_student: type === "student", is_sales: type === "sales"}})
                     dispatch({type: SET_USER, payload: {user: res.data.user}});
                 }
                 return res.data;

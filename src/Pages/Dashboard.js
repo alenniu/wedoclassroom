@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { get_my_classes, set_loading } from '../Actions';
 import Tabs from '../Components/Common/Tabs';
@@ -6,6 +6,7 @@ import Class from '../Components/Dashboard/Class';
 import "./Dashboard.css";
 import Schedule from '../Components/Dashboard/Schedule';
 import { useNavigate } from 'react-router-dom';
+import InfiniteScroller from '../Components/Common/InfiniteScroller';
 
 const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
     const [pageLimit, setPageLimit] = useState(20);
@@ -13,6 +14,9 @@ const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
     const [search, setSearch] = useState("");
 
     const [classtype, setClasstype] = useState("")
+    
+    const [scrollerDimensions, setScrollerDimensions] = useState({width: "100%", height: 0});
+    const scrollerRef = useRef(null);
     
     const navigate = useNavigate();
 
@@ -40,6 +44,10 @@ const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
         setClasstype(id);
     }
 
+    function onLayout({pageOffsetY, pageOffsetX, top, left, width, height, windowWidth, windowHeight}){
+        setScrollerDimensions((s) => ({...s, height: windowHeight - (pageOffsetY + 10)}));
+    }
+
     return (
         <div className='page dashboard'>
             <div className='main-col'>
@@ -49,11 +57,13 @@ const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
             <div className='misc-col'>
                 <Tabs tabs={[{label: "All Classes", id: ""}, {label: "Group Lessons", id: "group"}, {label: "One on One", id: "private"}]} />
 
-                <ul className='class-list'>
-                    {classes.map((c, i) => {
-                        return <li key={c._id + i} onClick={() => {navigate(`/dashboard/my-class/${c._id}`)}} className='class-item clickable'><Class _class={c} index={i} onPressTab={onPressTab} /></li>
-                    })}
-                </ul>
+                <InfiniteScroller onLayout={onLayout} width={scrollerDimensions.width} height={scrollerDimensions.height} ref={scrollerRef}>
+                    <ul className='class-list'>
+                        {classes.length && Array.from({length: 100}).fill(classes[0]).map((c, i) => {
+                            return <li key={c._id + i} onClick={() => {navigate(`/dashboard/my-class/${c._id}`)}} className='class-item clickable'><Class _class={c} index={i} onPressTab={onPressTab} /></li>
+                        })}
+                    </ul>
+                </InfiniteScroller>
             </div>
         </div>
     );

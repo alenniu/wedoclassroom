@@ -15,10 +15,19 @@ const user_schema = new schema({
             required: false
         }
     },
+    gender: {
+        type: String,
+    },
+    emergency_contact: {
+        name: String,
+        phone: String,
+        email: String,
+        relation: String
+    },
     type: { // type of account e.g student/teacher/admin etc...
         type: String,
         default: "student",
-        enum: ["admin", "teacher", "student"],
+        enum: ["admin", "teacher", "student", "sales"],
         required: true
     },
     email: { // email of user
@@ -61,6 +70,7 @@ const user_schema = new schema({
         type: String,
         default: ""
     },
+    roles: [String],
     invoices: [{
         type: schema.Types.ObjectId,
         ref: "invoice"
@@ -68,6 +78,15 @@ const user_schema = new schema({
     schedule: {
         type: schema.Types.ObjectId,
         ref: "schedule"
+    },
+    grade: {
+        type: String
+    },
+    school: {
+        type: String
+    },
+    date_enrolled: {
+        type: Date
     },
     created_by: {
         type: schema.Types.ObjectId,

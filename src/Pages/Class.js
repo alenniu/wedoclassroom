@@ -127,6 +127,8 @@ const Class = ({_class, announcements=[], assignments=[], attendance=[], user, i
         set_loading(false);
     }
 
+    const jsx = <div></div>;
+
     return (
         <div className='page class'>
             <div className='main-col'>

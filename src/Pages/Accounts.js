@@ -10,7 +10,7 @@ import "./Accounts.css";
 import TableHead from '../Components/Common/TableHead';
 import { password_requirements, validate_email, validate_name, validate_password } from '../Utils';
 
-const Accounts = ({accounts=[], total=0, new_account={}, edit_account={}, editing_account, get_accounts, create_account, update_account, edit_new_account, init_edit_account, cancel_account_edit, set_loading}) => {
+const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account={}, editing_account, get_accounts, create_account, update_account, edit_new_account, init_edit_account, cancel_account_edit, set_loading}) => {
     const [pageLimit, setPageLimit] = useState(20);
     const [page, setPage] = useState(0);
     const [search, setSearch] = useState("");
@@ -168,8 +168,9 @@ const Accounts = ({accounts=[], total=0, new_account={}, edit_account={}, editin
                 <div className='input-container fullwidth'>
                     <select value={type} onChange={onChangeValue(["type"])}>
                         <option>Account Type</option>
-                        <option value="admin">Admin</option>
-                        <option value="teacher">Teacher</option>
+                        {is_admin && <option value="admin">Admin</option>}
+                        <option value="sales">Sales</option>
+                        {is_admin && <option value="teacher">Teacher</option>}
                         <option value="student">Student</option>
                     </select>
                     {errors["type"] && <p className='error'>{errors["type"]}</p>}
@@ -191,8 +192,8 @@ const Accounts = ({accounts=[], total=0, new_account={}, edit_account={}, editin
     );
 }
 
-function map_state_to_props({User, Admin}){
-    return {accounts: Admin.accounts, total: Admin.total_accounts, classes: User.classes, total_classes: User.total_classes, new_account: Admin.new_account, edit_account: Admin.edit_account, editing_account: Admin.editing_account}
+function map_state_to_props({User, Admin, Auth}){
+    return {accounts: Admin.accounts, total: Admin.total_accounts, classes: User.classes, total_classes: User.total_classes, new_account: Admin.new_account, edit_account: Admin.edit_account, editing_account: Admin.editing_account, is_admin: Auth.is_admin}
 }
 
 export default connect(map_state_to_props, {create_account, update_account, init_edit_account, cancel_account_edit, edit_new_account, get_accounts, set_loading})(Accounts);

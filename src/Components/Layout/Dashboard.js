@@ -7,7 +7,7 @@ import { logout, set_loading } from '../../Actions';
 
 import "./Dashboard.css";
 
-const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_loading}) => {
+const DashboardLayout = ({user, is_admin, is_teacher, is_student, is_sales, logout, set_loading}) => {
     
     const {name={first: "Ruth", last: "Langmore"}, phone, type} = user;
     
@@ -75,7 +75,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_lo
                             <NavLink to="/dashboard/payments" className="button"><BsCurrencyDollar className='link-icon' size={"20px"} /><span className='link-label'>My Payments</span></NavLink>
                         </li>}
 
-                        {is_admin && <li className='nav-link'>
+                        {(is_admin || is_sales) && <li className='nav-link'>
                             <NavLink to="/dashboard/accounts" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>Accounts</span></NavLink>
                         </li>}
 
@@ -135,7 +135,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, logout, set_lo
 }
 
 function map_state_to_props({App, Auth}){
-    return {user: App.user, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student}
+    return {user: App.user, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student, is_sales: Auth.is_sales}
 }
 
 export default connect(map_state_to_props, {logout, set_loading})(DashboardLayout);
