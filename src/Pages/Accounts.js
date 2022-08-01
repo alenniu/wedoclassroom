@@ -120,7 +120,7 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
     return (
         <div className='page accounts'>
             <div className='main-col'>
-                <Tabs onPressTab={onPressTab} tabs={[{label: "All", id: ""}, {label: "Teachers", id: "teacher"}, {label: "Students", id: "student"}, {label: "Admins", id: "admin"}]} />
+                <Tabs onPressTab={onPressTab} tabs={[{label: "All", id: ""}, {label: "Teachers", id: "teacher"}, {label: "Students", id: "student"}, {label: "Sales", id: "sales"}, {label: "Admins", id: "admin"}]} />
 
                 <table>
                     <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Type", id: "type"}, {label: "Created", id: "createdAt"}]} order={order} orderBy={orderBy} onSort={onSortTable} />
