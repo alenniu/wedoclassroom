@@ -40,7 +40,7 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
     useEffect(() => {
         const init = async () => {
             set_loading(true);
-            await get_accounts(pageLimit, page, search, sort, accountType?JSON.stringify({type: accountType}):undefined)
+            await get_accounts(pageLimit, page * pageLimit, search, sort, accountType?JSON.stringify({type: accountType}):undefined)
             set_loading(false);
         }
         
@@ -110,7 +110,7 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
         if(validate_fields()){
             if(await create_account({name, email, phone, type, password, gender, school, grade, date_enrolled, emergency_contact: {name: emergency_name, email: emergency_email, phone: emergency_phone, relation}})){
                 setPassword("");
-                await get_accounts(pageLimit, page, search, sort, accountType?JSON.stringify({type: accountType}):undefined);
+                await get_accounts(pageLimit, page * pageLimit, search, sort, accountType?JSON.stringify({type: accountType}):undefined);
             }
         }
         set_loading(false);
@@ -121,7 +121,7 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
         if(validate_fields()){
             if(await update_account({...edit_account, password: password || undefined})){
                 setPassword("");
-                await get_accounts(pageLimit, page, search, sort, accountType?JSON.stringify({type: accountType}):undefined);
+                await get_accounts(pageLimit, page * pageLimit, search, sort, accountType?JSON.stringify({type: accountType}):undefined);
             }
         }
         set_loading(false);

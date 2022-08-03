@@ -23,7 +23,7 @@ const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
     useEffect(() => {
         const init = async () => {
             set_loading(true);
-            await get_my_classes(pageLimit, page);
+            await get_my_classes(pageLimit, page * pageLimit);
             set_loading(false);
         }
 
@@ -33,7 +33,7 @@ const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
     useEffect(() => {
         const init = async () => {
             set_loading(true);
-            await get_my_classes(pageLimit, page);
+            await get_my_classes(pageLimit, page * pageLimit);
             set_loading(false);
         }
 

@@ -112,7 +112,7 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
                 
                 await get_popular_classes(10, 0);
                 await get_my_requests(100, 0, "{}", `{"accepted": false, "rejected": false}`)
-                SUBJECTS.map((subject) => {get_classes_by_subject(pageLimit, page, search, "{}", "{}", subject)});
+                SUBJECTS.map((subject) => {get_classes_by_subject(pageLimit, page * pageLimit, search, "{}", "{}", subject)});
                 
                 set_loading(false);
             }
@@ -124,7 +124,7 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
     useEffect(() => {
         const init = async () => {
             set_loading(true);
-            await get_classes(pageLimit, page);
+            await get_classes(pageLimit, page * pageLimit);
             set_loading(false);
         }
 
