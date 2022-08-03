@@ -12,7 +12,7 @@ const KEY_ENTER = 13;
 const KEY_SHIFT = 16;
 const KEY_ESCAPE = 27;
 
-const TypeSelect = ({options=[], value, textValue, placeholder="Select", disabled=false, onChange, onChangeText, renderOption, renderSelected, placeholderAsOption=true, DrowDownIcon=RiArrowDownSLine }) => {
+const TypeSelect = ({options=[], value, textValue, placeholder="Select", disabled=false, onChange, onChangeText, renderOption, renderSelected, placeholderAsOption=false, DrowDownIcon=RiArrowDownSLine, localSearch=true }) => {
     const [open, setOpen] = useState(false);
     const [text, setText] = useState("");
     const [currentValue, setCurrentValue] = useState(undefined);

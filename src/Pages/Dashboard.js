@@ -59,7 +59,7 @@ const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
 
                 <InfiniteScroller onLayout={onLayout} width={scrollerDimensions.width} height={scrollerDimensions.height} ref={scrollerRef}>
                     <ul className='class-list'>
-                        {classes.length && Array.from({length: 100}).fill(classes[0]).map((c, i) => {
+                        {classes.length && Array.from({length: 20}).fill(classes).flat(1).map((c, i) => {
                             return <li key={c._id + i} onClick={() => {navigate(`/dashboard/my-class/${c._id}`)}} className='class-item clickable'><Class _class={c} index={i} onPressTab={onPressTab} /></li>
                         })}
                     </ul>

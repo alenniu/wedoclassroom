@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Configs = mongoose.model("config");
 const Config = Configs;
 
-async function get_or_create_config(defaults={subjects: ["Math", "English"], tags: ["math", "english", "ap", "beginner", "advanced"]}){
+async function get_or_create_config(defaults={subjects: ["Math", "English"], tags: ["math", "english", "ap", "beginner", "advanced"], levels: ["AP", "Beginner", "Advanced"]}){
     try{
         let config = await Configs.findOne({});
 

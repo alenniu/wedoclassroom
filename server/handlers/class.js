@@ -1,7 +1,7 @@
 import axios from "axios";
 import mongoose from "mongoose";
 import {Request, Response, NextFunction} from "express";
-import { accept_request, create_attendance, create_class, decline_request, end_class, get_class, get_classes, get_class_attendance, get_class_payment_intent, get_user_classes, remove_student_from_class, request_class, set_meeting_link, start_class, update_attendance } from "../functions/class";
+import { accept_request, cancel_class, create_attendance, create_class, decline_request, end_class, get_class, get_classes, get_class_attendance, get_class_payment_intent, get_user_classes, remove_student_from_class, request_class, set_meeting_link, start_class, uncancel_class, update_attendance } from "../functions/class";
 import { get_request } from "../functions/request";
 
 const Classes = mongoose.model("class");
@@ -15,7 +15,7 @@ export const create_class_handler = async (req: Request, res: Response, next: Ne
         _class = JSON.parse(_class)
         
         if((user.type === "admin") || (user.type === "teacher")){
-            let {title, subject, description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[]} = _class;
+            let {title, subject, description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_period, meeting_link} = _class;
 
             const cover_image = file?`${file.destination}/${file.filename}`:"";
         
@@ -23,11 +23,51 @@ export const create_class_handler = async (req: Request, res: Response, next: Ne
                 teacher = user;
             }
         
-            const new_class = await create_class({title, subject, cover_image, description, teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules}, user);
+            const new_class = await create_class({title, subject, cover_image, description, teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, start_date, end_date, billing_period, meeting_link}, user);
 
             return res.json({success: true, _class: new_class});
         }else{
             throw new Error("Only admins or teachers can create classes");
+        }
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const cancel_class_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        let {class_id} = req.body;
+
+        const current_class = await get_class(class_id, user);
+        
+        if((user.type === "admin") || (user.type === "teacher") && current_class){
+
+            const cancelled_class = await cancel_class(class_id, user);
+
+            return res.json({success: true, _class: cancelled_class});
+        }else{
+            throw new Error("Only admins or teachers can cancel classes");
+        }
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const uncancel_class_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        let {class_id} = req.body;
+
+        const current_class = await get_class(class_id, user);
+        
+        if((user.type === "admin") || (user.type === "teacher") && current_class){
+
+            const uncancelled_class = await uncancel_class(class_id, user);
+
+            return res.json({success: true, _class: uncancelled_class});
+        }else{
+            throw new Error("Only admins or teachers can cancel classes");
         }
     }catch(e){
         return res.status(400).json({success: false, msg: e.message});

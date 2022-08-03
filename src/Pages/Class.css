@@ -1,4 +1,4 @@
-.start-class-modal{
+.page.class .start-class-modal{
     width: 90%;
     max-width: 450px;
     margin: auto;
@@ -9,7 +9,7 @@
     background-color: var(--class-bg-color, white);
 }
 
-.input-container.meeting{
+.page.class .input-container.meeting{
     padding-top: 50px;
     padding-bottom: 100px;
 }

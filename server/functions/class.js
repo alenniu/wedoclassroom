@@ -130,10 +130,10 @@ async function end_class({_class}, user){
     }
 }
 
-async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[]}, creator){
+async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_period, meeting_link}, creator){
     try{
         if(title && subject && class_type){
-            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, schedules, is_full: false, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
+            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, schedules, start_date: new Date(start_date), end_date: new Date(end_date), billing_period, meeting_link, is_full: false, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
 
             return new_class;
         }else{
@@ -319,6 +319,30 @@ async function add_attachment_to_class({attachment, class_id}){
     }
 }
 
+async function cancel_class(class_id, user){
+    try{
+        if(user && user._id){
+            return await Classes.findOneAndUpdate({_id: class_id}, {$set: {cancelled: true, cancelled_by: user._id}}, {new: true, upsert: false}); 
+        }
+    
+        throw new Error("User not defined");
+    }catch(e){
+        throw e;
+    }
+}
+
+async function uncancel_class(class_id, user){
+    try{
+        if(user && user._id){
+            return await Classes.findOneAndUpdate({_id: class_id}, {$set: {cancelled: false, cancelled_by: null}}, {new: true, upsert: false}); 
+        }
+    
+        throw new Error("User not defined");
+    }catch(e){
+        throw e;
+    }
+}
+
 
 
 module.exports.get_class = get_class;
@@ -326,8 +350,10 @@ module.exports.end_class = end_class;
 module.exports.get_classes = get_classes;
 module.exports.start_class = start_class;
 module.exports.create_class = create_class;
+module.exports.cancel_class = cancel_class;
 module.exports.request_class = request_class;
 module.exports.accept_request = accept_request;
+module.exports.uncancel_class = uncancel_class;
 module.exports.decline_request = decline_request;
 module.exports.get_user_classes = get_user_classes;
 module.exports.set_meeting_link = set_meeting_link;

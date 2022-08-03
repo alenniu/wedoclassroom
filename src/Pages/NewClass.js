@@ -14,6 +14,7 @@ import "./NewClass.css";
 import { ListInput } from '../Components/Common/ListInput';
 import { DAYS } from '../Data';
 import FileUploadDropArea from '../Components/Common/FileUploadDropArea';
+import { DatePicker } from '@mui/x-date-pickers';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -28,15 +29,18 @@ const RenderTeacherOption = ({label, value, teacher}) => {
 }
 
 const class_type_options = [{label: "Group Class", value: "group"}, {label: "Private Class", value: "private"}];
+const pricing_type_options = [{label: "Hourly", value: "hourly"}, {label: "Per Session", value: "session"}, {label: "Semester", value: "semester"}];
 
 const schedules = [{days: [], start_time: "", end_time: ""}];
 
-const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, is_teacher, get_teachers, edit_class_value, create_new_class, set_teachers, set_loading}) => {
+const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config={}, is_admin, is_teacher, get_teachers, edit_class_value, create_new_class, set_teachers, set_loading}) => {
     const [teacherSearch, setTeacherSearch] = useState("");
     const [coverPreview, setCoverPreview] = useState({file: null, url: ""});
     const [errors, setErrors] = useState({});
 
-    const {title="", subject="", cover="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], error} = new_class;
+    const {subjects=[], tags:configTags=["AP, K12"], levels=[]} = app_config;
+
+    const {title="", subject="", cover="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_period="", error} = new_class;
 
     useEffect(() => {
         is_teacher && set_teachers([{...user}]);
@@ -125,7 +129,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
     const createClass = async () => {
         set_loading(true);
         const formData = new FormData();
-        formData.append("_class", JSON.stringify({title, subject, cover, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules}));
+        formData.append("_class", JSON.stringify({title, subject, cover, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_period}));
         if(coverPreview.file){
             formData.append("cover", coverPreview.file);
         }
@@ -182,16 +186,28 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
                     <textarea placeholder='Class Description' value={description} onChange={onChangeValueEvent(["description"])} />
                 </div>
 
-                <div className='input-container subject'>
+                <div className='input-container select subject'>
                     <label>Subject</label>
                     
-                    <input placeholder='Class Subject' value={subject} onChange={onChangeValueEvent(["subject"])} />
+                    <TypeSelect options={subjects.map((s) => ({label: s, value: s}))} placeholder="Subject" value={subject} onChange={onChangeValue(["subject"])} />
+                    {/* <select placeholder='Class Subject' value={subject} onChange={onChangeValueEvent(["subject"])}>
+                        <option value={""}>Select</option>
+                        {subjects.map((s) => {
+                            return <option value={s} key={s}>{s}</option>
+                        })}
+                    </select> */}
                 </div>
 
-                <div className='input-container level'>
+                <div className='input-container select level'>
                     <label>Level</label>
                     
-                    <input placeholder='Proficiency Level' value={level} onChange={onChangeValueEvent(["level"])} />
+                    <TypeSelect options={levels.map((l) => ({label: l, value: l}))} placeholder="Level" value={level} onChange={onChangeValue(["level"])} />
+                    {/* <select placeholder='Proficiency Level' value={level} onChange={onChangeValueEvent(["level"])}>
+                        <option value={""}>Select</option>
+                        {levels.map((l) => {
+                            return <option value={l} key={l}>{l}</option>
+                        })}
+                    </select> */}
                 </div>
 
                 <div className='input-container select'>
@@ -203,7 +219,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
                 <div className='input-container select'>
                     <label>Teacher</label>
                     
-                    <TypeSelect disabled={is_teacher} options={(is_teacher?[user]:teachers).map((t) => ({label: `${t.name.first} ${t.name.last}${is_teacher?" (You)":""}`, value: t._id, teacher: t}))} placeholder="Select Teacher" onChangeText={onTypeTeacherSelect} textValue={teacherSearch} renderOption={RenderTeacherOption} renderSelected={RenderTeacherOption} onChange={onChangeValue(["teacher"])} value={teacher} />
+                    <TypeSelect disabled={is_teacher} options={(is_teacher?[user]:teachers).map((t) => ({label: `${t.name.first} ${t.name.last}${is_teacher?" (You)":""}`, value: t._id, teacher: t}))} placeholder="Select Teacher" onChangeText={onTypeTeacherSelect} textValue={teacherSearch} renderOption={RenderTeacherOption} renderSelected={RenderTeacherOption} onChange={onChangeValue(["teacher"])} value={teacher} localSearch={false} />
                 </div>
 
                 <div className='input-container price'>
@@ -222,7 +238,13 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
                     <input placeholder='1' min={1} type="number" disabled={class_type === "private"} value={max_students} onChange={onChangeValueEvent(["max_students"])}  />
                 </div>
 
-                <div className='input-container color'>
+                <div className='input-container select pricing-type'>
+                    <label>Pricing Type</label>
+                    
+                    <TypeSelect placeholder='Select' options={pricing_type_options} value={billing_period} onChange={onChangeValue(["billing_period"])}  />
+                </div>
+
+                <div className='input-container background color'>
                     <label>Background Color</label>
                     
                     <input type="color" value={bg_color} onChange={onChangeValueEvent(["bg_color"])} />
@@ -234,20 +256,50 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
                     <input type="color" value={text_color} onChange={onChangeValueEvent(["text_color"])} />
                 </div>
 
+                <div className='input-container color-preview'>
+                    <label>Color Preview</label>
+                    
+                    <input style={{backgroundColor: bg_color, color: text_color, fontWeight: "700"}} value={"Look On Schedule Calendar"} disabled />
+                </div>
+
                 <div className='input-container'>
                     <label>Tags</label>
                     
                     {/* <input type="text" placeholder='math, english, beginner, advance etc...' /> */}
-                    <ListInput always_show_matches items={tags} search_array={["Math", "English", "I.T", "Advanced", "Beginner", "AP"]} onAddItem={onAddTag} onRemoveItem={onRemoveTag} />
+                    <ListInput always_show_matches items={tags} search_array={configTags} onAddItem={onAddTag} onRemoveItem={onRemoveTag} />
+                </div>
+
+                <div className='input-container link meeting'>
+                    <label>Meeting Link</label>
+                    
+                    <input placeholder='Meeting Link' value={meeting_link} onChange={onChangeValueEvent(["meeting_link"])} />
                 </div>
 
                 <div className='input-container'>
-                    <label>Color Preview</label>
-                    
-                    <input style={{backgroundColor: bg_color, color: text_color, fontFamily: "Lato, san-serif", fontWeight: "700"}} value={"Look On Schedule Calendar"} disabled />
+                    <label>Start Date</label>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                        // label="Start Time"
+                        value={start_date}
+                        onChange={(v) => onChangeValue(["start_date"])((v || (new Date())).getTime())}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                    </LocalizationProvider>
                 </div>
 
-                <h3>Schedules</h3>
+                <div className='input-container'>
+                    <label>End Date</label>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                        // label="Start Time"
+                        value={end_date}
+                        onChange={(v) => onChangeValue(["end_date"])((v || (new Date())).getTime())}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                    </LocalizationProvider>
+                </div>
+
+                <h3>Weekly Schedule</h3>
                 <ul className='schedules'>
                     {schedules.map((s, i) => {
                         const {days=[], daily_start_time, daily_end_time} = s;
@@ -307,7 +359,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, is_admin, 
 }
 
 function map_state_to_props({App, Auth, Class, Admin}){
-    return {user: App.user, teachers: Admin.teachers, total_teachers: Admin.total_teachers, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, new_class: Class.create};
+    return {user: App.user, teachers: Admin.teachers, total_teachers: Admin.total_teachers, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, new_class: Class.create, app_config: App.config};
 }
  
 export default connect(map_state_to_props, {get_teachers, edit_class_value, create_new_class, set_teachers, set_loading})(NewClass);

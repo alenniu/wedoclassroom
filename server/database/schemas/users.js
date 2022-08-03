@@ -61,6 +61,10 @@ const user_schema = new schema({
         type: Boolean,
         default: false
     },
+    credits: {
+        type: Number,
+        default: 0
+    },
     stripe_customer_id: {
         type: String,
         required: false,
@@ -87,6 +91,20 @@ const user_schema = new schema({
     },
     date_enrolled: {
         type: Date
+    },
+    status: {
+        type: String,
+        enum: ["active", "inactive"],
+        default: "active"
+    },
+    deleted: {
+        type: Boolean,
+        default: false
+    },
+    deleted_by: {
+        type: schema.Types.ObjectId,
+        ref: "user",
+        default: null
     },
     created_by: {
         type: schema.Types.ObjectId,

@@ -5,7 +5,19 @@ const invoice_schema = new schema({
     description: {
         type: String
     },
-    amount: {type: Number, required: true},
+    amount: {
+        type: Number,
+        required: true
+    },
+    amount_charged: {
+        type: Number,
+        default: 0
+    },
+    amount_chargable: {
+        type: Number,
+    },
+    // discounts: [],
+    // refunds: [],
     charges: [{
         amount_attempted: {
             type: Number,

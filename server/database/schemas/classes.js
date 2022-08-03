@@ -37,6 +37,12 @@ const class_schema = new schema({
         enum: ["group", "private"],
         default: "group"
     },
+    start_date: {
+        type: Date
+    },
+    end_date: {
+        type: Date
+    },
     schedules: [{ // If the different days start at different times, They must be put in a seperate schedule
         days: [Number],
         timezone: String,
@@ -71,6 +77,19 @@ const class_schema = new schema({
         type: Number,
         default: 0,
         required: true
+    },
+    billing_schedule: {
+        type: String,
+        enum: ["hourly", "session"/*basically daily*/, "weekly", "monthly", "semester"],
+        default: "semester"
+    },
+    cancelled: {
+        type: Boolean,
+        default: false
+    },
+    cencelled_by: {
+        type: schema.Types.ObjectId,
+        ref: "user"
     },
     stripe_product_price_id: {
         type: String
