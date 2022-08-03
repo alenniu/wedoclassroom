@@ -21,24 +21,17 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
     const [order, setOrder] = useState("");
     const [orderBy, setOrderBy] = useState("");
     const [sort, setSort] = useState("{}");
-    const [accountType, setAccountType] = useState("")
+    const [accountType, setAccountType] = useState(is_admin?"":"student")
 
     const [password, setPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [errors, setErrors] = useState({});
+
     const {name={}, email="", phone="", type="", gender, school, grade, date_enrolled, emergency_contact={}, error} = editing_account?edit_account:new_account
     const {name:emergency_name="", email:emergency_email="", phone:emergency_phone="", relation=""} = emergency_contact;
     const {first="", last=""} = name;
 
-    useEffect(() => {
-        const init = async () => {
-            set_loading(true);
-            await get_accounts(pageLimit, page);
-            set_loading(false);
-        }
-
-        init();
-    }, []);
+    const account_type_tabs = is_admin?[{label: "All", id: ""}, {label: "Teachers", id: "teacher"}, {label: "Students", id: "student"}, {label: "Sales", id: "sales"}, {label: "Admins", id: "admin"}]:[{label: "Students", id: "student"}];
 
     const debouncedSearch = useCallback(debounce(async (search) => {
         await get_accounts(pageLimit, 0, search, sort, accountType?JSON.stringify({type: accountType}):undefined)
@@ -137,7 +130,7 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
     return (
         <div className='page accounts'>
             <div className='main-col'>
-                <Tabs onPressTab={onPressTab} tabs={[{label: "All", id: ""}, {label: "Teachers", id: "teacher"}, {label: "Students", id: "student"}, {label: "Sales", id: "sales"}, {label: "Admins", id: "admin"}]} />
+                <Tabs onPressTab={onPressTab} tabs={account_type_tabs} />
 
                 {/* <div className='page-title'>
                     <span>Total: {total}</span>
@@ -202,9 +195,13 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
                 <div className='input-container fullwidth'>
                     <select value={type} onChange={onChangeValueEvent(["type"])}>
                         <option>Account Type</option>
+                        
                         {is_admin && <option value="admin">Admin</option>}
-                        <option value="sales">Sales</option>
+                        
+                        {is_admin && <option value="sales">Sales</option>}
+                        
                         {is_admin && <option value="teacher">Teacher</option>}
+                        
                         <option value="student">Student</option>
                     </select>
                     {errors["type"] && <p className='error'>{errors["type"]}</p>}

@@ -9,11 +9,15 @@ export const admin_create_user_handler = async (req: Request, res: Response, nex
     const {email, name, phone, password, gender, school, grade, date_enrolled, birth, type, role, emergency_contact} = req.body;
 
     try{
-        const new_user = await create_user({email, name, phone, password, gender, school, grade, date_enrolled, birth, type, role, emergency_contact}, user);
+        if(user.type === "admin" || (user.type === "sales" && type === "student")){
+            const new_user = await create_user({email, name, phone, password, gender, school, grade, date_enrolled, birth, type, role, emergency_contact}, user);
+    
+            delete new_user.password;
+    
+            return res.json({success: true, new_user});
+        }
 
-        delete new_user.password;
-
-        return res.json({success: true, new_user});
+        throw new Error("Only admins or sales can create accounts. Sales can only create student accounts");
     }catch(e){
         return res.status(400).json({success: true, msg: e.message});
     }
@@ -22,13 +26,17 @@ export const admin_create_user_handler = async (req: Request, res: Response, nex
 export const admin_update_user_handler = async (req: Request, res: Response, next: NextFunction) => {
     const {user} = req;
     const {account} = req.body;
-
+    
     try{
-        const updated_user = await update_user(account);
-
-        delete updated_user.password;
-
-        return res.json({success: true, updated_user});
+        if(user.type === "admin" || (user.type === "sales" && type === "student")){
+            const updated_user = await update_user(account);
+            
+            delete updated_user.password;
+            
+            return res.json({success: true, updated_user});
+        }
+        
+        throw new Error("Only admins or sales can edit accounts. Sales can only edit student accounts");
     }catch(e){
         return res.status(400).json({success: true, msg: e.message});
     }
@@ -87,16 +95,21 @@ export const get_admins_handler = async (req: Request, res: Response, next: Next
 
 export const get_accounts_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
+        const {user} = req;
         let {limit=20, offset=0, search="", sort="{}", filters="{}"} = req.query;
 
         limit = Number(limit) || 20;
         offset = Number(offset) || 0;
         sort = JSON.parse(sort) || {};
         filters = JSON.parse(filters) || {};
-    
-        const {accounts, total} = await get_accounts(limit, offset, search, sort, filters);
+        
+        if(user.type === "admin" || (user.type === "sales" && filters.type === "student")){
+            const {accounts, total} = await get_accounts(limit, offset, search, sort, filters);
+            return res.json({accounts, total, success: true});
+        }else{
+            throw new Error("Only admin or sales can search accounts. Sales can only search student accounts");
+        }
 
-        return res.json({accounts, total, success: true});
     }catch(e){
         return res.status(400).json({success: true, msg: e.message});
     }
