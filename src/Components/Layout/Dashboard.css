@@ -105,6 +105,10 @@ nav.admin-nav{
     padding: 20px;
 }
 
+.admin-page-container .main-col, .admin-page-container .misc-col{
+    padding-bottom: 20px;
+}
+
 .admin-page-container .main-col{
     padding-left: 0;
     padding-right: 20px;

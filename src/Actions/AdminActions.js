@@ -127,10 +127,10 @@ export const get_accounts = (limit=20, offset=0, search="", sort="{}", filters="
     }
 }
 
-export const create_account = ({name, photo_url, email, phone, type, password}) => async (dispatch) => {
+export const create_account = ({name, photo_url, email, phone, gender, school, grade, date_enrolled, type, password, emergency_contact={name: "", email: "", phone: "", relation: ""}}) => async (dispatch) => {
     try{
         if(name && name.first && name.last && validate_email(email) && validate_password(password) && type){
-            const res = await api("post", "/api/admin/accounts", {name, photo_url, email, phone, type, password});
+            const res = await api("post", "/api/admin/accounts", {name, photo_url, email, phone, gender, school, grade, date_enrolled, type, password, emergency_contact});
 
             if(res.data){
                 if(res.data.success){

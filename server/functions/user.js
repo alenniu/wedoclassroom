@@ -27,13 +27,13 @@ async function user_exists(prop="email", value, projection={password: 0}){
     });
 }
 
-async function create_user({name, email, phone, password, birth=Date.now(), type, role=""}, admin_user=null){
+async function create_user({name, email, phone, password, gender, school, grade, date_enrolled, birth=Date.now(), type, role="", emergency_contact}, admin_user=null){
     try{
         if((type !== "student") || (admin_user && mongoose.isValidObjectId(admin_user._id))){
             if(validate_email(email) && validate_password(password) && birth && type && name.first && name.last){
                 const hashed_password = hash_password(password);
                 
-                const new_user = await (new User({name, email, phone, password: hashed_password, birth: new Date(birth), type, activated: false, role, created_by: admin_user})).save();
+                const new_user = await (new User({name, email, phone, password: hashed_password, gender, school, grade, date_enrolled: new Date(date_enrolled), birth: new Date(birth), type, emergency_contact, activated: false, role, created_by: admin_user})).save();
                 
                 return new_user;
             }else{

@@ -6,10 +6,11 @@ import {BsCurrencyDollar} from "react-icons/bs";
 import { logout, set_loading } from '../../Actions';
 
 import "./Dashboard.css";
+import { get_full_image_url } from '../../Utils';
 
 const DashboardLayout = ({user, is_admin, is_teacher, is_student, is_sales, logout, set_loading}) => {
     
-    const {name={first: "Ruth", last: "Langmore"}, phone, type} = user;
+    const {name={first: "Ruth", last: "Langmore"}, phone, type, photo_url="/Assets/Images/AuthBackground.png"} = user;
     
     const [navOpen, setNavOpen] = useState(null);
     
@@ -112,7 +113,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, is_sales, logo
                         <div className='dashboard-user-actions'>
                             <div className='user-profile-container'>
                                 <div className='user-image-container'>
-                                    <img src={"/Assets/Images/AuthBackground.png"} />
+                                    <img src={get_full_image_url(photo_url)} />
                                 </div>
 
                                 <div className='user-info-container'>

@@ -6,10 +6,10 @@ const { create_user, update_user } = require("../functions/user");
 
 export const admin_create_user_handler = async (req: Request, res: Response, next: NextFunction) => {
     const {user} = req;
-    const {email, name, phone, password, birth, type, role} = req.body;
+    const {email, name, phone, password, gender, school, grade, date_enrolled, birth, type, role, emergency_contact} = req.body;
 
     try{
-        const new_user = await create_user({email, name, phone, password, birth, type, role}, user);
+        const new_user = await create_user({email, name, phone, password, gender, school, grade, date_enrolled, birth, type, role, emergency_contact}, user);
 
         delete new_user.password;
 
