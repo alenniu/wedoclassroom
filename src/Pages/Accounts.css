@@ -2,3 +2,9 @@
     max-width: 50%;
     width: 350px;
 }
+
+.page.accounts .table-utils{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

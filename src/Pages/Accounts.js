@@ -132,13 +132,13 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
             <div className='main-col'>
                 <Tabs onPressTab={onPressTab} tabs={account_type_tabs} />
 
-                {/* <div className='page-title'>
+                <div className='table-utils'>
                     <span>Total: {total}</span>
 
                     <div className='input-container search'>
                         <input value={search} placeholder="Search Accounts" onChange={(e) => {setSearch(e.target.value)}} />
                     </div>
-                </div> */}
+                </div>
                 <table>
                     <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Type", id: "type"}, {label: "Created", id: "createdAt"}]} order={order} orderBy={orderBy} onSort={onSortTable} />
 
