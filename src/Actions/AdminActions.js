@@ -1,7 +1,7 @@
 import { validate_email, validate_password } from "../Utils";
 import { api } from "../Utils/api";
 import { set_config } from "./AppActions";
-import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS } from "./types";
+import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT } from "./types";
 
 export const set_admins = (admins=[], total=0) => {
     return {type: SET_ADMINS, payload: {admins, total: total || admins.length}};
@@ -27,8 +27,8 @@ export const set_create_account_error = (error) => {
     return {type: SET_CREATE_ACCOUNT_ERROR, payload: {error}};
 }
 
-export const init_edit_account = ({_id, name, email, phone, type}) => {
-    return {type: INIT_EDIT_ACCOUNT, payload:{account: {_id, name, email, phone, type}}};
+export const init_edit_account = (account) => {
+    return {type: INIT_EDIT_ACCOUNT, payload:{account}};
 }
 
 export const cancel_account_edit = () => {
@@ -37,6 +37,10 @@ export const cancel_account_edit = () => {
 
 export const edit_new_account = (keys=[], value) => {
     return {type: EDIT_NEW_ACCOUNT, payload:{keys, value}};
+}
+
+export const edit_existing_account = (keys=[], value) => {
+    return {type: EDIT_EXISTING_ACCOUNT, payload:{keys, value}};
 }
 
 export const get_admins = (limit=20, offset=0, search="", sort="{}", filters="{}") => async (dispatch) => {
@@ -124,6 +128,25 @@ export const get_accounts = (limit=20, offset=0, search="", sort="{}", filters="
         }
     }catch(e){
         console.error(e);
+    }
+}
+
+export const get_account = (account_id, action_to_dispatch) => async (dispatch) => {
+    try{
+        const res = await api("get", `/api/admin/accounts/${account_id}`);
+
+        if(res.data){
+            if(res.data.success){
+                action_to_dispatch && dispatch({type: action_to_dispatch, payload: {account: res.data.account}})
+                return res.data;
+            }
+
+            console.log(res.data);
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.log(e);
     }
 }
 

@@ -34,11 +34,11 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, get
         const from = query.get("from");
         if(logged_in && user){
             get_user_assignments()
-            if(is_admin){
-                navigate(from || "/dashboard/");
-            }else{
-                navigate(`/dashboard/`);
-            }
+            // if(is_admin){
+                navigate(from || "/dashboard");
+            // }else{
+            //     navigate(`/dashboard`);
+            // }
         }
     }, [logged_in, is_admin, user]);
 

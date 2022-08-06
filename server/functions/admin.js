@@ -120,7 +120,24 @@ async function get_accounts(limit=20, offset=0, search="", sort={}, filters={}){
     }
 }
 
+async function get_account(account_id, user){
+    try{
+        const q = {$and: [{_id: account_id}]};
+
+        if(user.type === "sales"){
+            q.$and.push({type: "student"})
+        }
+
+        const account = await Users.findOne(q, {password: 0}).lean(true); 
+
+        return account;
+    }catch(e){
+        throw e;
+    }
+}
+
 module.exports.get_admins = get_admins;
+module.exports.get_account = get_account;
 module.exports.get_teachers = get_teachers;
 module.exports.get_students = get_students;
 module.exports.get_accounts = get_accounts;

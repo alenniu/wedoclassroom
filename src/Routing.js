@@ -15,6 +15,8 @@ import Class from './Pages/Class';
 import { get_config } from './Actions';
 import Payments from './Pages/Payments';
 import Sessions from './Pages/Sessions';
+import EditAccount from './Pages/Account/EditAccount';
+import NewAccount from './Pages/Account/NewAccount';
 
 const routes = [
     {
@@ -25,6 +27,7 @@ const routes = [
         teacherRequired: false, //will also effect children
         adminRequired: false, //will also effect children
         salesRequired: false,
+        authRedirect: "/login",
         children: [
             {
                 path: "/dashboard/",
@@ -74,6 +77,26 @@ const routes = [
             {
                 path: "/dashboard/accounts",
                 component: Accounts,
+                exact: true,
+                children: null,
+                isIndex: false,
+                teacherRequired: false,
+                adminRequired: true,
+                salesRequired: true,
+            },
+            {
+                path: "/dashboard/accounts/new",
+                component: NewAccount,
+                exact: true,
+                children: null,
+                isIndex: false,
+                teacherRequired: false,
+                adminRequired: true,
+                salesRequired: true,
+            },
+            {
+                path: "/dashboard/accounts/edit/:account_id",
+                component: EditAccount,
                 exact: true,
                 children: null,
                 isIndex: false,
@@ -142,13 +165,13 @@ const routes = [
 
 
 const renderChildrenRoutes = ({children=[], authenticated=false, is_admin=false, is_teacher=false, is_student=false.valueOf, is_sales=false, authRequired, teacherRequired, salesRequired, adminRequired}) => {
-    return children.map(({path, component:C, exact, isIndex=false, children}) => {
+    return children.map(({path, component:C, exact, authRedirect="/dashboard", isIndex=false, children}) => {
         const has_children = Array.isArray(children) && children.length > 0;
         
         const allowed = !authRequired || authenticated && (!teacherRequired || is_teacher || is_sales || is_admin) && (!salesRequired || is_sales || is_admin) && (!adminRequired ||  is_admin);
         
         return (
-            <Route index={isIndex} key={path} path={path} exact={exact} element={allowed?<C />:<Navigate to={`/login?from=${window.location.pathname}`} replace />}>
+            <Route index={isIndex} key={path} path={path} exact={exact} element={allowed?<C />:<Navigate to={`${authRedirect || "/login"}?from=${window.location.pathname}`} replace />}>
                 {has_children && renderChildrenRoutes({children, authenticated, is_admin, is_teacher, is_student, authRequired, teacherRequired, salesRequired, adminRequired})}
             </Route>
         )
@@ -167,13 +190,13 @@ export default connect(map_state_to_props, {get_config})(({authenticated=false, 
     return (
         <Router>
             <Routes>
-                {routes.map(({path, component:C, exact, authRequired, teacherRequired, salesRequired, adminRequired, children}) => {
+                {routes.map(({path, component:C, exact, authRedirect="/dashboard", authRequired, teacherRequired, salesRequired, adminRequired, children}) => {
                     const has_children = Array.isArray(children) && children.length > 0;
 
                     const allowed = !authRequired || authenticated && (!teacherRequired || is_teacher || is_sales || is_admin) && (!salesRequired || is_sales || is_admin) && (!adminRequired ||  is_admin);
 
                     return (
-                        <Route key={path} path={path} exact={exact} element={allowed?<C />:<Navigate to={`/login?from=${window.location.pathname}`} replace />}>
+                        <Route key={path} path={path} exact={exact} element={allowed?<C />:<Navigate to={`${authRedirect || "/login"}?from=${window.location.pathname}`} replace />}>
                             {has_children && renderChildrenRoutes({children, authenticated, is_admin, is_teacher, is_student, authRequired, teacherRequired, salesRequired, adminRequired})}
                         </Route>
                     );
