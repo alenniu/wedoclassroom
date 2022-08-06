@@ -10,7 +10,7 @@ import "./Accounts.css";
 import TableHead from '../Components/Common/TableHead';
 import { debounce, password_requirements, validate_email, validate_name, validate_password } from '../Utils';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account={}, editing_account, get_accounts, create_account, update_account, edit_new_account, init_edit_account, cancel_account_edit, set_loading}) => {
     const [pageLimit, setPageLimit] = useState(20);
@@ -21,6 +21,8 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
     const [orderBy, setOrderBy] = useState("");
     const [sort, setSort] = useState("{}");
     const [accountType, setAccountType] = useState(is_admin?"":"student")
+
+    const navigate = useNavigate();
 
     const account_type_tabs = is_admin?[{label: "All", id: ""}, {label: "Teachers", id: "teacher"}, {label: "Students", id: "student"}, {label: "Sales", id: "sales"}, {label: "Admins", id: "admin"}]:[{label: "Students", id: "student"}];
 
@@ -67,6 +69,9 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
             <div className='main-col fullwidth'>
                 <Tabs onPressTab={onPressTab} tabs={account_type_tabs} />
 
+                <div style={{marginTop: 20}}>
+                    <button className='button primary' onClick={() => navigate("/dashboard/accounts/new")}>New Account</button>
+                </div>
                 <div className='table-utils'>
                     <span>Total: {total}</span>
 
