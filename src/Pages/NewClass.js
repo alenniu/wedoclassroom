@@ -269,7 +269,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
                     <ListInput always_show_matches items={tags} search_array={configTags} onAddItem={onAddTag} onRemoveItem={onRemoveTag} />
                 </div>
 
-                <div className='input-container link meeting'>
+                <div className='input-container meeting-link'>
                     <label>Meeting Link</label>
                     
                     <input placeholder='Meeting Link' value={meeting_link} onChange={onChangeValueEvent(["meeting_link"])} />
