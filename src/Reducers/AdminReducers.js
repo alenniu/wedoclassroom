@@ -1,4 +1,4 @@
-import { CANCEL_ACCOUNT_EDIT, CREATE_ACCOUNT, EDIT_ACCOUNT, EDIT_NEW_ACCOUNT, INIT_EDIT_ACCOUNT, SET_ACCOUNTS, SET_ADMINS, SET_CREATE_ACCOUNT_ERROR, SET_SESSIONS, SET_STUDENTS, SET_TEACHERS } from "../Actions/types";
+import { CANCEL_ACCOUNT_EDIT, CREATE_ACCOUNT, EDIT_ACCOUNT, EDIT_EXISTING_ACCOUNT, EDIT_NEW_ACCOUNT, INIT_EDIT_ACCOUNT, SET_ACCOUNTS, SET_ADMINS, SET_CREATE_ACCOUNT_ERROR, SET_SESSIONS, SET_STUDENTS, SET_TEACHERS } from "../Actions/types";
 import { update_object } from "../Utils";
 
 const NEW_ACCOUNT_PROPS = {name: {first: "", last: ""}, email: "", phone: "", type: ""}
@@ -40,7 +40,14 @@ export default (state=INITIAL_STATE, action) => {
         case EDIT_NEW_ACCOUNT:{
             const {keys=[], value} = payload;
             new_state.new_account.error = "";
-            update_object(keys, value, new_state.editing_account?new_state.edit_account:new_state.new_account);
+            update_object(keys, value, new_state.new_account);
+        }
+        break;
+
+        case EDIT_EXISTING_ACCOUNT:{
+            const {keys=[], value} = payload;
+            new_state.edit_account.error = "";
+            update_object(keys, value,new_state.edit_account);
         }
         break;
 

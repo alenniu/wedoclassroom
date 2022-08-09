@@ -8,6 +8,9 @@ import { create_account, edit_new_account, init_edit_account, set_loading } from
 import { password_requirements, validate_email, validate_name, validate_password } from '../../Utils';
 import { useNavigate } from 'react-router-dom';
 
+import "./Account.css"
+import "./NewAccount.css"
+
 const NewAccount = ({new_account, is_admin, create_account, edit_new_account, set_loading}) => {
 
     const [password, setPassword] = useState("");
@@ -67,30 +70,30 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
     }
 
     return (
-        <div className='page new-account'>
+        <div className='page account new-account'>
             <div className='main-col'>
                 <h2>New Account</h2>
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <input type="text" value={first} onChange={onChangeValueEvent(["name", "first"])} placeholder='First Name' />
                     {errors["name.first"] && <p className='error'>{errors["name.first"]}</p>}
                 </div>
 
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <input type="text" value={last} onChange={onChangeValueEvent(["name", "last"])} placeholder='Last Name' />
                     {errors["name.last"] && <p className='error'>{errors["name.last"]}</p>}
                 </div>
 
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <input type="text" value={email} onChange={onChangeValueEvent(["email"])} placeholder='youremail@example.com' />
                     {errors["email"] && <p className='error'>{errors["email"]}</p>}
                 </div>
 
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <input type="text" value={phone} onChange={onChangeValueEvent(["phone"])} placeholder='Phone Number' />
                     {errors["phone"] && <p className='error'>{errors["phone"]}</p>}
                 </div>
 
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <select value={gender} onChange={onChangeValueEvent(["gender"])}>
                         <option value={""}>Gender</option>
                         <option value={"male"}>Male</option>
@@ -100,7 +103,7 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
                     {errors["gender"] && <p className='error'>{errors["gender"]}</p>}
                 </div>
 
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <select value={type} onChange={onChangeValueEvent(["type"])}>
                         <option>Account Type</option>
                         
@@ -117,18 +120,18 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
 
                 {type === "student" && (
                     <>
-                    <div className='input-container fullwidth'>
+                    <div className='input-container'>
                         <input type="text" value={school} onChange={onChangeValueEvent(["school"])} placeholder='Current School' />
                         {errors["school"] && <p className='error'>{errors["school"]}</p>}
                     </div>
 
-                    <div className='input-container fullwidth'>
+                    <div className='input-container'>
                         <input type="text" value={grade} onChange={onChangeValueEvent(["grade"])} placeholder='Current Grade' />
                         {errors["grade"] && <p className='error'>{errors["grade"]}</p>}
                     </div>
 
-                    <div className='input-container fullwidth'>
-                        <label>Date Enrolled</label>
+                    <div className='input-container'>
+                        <label className='border'>Date Enrolled</label>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                             // label="Start Time"
@@ -141,7 +144,7 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
                     </>
                 )}
 
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <input type={passwordVisible?"text":"password"} value={password} onChange={onChangePassword} placeholder='Your Password' />
                     <div className='input-adornment end' style={{backgroundColor: "transparent"}}>
                         <span className='clickable' onClick={onClickPasswordEye}>{passwordVisible?<BsEye />:<BsEyeSlash />}</span>
@@ -149,19 +152,19 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
                 </div>
                 {errors["password"] && <p className='error'>{errors["password"]}</p>}
 
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <input type="text" value={emergency_name} onChange={onChangeValueEvent(["emergency_contact", "name"])} placeholder='Emergency Contact Name' />
                 </div>
 
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <input type="text" value={emergency_email} onChange={onChangeValueEvent(["emergency_contact", "email"])} placeholder='Emergency Contact email' />
                 </div>
 
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <input type="text" value={emergency_phone} onChange={onChangeValueEvent(["emergency_contact", "phone"])} placeholder='Emergency Contact phone' />
                 </div>
 
-                <div className='input-container fullwidth'>
+                <div className='input-container'>
                     <input type="text" value={relation} onChange={onChangeValueEvent(["emergency_contact", "relation"])} placeholder='Emergency Contact relation' />
                 </div>
 

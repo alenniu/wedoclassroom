@@ -1,0 +1,12 @@
+.page.account .input-container{
+    display: inline-block;
+    width: 48%;
+}
+
+.page.account .input-container:nth-of-type(odd){
+    margin-right: 2%;
+}
+
+.page.account .input-container:nth-of-type(even){
+    margin-left: 2%;
+}

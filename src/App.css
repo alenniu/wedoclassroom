@@ -212,6 +212,23 @@ input:focus-visible, textarea:focus-visible{
   width: 100%;
 }
 
+.input-container label.border{
+  position: absolute;
+  z-index: 2;
+  font-size: smaller;
+  padding-left: 2px;
+  padding-right: 2px;
+  margin-left: 10px;
+  margin-right: 10px;
+  top: 0;
+  transform: translateY(-50%);
+  background-color: var(--input-bgcolor, white);
+  color: var(--text-color, #3F3F44);
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
 .input-container > input, .input-container > select, .input-container > textarea, .input-container .MuiSelect-select, .input-container .MuiTextField-root{
   padding: 10px;
   border-radius: 8px;
