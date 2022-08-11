@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { create_new_class, edit_class_value, get_teachers, set_loading, set_teachers } from '../Actions';
-import TypeSelect from '../Components/Common/TypeSelect';
-import { debounce, get_full_image_url, throttle } from '../Utils';
+import { create_new_class, edit_new_class_value, get_teachers, set_loading, set_teachers } from '../../Actions';
+import TypeSelect from '../../Components/Common/TypeSelect';
+import { debounce, get_full_image_url, throttle } from '../../Utils';
 import {RiImageAddLine, RiCloseCircleFill} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
 import {TextField} from '@mui/material';
@@ -10,11 +10,14 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
-import "./NewClass.css";
-import { ListInput } from '../Components/Common/ListInput';
-import { DAYS } from '../Data';
-import FileUploadDropArea from '../Components/Common/FileUploadDropArea';
+import { ListInput } from '../../Components/Common/ListInput';
+import { DAYS } from '../../Data';
+import FileUploadDropArea from '../../Components/Common/FileUploadDropArea';
 import { DatePicker } from '@mui/x-date-pickers';
+
+import "./Class.css";
+import "./NewClass.css";
+import { useNavigate } from 'react-router-dom';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -33,14 +36,17 @@ const pricing_type_options = [{label: "Hourly", value: "hourly"}, {label: "Per S
 
 const schedules = [{days: [], start_time: "", end_time: ""}];
 
-const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config={}, is_admin, is_teacher, get_teachers, edit_class_value, create_new_class, set_teachers, set_loading}) => {
+const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config={}, is_admin, is_teacher, get_teachers, edit_new_class_value, create_new_class, set_teachers, set_loading}) => {
+
     const [teacherSearch, setTeacherSearch] = useState("");
     const [coverPreview, setCoverPreview] = useState({file: null, url: ""});
     const [errors, setErrors] = useState({});
 
     const {subjects=[], tags:configTags=["AP, K12"], levels=[]} = app_config;
 
-    const {title="", subject="", cover="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_period="", error} = new_class;
+    const {title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error} = new_class;
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         is_teacher && set_teachers([{...user}]);
@@ -54,7 +60,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
 
         // console.log(value, keys);
 
-        edit_class_value(["create", ...keys], numeric?(Number(value) || value):value);
+        edit_new_class_value(keys, numeric?(Number(value) || value):value);
         setErrors(err => ({...err, [keys.join(".")]: ""}));
     }
 
@@ -62,31 +68,31 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
         const value = val;
         console.log(keys, value);
 
-        edit_class_value(["create", ...keys], numeric?(Number(value) || value):value);
+        edit_new_class_value(keys, numeric?(Number(value) || value):value);
         setErrors(err => ({...err, [keys.join(".")]: ""}));
     }
 
     const onAddTag = (tag) => {
         tags.push(tag);
-        edit_class_value(["create", "tags"], tags);
+        edit_new_class_value(["tags"], tags);
         setErrors(err => ({...err, tags: ""}));
     }
 
     const onRemoveTag = (index, tag) => {
         tags.splice(index, 1);
 
-        edit_class_value(["create", "tags"], tags);
+        edit_new_class_value(["tags"], tags);
         setErrors(err => ({...err, tags: ""}));
     }
     
     const AddNewSchedule = () => {
         schedules.push({days: [], daily_start_time: new Date(), daily_end_time: new Date()})
-        edit_class_value(["create", "schedules"], schedules);
+        edit_new_class_value(["schedules"], schedules);
     }
     
     const RemoveNewSchedule = (index) => {
         schedules.splice(index, 1);
-        edit_class_value(["create", "schedules"], schedules);
+        edit_new_class_value(["schedules"], schedules);
     }
     
     const onTypeTeacherSelect = (e, value) => {
@@ -96,13 +102,13 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     const onAddScheduleDay = (scehdule_index, day) => {
         schedules[scehdule_index].days.push(day.number);
         
-        edit_class_value(["create", "schedules", scehdule_index, "days"], schedules[scehdule_index].days);
+        edit_new_class_value(["schedules", scehdule_index, "days"], schedules[scehdule_index].days);
     }
 
     const onRemoveScheduleDay = (scehdule_index, index, day) => {
         schedules[scehdule_index].days.splice(index, 1);
             
-        edit_class_value(["create", schedules, scehdule_index, "days"], schedules[scehdule_index].days);
+        edit_new_class_value([schedules, scehdule_index, "days"], schedules[scehdule_index].days);
     }
 
     const onSelectImage = (e) => {
@@ -114,7 +120,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
             
             fileReader.onload = function(){
                 setCoverPreview({url: fileReader.result, file: file});
-                edit_class_value(["create", "cover_image"], file.name);
+                edit_new_class_value(["cover_image"], file.name);
             }
             
             fileReader.readAsDataURL(file);
@@ -123,19 +129,21 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     
     const onClickRemoveCover = () => {
         setCoverPreview({url: "", file: null});
-        edit_class_value(["create", "cover_image"], "");
+        edit_new_class_value(["cover_image"], "");
     }
 
     const createClass = async () => {
         set_loading(true);
         const formData = new FormData();
-        formData.append("_class", JSON.stringify({title, subject, cover, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_period}));
+        formData.append("_class", JSON.stringify({title, subject, cover_image, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_schedule}));
         if(coverPreview.file){
             formData.append("cover", coverPreview.file);
         }
         
 
-        await create_new_class(formData);
+        if(await create_new_class(formData)){
+            navigate("/dashboard");
+        }
 
         set_loading(false);
     }
@@ -174,8 +182,8 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
                             <p className='upload-drop-text'>Drop your file here or browse</p>
                         </div>
                     </div> */}
-                    {coverPreview.url && <div className='cover-preview'>
-                        <img src={coverPreview.url} />
+                    {(cover_image || coverPreview.url) && <div className='cover-preview'>
+                        <img src={coverPreview.url || (cover_image && get_full_image_url(cover_image))} />
                         <RiCloseCircleFill color='red' size={20} className='clickable remove' onClick={onClickRemoveCover} />
                     </div>}
                 </div>
@@ -241,7 +249,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
                 <div className='input-container select pricing-type'>
                     <label>Pricing Type</label>
                     
-                    <TypeSelect placeholder='Select' options={pricing_type_options} value={billing_period} onChange={onChangeValue(["billing_period"])}  />
+                    <TypeSelect placeholder='Select' options={pricing_type_options} value={billing_schedule} onChange={onChangeValue(["billing_schedule"])}  />
                 </div>
 
                 <div className='input-container background color'>
@@ -362,4 +370,4 @@ function map_state_to_props({App, Auth, Class, Admin}){
     return {user: App.user, teachers: Admin.teachers, total_teachers: Admin.total_teachers, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, new_class: Class.create, app_config: App.config};
 }
  
-export default connect(map_state_to_props, {get_teachers, edit_class_value, create_new_class, set_teachers, set_loading})(NewClass);
+export default connect(map_state_to_props, {get_teachers, edit_new_class_value, create_new_class, set_teachers, set_loading})(NewClass);

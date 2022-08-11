@@ -10,7 +10,8 @@ import NotFound from './Pages/404';
 import Home from './Pages/Home';
 import Accounts from './Pages/Accounts';
 import Classes from './Pages/Classes';
-import NewClass from './Pages/NewClass';
+import NewClass from './Pages/Class/NewClass';
+import EditClass from './Pages/Class/EditClass';
 import Class from './Pages/Class';
 import { get_config } from './Actions';
 import Payments from './Pages/Payments';
@@ -114,13 +115,23 @@ const routes = [
                 adminRequired: true
             },
             {
-                path: "/dashboard/new-class",
+                path: "/dashboard/class/new",
                 component: NewClass,
                 exact: true,
                 children: null,
                 isIndex: false,
                 teacherRequired: true,
                 adminRequired: false
+            },
+            {
+                path: "/dashboard/class/edit/:class_id",
+                component: EditClass,
+                exact: true,
+                children: null,
+                isIndex: false,
+                teacherRequired: true,
+                adminRequired: true,
+                salesRequired: true
             }
         ]
     },

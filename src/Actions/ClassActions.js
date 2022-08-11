@@ -1,7 +1,7 @@
 import axios from "axios";
 import { api } from "../Utils/api";
 import { set_class } from "./AppActions";
-import { CREATE_CLASS, EDIT_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_CLASS, SET_CURRENT_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_SUBJECT_CLASSES, DECLINE_JOIN_REQUEST } from "./types";
+import { CREATE_CLASS, EDIT_NEW_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_CLASS, SET_CURRENT_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_SUBJECT_CLASSES, DECLINE_JOIN_REQUEST, EDIT_CLASS_VALUE, UPDATE_CLASS, SET_UPDATE_CLASS_ERROR } from "./types";
 
 export const set_classes = (classes = [], total = 0) => {
     return {
@@ -45,16 +45,20 @@ export const set_class_assignment_error = (error) => {
     return {type: SET_CLASS_ASSIGNMENT_ERROR, payload: {error}};
 }
 
-export const get_class = (class_id) => async (dispatch) => {
+export const get_class = (class_id, action_to_dispatch) => async (dispatch) => {
     try{
         const res = await api("get", `/api/classes/${class_id}`);
 
         if(res && res.data){
-            if(!res.data.success){
-                console.error(res.data);
-            }
+            if(res.data.success){
+                const {_class} = res.data;
 
-            return res.data;
+                action_to_dispatch && dispatch({type: action_to_dispatch, payload: {_class}});
+
+                return res.data;
+            }
+            
+            console.error(res.data);
         }else{
             console.error(res);
         }
@@ -240,12 +244,41 @@ export const create_new_class = (_class_formdata) => async (dispatch) => {
     }
 }
 
+export const update_class = (_class_formdata) => async (dispatch) => {
+    try{
+        const res = await api("put", `/api/classes`, _class_formdata);
+
+        if(res.data){
+            if(res.data.success){
+                const {updated_class} = res.data;
+                dispatch({type: UPDATE_CLASS, payload: {updated_class}})
+                return res.data;
+            }
+
+            dispatch(set_update_class_error(res.data.msg));
+        }else{
+            dispatch(set_update_class_error(res));
+        }
+    }catch(e){
+        dispatch(set_update_class_error(e.message));
+        console.error(e);
+    }
+}
+
 export const set_create_class_error = (error) => {
     return {type: SET_CREATE_CLASS_ERROR, payload: {error}};
 }
 
+export const set_update_class_error = (error) => {
+    return {type: SET_UPDATE_CLASS_ERROR, payload: {error}};
+}
+
 export const edit_class_value = (keys=[], value) => {
     return {type: EDIT_CLASS_VALUE, payload: {keys, value}};
+}
+
+export const edit_new_class_value = (keys=[], value) => {
+    return {type: EDIT_NEW_CLASS_VALUE, payload: {keys, value}};
 }
 
 export const get_class_announcements = (class_id, limit=20, offset=0, sort="{}", filters="{}") => async (dispatch) => {

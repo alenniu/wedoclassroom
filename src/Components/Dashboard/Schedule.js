@@ -1,5 +1,6 @@
 import React from 'react';
 import {RiCalendarLine} from "react-icons/ri";
+import { useNavigate } from 'react-router-dom';
 
 import { DAYS, get_day, get_week_date_range, MONTHS } from '../../Data';
 import { ordinal_suffix, randomColor, ranges_overlaps } from '../../Utils';
@@ -35,6 +36,8 @@ const EVENTS = [
 
 const Schedule = ({schedules=[], date_range}) => {
 
+    const navigate = useNavigate();
+
     const current_date = new Date();
     const month = current_date.getMonth();
     const date = current_date.getDate();
@@ -69,7 +72,7 @@ const Schedule = ({schedules=[], date_range}) => {
                     )
                 })}
 
-                {schedules.map(({title, days=[], daily_start_time, daily_end_time, bg_color, text_color}, i, arr) => {
+                {schedules.map(({_id, title, days=[], daily_start_time, daily_end_time, bg_color, text_color}, i, arr) => {
                     const ordered_days = days.sort((a, z) => a - z);
 
                     // console.log(bg_color);
@@ -91,7 +94,7 @@ const Schedule = ({schedules=[], date_range}) => {
 
                     const startTime = new Date(daily_start_time)
                     const endTime = new Date(daily_end_time);
-                    const time = `${startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - ${endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}`
+                    const time_range = `${startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - ${endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}`
 
                     return consecutive_periods.map((days) => {
                         const items_on_same_day_before = arr.filter((a, ai) => ai < i && a.title !== title && ranges_overlaps({min: days[0], max: days.at(-1)}, {min: a.days[0], max: a.days.at(-1)}));
@@ -103,9 +106,9 @@ const Schedule = ({schedules=[], date_range}) => {
                         const maxHeight = 265 / (items_on_same_day.length || 1);
 
                         return (
-                            <div className='schedule-event' style={{left: `calc(${((100/7)*days[0])}% + 5px)`, width: `calc(${(100/7) * days.length}% - 10px)`, top: `${160 + (items_on_same_day_before.length * maxHeight)}px`, maxHeight: `${maxHeight}px`, backgroundColor: bg_color, color: text_color}}>
+                            <div title={`${title} - ${time_range}`} className='schedule-event clickable' onClick={() => {navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(${((100/7)*days[0])}% + 5px)`, width: `calc(${(100/7) * days.length}% - 10px)`, top: `${160 + (items_on_same_day_before.length * maxHeight)}px`, maxHeight: `${maxHeight}px`, backgroundColor: bg_color, color: text_color}}>
                                 <p>{title}</p>
-                                <p>{time}</p>
+                                <p>{time_range}</p>
                                 <p>{DAYS[days[0]].short}{days.length>1?" - " + DAYS[days.at(-1)].short:""}</p>
                             </div>
                         )

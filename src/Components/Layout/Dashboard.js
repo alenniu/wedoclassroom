@@ -17,7 +17,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, is_sales, logo
     const navigate = useNavigate();
     
     const location = useLocation();
-    const is_on_new_class = location.pathname === "/dashboard/new-class";
+    const is_on_new_class = location.pathname === "/dashboard/class/new";
 
     const openNav = () => {
         setNavOpen(true);
@@ -40,7 +40,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, is_sales, logo
     }
 
     const onPressNewClass = async () => {
-        navigate("/dashboard/new-class");
+        navigate("/dashboard/class/new");
     }
 
     return (

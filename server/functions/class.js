@@ -17,7 +17,7 @@ async function get_class(class_id, user){
     try{
         const {_id, type} = user;
 
-        return await Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: type === "admin"}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"}).populate({path: "current_session", populate: {path: "students", select: "-password"}});
+        return await Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: (type === "admin") || (type === "sales")}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"}).populate({path: "current_session", populate: {path: "students", select: "-password"}});
     }catch(e){
         console.error(e);
         throw e;
@@ -130,12 +130,26 @@ async function end_class({_class}, user){
     }
 }
 
-async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_period, meeting_link}, creator){
+async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_schedule, meeting_link}, creator){
     try{
         if(title && subject && class_type){
-            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, schedules, start_date: new Date(start_date), end_date: new Date(end_date), billing_period, meeting_link, is_full: false, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
+            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, schedules, start_date: new Date(start_date), end_date: new Date(end_date), billing_schedule, meeting_link, is_full: false, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
 
             return new_class;
+        }else{
+            throw new Error("subject, title and class type must be provided")
+        }
+    }catch(e){
+        throw e;
+    }
+}
+
+async function update_class({_id, title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_schedule, meeting_link, students=[]}){
+    try{
+        if(title && subject && class_type){
+            const updated_class = await Classes.findOneAndUpdate({_id}, {$set: {title, subject, cover_image, description, teacher: teacher?._id || teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, start_date, end_date, billing_schedule, meeting_link, students}}, {new: true, upsert: false});
+
+            return updated_class;
         }else{
             throw new Error("subject, title and class type must be provided")
         }
@@ -381,6 +395,7 @@ module.exports.end_class = end_class;
 module.exports.get_classes = get_classes;
 module.exports.start_class = start_class;
 module.exports.create_class = create_class;
+module.exports.update_class = update_class;
 module.exports.cancel_class = cancel_class;
 module.exports.request_class = request_class;
 module.exports.accept_request = accept_request;

@@ -1,15 +1,15 @@
-import { ADD_SUBJECT_CLASSES, CREATE_CLASS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, EDIT_CLASS_VALUE, SET_CLASSES, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_CREATE_CLASS_ERROR, SET_EDITING_CLASS, SET_POPULAR_CLASSES, SET_SUBJECT_CLASSES } from "../Actions/types";
+import { ADD_SUBJECT_CLASSES, CREATE_CLASS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, EDIT_CLASS_VALUE, EDIT_NEW_CLASS_VALUE, INIT_EDIT_CLASS, SET_CLASSES, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_CREATE_CLASS_ERROR, SET_EDITING_CLASS, SET_POPULAR_CLASSES, SET_SUBJECT_CLASSES, SET_UPDATE_CLASS_ERROR, UPDATE_CLASS } from "../Actions/types";
 import { update_object } from "../Utils";
 
-const INITIAL_STATE = {classes: [], total: 0, popular_classes: [], create: {schedules: [{days: [], daily_start_time: new Date(), daily_end_time: new Date()}], error: ""}, edit: {error: ""}, announcement: {error: ""}, assignment: {error: ""}, subject_classes: {}};
+const INITIAL_STATE = {classes: [], total: 0, popular_classes: [], create: {schedules: [{days: [], daily_start_time: new Date(), daily_end_time: new Date()}], error: ""}, edit: {error: ""}, edit: {error: ""}, announcement: {error: ""}, assignment: {error: ""}, subject_classes: {}};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
     
     const new_state = {...state};
-
+    
     switch(type){
-
+        
         case SET_CLASSES:
             new_state.classes = payload.classes;
             new_state.total = payload.total;
@@ -32,17 +32,27 @@ export default (state=INITIAL_STATE, action) => {
             new_state.popular_classes = [...new_state.popular_classes, ...payload.classes]
         break;
 
-        case EDIT_CLASS_VALUE:{
+        case EDIT_NEW_CLASS_VALUE:{
             const {keys=[], value} = payload;
 
-            if(keys.length > 1){
-                new_state[keys[0]] = {...new_state[keys[0]]};
-                update_object(keys, value, new_state);
-            }
+            new_state.edit.error = "";
+            update_object(keys, value, new_state.create);
+        }
+        break;
+
+        case EDIT_CLASS_VALUE:{
+            const {keys=[], value} = payload;
+            
+            new_state.edit.error = "";
+            update_object(keys, value, new_state.edit);
         }
         break;
 
         case SET_EDITING_CLASS:
+            new_state.edit = payload._class;
+        break;
+
+        case INIT_EDIT_CLASS:
             new_state.edit = payload._class;
         break;
 
@@ -78,8 +88,16 @@ export default (state=INITIAL_STATE, action) => {
             new_state.create = {schedules: [{days: [], daily_start_time: new Date(), daily_end_time: new Date()}], error: ""};
         break;
 
+        case UPDATE_CLASS:
+            new_state.edit = {error: ""};
+        break;
+
         case SET_CREATE_CLASS_ERROR:
             new_state.create.error = payload.error;
+        break;
+
+        case SET_UPDATE_CLASS_ERROR:
+            new_state.edit.error = payload.error;
         break;
 
         case CREATE_CLASS_ANNOUNCEMENT:

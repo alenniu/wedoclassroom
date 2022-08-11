@@ -1,5 +1,6 @@
 import React from 'react';
 import {RiCalendarLine} from "react-icons/ri";
+import { useNavigate } from 'react-router-dom';
 
 import { DAYS, get_day, get_week_date_range, MONTHS } from '../../Data';
 import { isWebkit, ordinal_suffix, randomColor, ranges_overlaps } from '../../Utils';
@@ -48,6 +49,8 @@ const HOUR_SECTION_HEIGHT = 100;
 const is_webkit = isWebkit();
 
 const NewSchedule = ({schedules=[], date_range}) => {
+
+    const navigate = useNavigate()
 
     const current_date = new Date();
     const month = current_date.getMonth();
@@ -102,7 +105,7 @@ const NewSchedule = ({schedules=[], date_range}) => {
                     })}
                 </ul>
 
-                {schedules.map(({title, days=[], time, daily_start_time, daily_end_time, bg_color, text_color}, i, arr) => {
+                {schedules.map(({_id, title, days=[], time, daily_start_time, daily_end_time, bg_color, text_color}, i, arr) => {
                     // const ordered_days = days.sort((a, z) => a - z);
 
                     // console.log(bg_color);
@@ -124,6 +127,7 @@ const NewSchedule = ({schedules=[], date_range}) => {
 
                     const startTime = new Date(daily_start_time);
                     const endTime = new Date(daily_end_time);
+                    const time_range = `${startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - ${endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}`
 
                     return days.map((d) => {
                         // const items_on_same_day_before = arr.filter((a, ai) => ai < i && a.name !== name && ranges_overlaps({min: d[0], max: d.at(-1)}, {min: a.days[0], max: a.days.at(-1)}));
@@ -137,7 +141,7 @@ const NewSchedule = ({schedules=[], date_range}) => {
 
 
                         return (
-                            <div className='schedule-event' style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}))`, width: `50px`, top: `${HOUR_SECTION_HEIGHT * (startTime.getHours() + (startTime.getMinutes()/60))}px`, height: `${HOUR_SECTION_HEIGHT * ((endTime.getHours() + (endTime.getMinutes()/60)) - (startTime.getHours() + (startTime.getMinutes()/60)))}px`, backgroundColor: bg_color, color: text_color}}>
+                            <div title={`${title} - ${time_range}`} className='schedule-event clickable' onClick={() => {navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}))`, width: `50px`, top: `${HOUR_SECTION_HEIGHT * (startTime.getHours() + (startTime.getMinutes()/60))}px`, height: `${HOUR_SECTION_HEIGHT * ((endTime.getHours() + (endTime.getMinutes()/60)) - (startTime.getHours() + (startTime.getMinutes()/60)))}px`, backgroundColor: bg_color, color: text_color}}>
                                 <p>{title}</p>
                                 <p>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</p>
                                 <p>{DAYS[d].short}</p>
