@@ -7,6 +7,7 @@ import "./Dashboard.css";
 import Schedule from '../Components/Dashboard/Schedule';
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroller from '../Components/Common/InfiniteScroller';
+import NewSchedule from '../Components/Dashboard/NewSchedule';
 
 const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
     const [pageLimit, setPageLimit] = useState(20);
@@ -51,6 +52,7 @@ const Dashboard = ({classes=[], total=0, get_my_classes, set_loading}) => {
     return (
         <div className='page dashboard'>
             <div className='main-col'>
+                <NewSchedule />
                 <Schedule />
             </div>
 

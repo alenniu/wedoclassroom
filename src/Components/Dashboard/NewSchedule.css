@@ -1,0 +1,168 @@
+.new-schedule-container{
+    padding-top: 20px;
+    --calendar-height: 500px
+}
+
+.new-schedule-container .schedule-date-range{
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    text-transform: capitalize;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.new-schedule-container .schedule-date-range svg{
+    margin-right: 10px;
+}
+
+.new-schedule-container .schedule-days-columns{
+    padding-left: 70px;
+}
+
+.new-schedule-container .new-schedule-calender{
+    width: 100%;
+    /* min-height: 250px; */
+    height: var(--calendar-height, 500px);
+    border-radius: 16px;
+    border: 2px solid #ECECEC;
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: nowrap;
+    position: relative;
+    justify-content: space-between;
+    overflow-y: auto;
+}
+
+.new-schedule-calender .schedule-event{
+    position: absolute;
+    border-radius: 2px;
+    padding: 4px;
+    box-shadow: 0 0 2px rgba(247, 247, 247, 0.4);
+    /* white-space: nowrap; */
+    overflow: hidden;
+    min-width: 50px;
+    background-color: gold;
+}
+
+.new-schedule-calender .schedule-event p{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #ECECEC;
+}
+
+.new-schedule-container .new-schedule-column-container{
+    flex: 1;
+    position: relative;
+}
+
+.new-schedule-container .new-schedule-column-container:after{
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: var(--calendar-height, 500px);
+    background-color: #ECECEC;
+    top: 100%;
+    transform: translateY(20px);
+}
+
+.new-schedule-container .new-schedule-column-container:last-of-type::after{
+    display: none;
+    content: none;
+}
+
+.new-schedule-column-container .day{
+    /* position: absolute; */
+    /* transform: translateY(calc(-100% - 10px)); */
+    display: inline-block;
+    text-align: center;
+    width: calc(100% / 7);
+    text-transform: capitalize;
+}
+
+.new-schedule-column-container .schedule-column-day{
+    height: 125px;
+    border: 1px solid #ECECEC;
+    position: relative;
+}
+
+.new-schedule-column-container:first-of-type .schedule-column-day{
+    border-left: none;
+    background-color: rgba(247, 247, 247, 0.4);
+}
+
+.new-schedule-column-container:last-of-type .schedule-column-day{
+    border-right: none;
+    background-color: rgba(247, 247, 247, 0.4);
+}
+
+.new-schedule-column-container:first-of-type .schedule-column-day.top{
+    border-top-left-radius: 16px;
+}
+
+.new-schedule-column-container:last-of-type .schedule-column-day.top{
+    border-top-right-radius: 16px;
+}
+
+.new-schedule-column-container:first-of-type .schedule-column-day.bottom{
+    border-bottom-left-radius: 16px;
+}
+
+.new-schedule-column-container:last-of-type .schedule-column-day.bottom{
+    border-bottom-right-radius: 16px;
+}
+
+.new-schedule-column-container .schedule-column-day.top{
+    border-top: none;
+}
+
+.new-schedule-column-container .schedule-column-day.bottom{
+    border-bottom: none;
+}
+
+.new-schedule-column-container .schedule-column-day.main{
+    height: 300px;
+    padding: 8px;
+}
+
+.new-schedule-calender .schedule-hours{
+    position: relative;
+    width: 100%;
+    height: max-content;
+    /* height: var(--calendar-height, 500px); */
+    /* overflow-y: auto; */
+}
+
+.new-schedule-calender .schedule-hours:after{
+    content: "";
+    position: absolute;
+    left: 70px;
+    width: 2px;
+    background-color: #ECECEC;
+    top: 0;
+    bottom: 0;
+}
+
+.new-schedule-calender .schedule-calendar-hour-period{
+    height: var(--section-height, 50px);
+    width: 100%;
+    border-bottom: 2px dashed #ECECEC;
+}
+
+.new-schedule-calender .schedule-calendar-hour-period.half{
+    border-bottom: 2px solid #ECECEC;
+}
+
+.new-schedule-calender .schedule-calendar-hour-period.half:last-of-type{
+    border-bottom: none;
+}
+
+.new-schedule-calender .schedule-calendar-hour-period .schedule-time{
+    display: inline-block;
+    position: relative;
+    top: 50%;
+    width: 70px;
+    text-align: center;
+    transform: translateY(-50%);
+}

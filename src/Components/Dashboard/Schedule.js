@@ -2,7 +2,7 @@ import React from 'react';
 import {RiCalendarLine} from "react-icons/ri";
 
 import { DAYS, get_day, get_week_date_range, MONTHS } from '../../Data';
-import { randomColor, ranges_overlaps } from '../../Utils';
+import { ordinal_suffix, randomColor, ranges_overlaps } from '../../Utils';
 
 import "./Schedule.css";
 
@@ -49,11 +49,11 @@ const Schedule = ({schedule={}}) => {
     return (
         <div className='schedule-container'>
             <p className='schedule-date-range'>
-                <RiCalendarLine color='#99C183' size={24} /> {month_obj.long} {min + (previous_month ? month_obj.days : 0)} - {(goes_into_next_month || previous_month) && MONTHS[month + (goes_into_next_month ? 1 : 0)].long} {max - subtract}, {current_date.getFullYear()}
+                <RiCalendarLine color='#99C183' size={24} /> {month_obj.long} {ordinal_suffix(min + (previous_month ? month_obj.days : 0))} - {(goes_into_next_month || previous_month) && MONTHS[month + (goes_into_next_month ? 1 : 0)].long} {ordinal_suffix(max - subtract)}, {current_date.getFullYear()}
             </p>
 
             <div className='schedule-calender'>
-                {Array(7).fill(null).map((_, i) => {
+                {Array.from({length: 7}).map((_, i) => {
                     const this_date = min+i;
                     const subtract = this_date < 1 ? -month_obj.days : this_date > month_obj.days ? month_obj.days : 0;
 
@@ -62,7 +62,7 @@ const Schedule = ({schedule={}}) => {
                             <span className='day'>{DAYS[i].short}</span>
                             <div className='schedule-column-day top'></div>
                             <div className='schedule-column-day main'>
-                                {this_date - subtract}
+                                {ordinal_suffix(this_date - subtract)}
                             </div>
                             <div className='schedule-column-day bottom'></div>
                         </span>
