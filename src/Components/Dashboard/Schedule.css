@@ -38,7 +38,7 @@
 .schedule-calender .schedule-event p{
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #ECECEC;
+    color: inherit;
 }
 
 .schedule-calender .schedule-column-container{

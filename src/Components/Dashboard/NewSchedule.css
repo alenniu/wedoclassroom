@@ -35,6 +35,10 @@
     overflow-y: auto;
 }
 
+.new-schedule-container .new-schedule-calender::-webkit-scrollbar{
+    width: 5px;
+}
+
 .new-schedule-calender .schedule-event{
     position: absolute;
     border-radius: 2px;
@@ -49,7 +53,7 @@
 .new-schedule-calender .schedule-event p{
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #ECECEC;
+    color: inherit;
 }
 
 .new-schedule-container .new-schedule-column-container{

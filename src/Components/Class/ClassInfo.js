@@ -19,7 +19,7 @@ const ClassInfo = ({_class={}, assignments=[]}) => {
             
             <p><span className='info-title'>Email :</span> {teacher?.email}</p>
             
-            <p><span className='info-title'>Class Dates :</span> {schedules.map((s) => <span className='schedule'>{s.days.map((d) => DAYS[d].long).join(", ")} @ {(new Date(s.daily_start_time)).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"})} - {(new Date(s.daily_end_time)).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"})}</span>)}</p>
+            <p><span className='info-title'>Class Dates :</span> {schedules.map((s) => <span className='schedule'>{s.days.map((d) => DAYS[d].long).join(", ")} @ {(new Date(s.daily_start_time)).toLocaleTimeString(undefined, {hour: "numeric", minute: "2-digit"})} - {(new Date(s.daily_end_time)).toLocaleTimeString(undefined, {hour: "numeric", minute: "2-digit"})}</span>)}</p>
 
             <div className='upcoming-assignments'>
                 <h3 style={{margin: "20px 0"}}>Upcoming Assignments</h3>

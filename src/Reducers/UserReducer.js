@@ -1,6 +1,6 @@
-import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE, DECLINE_JOIN_REQUEST } from "../Actions/types";
+import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE, DECLINE_JOIN_REQUEST, SET_CLASSES_SCHEDULES } from "../Actions/types";
 
-const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, current_class_requests: [], total_class_requests: 0, requests: [], total_requests: 0, assignments: [], total_assignments: 0, class_attendance: []};
+const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, current_class_requests: [], total_class_requests: 0, requests: [], total_requests: 0, assignments: [], total_assignments: 0, class_attendance: [], classes_schedules: []};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -29,8 +29,8 @@ export default (state=INITIAL_STATE, action) => {
             new_state.total_assignments = payload.total;
         break;
 
-        case SET_CLASS_ATTENDANCE:
-            new_state.class_attendance = payload.attendance;
+        case SET_CLASSES_SCHEDULES:
+            new_state.classes_schedules = payload.classes_schedules;
         break;
 
         case UPDATE_STUDENT_CLASS_ATTENDANCE:{

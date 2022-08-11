@@ -147,7 +147,7 @@ export const onPressReturn = (func) => ({key, keyCode, which}) => {
 export const randomColor = () => "#" + Math.floor(Math.random()*16777215).toString(16);
 
 export const ranges_overlaps = (r1, r2) => {
-    return r1.min <= r2.max && r2.min <= r1.max
+    return r1.min <= r2.max && r2.min <= r1.max;
 }
 
 export const get_time_left = (til=0, from=Date.now()) => {
@@ -187,3 +187,5 @@ export const ordinal_suffix = (i) => {
     }
     return i + "th";
 }
+
+export const isWebkit = () => 'webkitRequestAnimationFrame' in window;

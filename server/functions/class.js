@@ -34,7 +34,7 @@ async function get_classes(limit=20, offset=0, search="", sort={}, filters={}){
 
             const search_regex = new RegExp(`${escaped_search}`, "i");
 
-            total = await Classes.count({is_full: false, ...filters, $or: [{subject: search_regex}, {tags: search_regex}]});
+            total = await Classes.count({is_full: false, ...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]});
 
             if(total){
                 classes = await Classes.find({is_full: false, ...filters, $or: [{subject: search_regex}, {tags: search_regex}]}).sort(sort).limit(limit).skip(offset).lean(true);
@@ -66,7 +66,7 @@ async function get_user_classes(user, limit=20, offset=0, search=""){
             total = await Classes.count({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}]}]});
 
             if(total){
-                classes = await Classes.find({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}]}]}).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}]}).limit(limit).skip(offset).lean(true);
             }
         }else{
             total = await Classes.count({$or: [{teacher: _id}, {students: _id}, {created_by: _id}]});
@@ -343,6 +343,37 @@ async function uncancel_class(class_id, user){
     }
 }
 
+async function get_classes_schedules({startPeriod, endPeriod}, filters={}, search="", user){
+    try{
+        const is_admin_or_sales = (user.type === "admin") || (user.type === "sales");
+    
+        const match = {$and: [{end_date: {$gte: new Date(startPeriod)}, start_date: {$lte: new Date(endPeriod)}}, {...filters}]};
+    
+        if(!is_admin_or_sales){
+            match.$or = match.$or || [];
+            match.$or.push({students: user._id}, {teacher: user._id});
+        }
+
+        if(search){
+            let escaped_search = escape_regex(search);
+            const search_regex = new RegExp(`${escaped_search}`, "i");
+
+            match.$and.push({$or: [{tags: search_regex}, {subject: search_regex}, {title: search_regex}, {description: search}]})
+        }
+
+        // console.log(JSON.stringify(match));
+    
+        const schedules = await Classes.aggregate([
+            {$match: match},
+            {$project: {_id: 1, title: 1, subject: 1, description: 1, tags: 1, bg_color: 1, text_color: 1, current_session: 1, cover_image: 1, students: 1, schedules: 1, start_date: 1, end_date: 1}}
+        ]);
+    
+        return schedules;
+    }catch(e){
+        throw e;
+    }
+}
+
 
 
 module.exports.get_class = get_class;
@@ -361,6 +392,7 @@ module.exports.update_attendance = update_attendance;
 module.exports.create_attendance = create_attendance;
 module.exports.add_teacher_to_class = add_teacher_to_class;
 module.exports.get_class_attendance = get_class_attendance;
+module.exports.get_classes_schedules = get_classes_schedules;
 module.exports.add_attachment_to_class = add_attachment_to_class;
 module.exports.get_class_payment_intent = get_class_payment_intent;
 module.exports.remove_student_from_class = remove_student_from_class;

@@ -34,7 +34,7 @@ const Announcement = ({_class, announcement={}, assignment=null, user={}}) => {
 
             <div className='announcement-content'>
                 <p className='announcement-title'>{title}{assignment && <span className='assignment'>{assignment.title}</span>}</p>
-                <p className='announcement-date'>{(new Date(createdAt)).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"})}</p>
+                <p className='announcement-date'>{(new Date(createdAt)).toLocaleDateString(undefined, {hour: "numeric", minute: "2-digit"})}</p>
 
                 <p className='announcement-message'>{message || description}</p>
 

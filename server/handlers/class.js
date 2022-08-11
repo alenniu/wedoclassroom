@@ -1,8 +1,9 @@
 import axios from "axios";
 import mongoose from "mongoose";
 import {Request, Response, NextFunction} from "express";
-import { accept_request, cancel_class, create_attendance, create_class, decline_request, end_class, get_class, get_classes, get_class_attendance, get_class_payment_intent, get_user_classes, remove_student_from_class, request_class, set_meeting_link, start_class, uncancel_class, update_attendance } from "../functions/class";
+import { accept_request, cancel_class, create_attendance, create_class, decline_request, end_class, get_class, get_classes, get_classes_schedules, get_class_attendance, get_class_payment_intent, get_user_classes, remove_student_from_class, request_class, set_meeting_link, start_class, uncancel_class, update_attendance } from "../functions/class";
 import { get_request } from "../functions/request";
+import { DAY } from "../../src/Data";
 
 const Classes = mongoose.model("class");
 const Class = Classes;
@@ -384,6 +385,24 @@ export const get_class_client_secret_handler = async (req: Request, res: Respons
         }else{
             return res.status(400).json({success: false, msg: "class_id must be provided"});
         }
+    }catch(e){
+        console.log(e);
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const get_classes_schedules_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        let {filters="{}", search="", startPeriod=Date.now(), endPeriod=Date.now()+(7*DAY)} = req.query;
+
+        filters = JSON.parse(filters);
+        
+        const classes_schedules = await get_classes_schedules({startPeriod, endPeriod}, filters, search, user);
+
+        // console.log("class_schedules", class_schedules);
+
+        return res.json({success: true, classes_schedules});
     }catch(e){
         console.log(e);
         return res.status(400).json({success: false, msg: e.message});

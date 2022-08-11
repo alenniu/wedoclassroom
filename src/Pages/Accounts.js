@@ -92,7 +92,7 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
                                     <td>{email}</td>
                                     <td>{phone || <span style={{opacity: 0.5}}>No Phone</span>}</td>
                                     <td>{type}</td>
-                                    <td>{(new Date(createdAt)).toLocaleDateString(undefined, {hour: "2-digit", minute: "2-digit"})}</td>
+                                    <td>{(new Date(createdAt)).toLocaleDateString(undefined, {hour: "numeric", minute: "2-digit"})}</td>
                                 </tr>
                             )
                         })}

@@ -65,12 +65,13 @@
 
 *::-webkit-scrollbar {
   width: 5px;               /* width of the entire scrollbar */
-  clip: auto
+  position: absolute;
 }
 
 *::-webkit-scrollbar-track {
   border-radius: 20px;
   background: var(--scollbar-track-color, #efefef); /* color of the tracking area */
+  position: absolute;
 }
 
 *::-webkit-scrollbar-thumb {
@@ -219,6 +220,10 @@ input:focus-visible, textarea:focus-visible{
 }
 
 .input-container.select:focus-within{
+  z-index: 4;
+}
+
+.input-container.select:hover, .input-container.select:active{
   z-index: 3;
 }
 
