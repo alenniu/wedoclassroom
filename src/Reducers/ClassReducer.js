@@ -35,7 +35,7 @@ export default (state=INITIAL_STATE, action) => {
         case EDIT_NEW_CLASS_VALUE:{
             const {keys=[], value} = payload;
 
-            new_state.edit.error = "";
+            new_state.create = {...new_state.create, error: ""};
             update_object(keys, value, new_state.create);
         }
         break;
@@ -43,7 +43,7 @@ export default (state=INITIAL_STATE, action) => {
         case EDIT_CLASS_VALUE:{
             const {keys=[], value} = payload;
             
-            new_state.edit.error = "";
+            new_state.edit = {...new_state.edit, error: ""};
             update_object(keys, value, new_state.edit);
         }
         break;

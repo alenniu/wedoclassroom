@@ -100,6 +100,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     };
     
     const onAddScheduleDay = (scehdule_index, day) => {
+        // console.log({day});
         schedules[scehdule_index].days.push(day.number);
         
         edit_new_class_value(["schedules", scehdule_index, "days"], schedules[scehdule_index].days);
@@ -108,7 +109,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     const onRemoveScheduleDay = (scehdule_index, index, day) => {
         schedules[scehdule_index].days.splice(index, 1);
             
-        edit_new_class_value([schedules, scehdule_index, "days"], schedules[scehdule_index].days);
+        edit_new_class_value(["schedules", scehdule_index, "days"], schedules[scehdule_index].days);
     }
 
     const onSelectImage = (e) => {

@@ -72,7 +72,7 @@ const ListInput = ({items=[], renderItem, search_array=[], search_property="", r
     const onPress_match = (item) => {
         // if(match_selected){
             if(onAddItem && typeof onAddItem === "function"){
-                onAddItem(search_prop?item[search_prop]:item);
+                onAddItem(item);
                 // console.log("item added");
             }
             setTyping(false);
@@ -175,7 +175,7 @@ const ListInput = ({items=[], renderItem, search_array=[], search_property="", r
             {((matches.length > 0 && typing)&&!matchSelected)?<div className="search-matches-container">
                 {matches.map((match, i) => {
                     return (
-                        <div className={`match-item-container ${match_button_container_classname}`}>
+                        <div key={search_array?match[search_prop]:match} className={`match-item-container ${match_button_container_classname}`}>
                             <button className={`match-item-button ${match_button_classname}`} onClick={() => onPress_match(match)}>
                                 <span className={"match-item-text"}>{search_prop?match[search_prop]:match}</span>
                             </button>
