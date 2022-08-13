@@ -147,7 +147,7 @@ async function create_class({title, subject, cover_image="", description, teache
 async function update_class({_id, title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_schedule, meeting_link, students=[]}){
     try{
         if(title && subject && class_type){
-            const updated_class = await Classes.findOneAndUpdate({_id}, {$set: {title, subject, cover_image, description, teacher: teacher?._id || teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, start_date, end_date, billing_schedule, meeting_link, students}}, {new: true, upsert: false});
+            const updated_class = await Classes.findOneAndUpdate({_id}, {$set: {title, subject, cover_image, description, teacher: teacher?._id || teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, start_date, end_date, billing_schedule, meeting_link, students, is_full: students.length >= max_students}}, {new: true, upsert: false});
 
             return updated_class;
         }else{
