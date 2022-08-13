@@ -127,6 +127,8 @@ const NewSchedule = ({schedules=[], date_range}) => {
 
                     const startTime = new Date(daily_start_time);
                     const endTime = new Date(daily_end_time);
+                    const startDayTime = startTime.getHours() + (startTime.getMinutes()/60);
+                    const endDayTime = endTime.getHours() + (endTime.getMinutes()/60);
                     const time_range = `${startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - ${endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}`
 
                     return days.map((d) => {
@@ -138,10 +140,26 @@ const NewSchedule = ({schedules=[], date_range}) => {
 
                         // const maxHeight = 265 / (items_on_same_day.length || 1);
 
+                        const overlapping_items_before = arr.filter((s, si) => {
+
+                            const sStartTime = new Date(s.daily_start_time); 
+                            const sEndTime = new Date(s.daily_end_time); 
+                            const sStartDayTime = sStartTime.getHours() + (sStartTime.getMinutes()/60);
+                            const sEndDayTime = sEndTime.getHours() + (sEndTime.getMinutes()/60);
+                            
+                            return (si < i && s.days.includes(d) && ranges_overlaps({min: startDayTime, max: endDayTime}, {min: sStartDayTime, max: sEndDayTime}))
+                        });
+
+                        console.log("overlapping_items_before", overlapping_items_before);
+
+                        const top = HOUR_SECTION_HEIGHT * startDayTime;
+                        const leftOffset = overlapping_items_before.length * 30;
+
+                        const height = HOUR_SECTION_HEIGHT * (endDayTime - startDayTime);
 
 
                         return (
-                            <div title={`${title} - ${time_range}`} className='schedule-event clickable' onClick={() => {navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}))`, width: `50px`, top: `${HOUR_SECTION_HEIGHT * (startTime.getHours() + (startTime.getMinutes()/60))}px`, height: `${HOUR_SECTION_HEIGHT * ((endTime.getHours() + (endTime.getMinutes()/60)) - (startTime.getHours() + (startTime.getMinutes()/60)))}px`, backgroundColor: bg_color, color: text_color}}>
+                            <div title={`${title} | ${time_range}`} className='schedule-event clickable' onClick={() => {navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, width: `50px`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: top}}>
                                 <p>{title}</p>
                                 <p>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</p>
                                 <p>{DAYS[d].short}</p>
