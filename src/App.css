@@ -1,5 +1,9 @@
 :root{
   --nav-border: 1px solid rgb(63, 63, 68, 0.1);
+  --dashboard-header-height: 90px;
+  --dashboard-opened-nav-width: 280px;
+  --dashboard-closed-nav-width: 50px;
+  --dashboard-nav-icon-size: 30px;
   --class-bg-color: white;
   --class-border: none;
   --class-box-shadow: 1px 1px 5px grey;

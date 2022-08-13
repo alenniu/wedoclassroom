@@ -22,11 +22,21 @@ const InfiniteScroller = forwardRef(({children, onLayout, loadNext, loadPrev, ho
         console.log({deltaX, deltaY, scrollTop, scrollLeft, scrollWidth, scrollHeight})
     }
 
-    useEffect(() => {
+    const onSize = (e) => {
         const {innerWidth, innerHeight, scrollY, scrollX} = window;
         const { x, y, top, left, width, height, } = ref.current.getBoundingClientRect();
-
+        
         typeof(onLayout) === "function" && onLayout({pageOffsetY: top+scrollY, pageOffsetX: left+scrollX, top, left, width, height, windowWidth: innerWidth, windowHeight: innerHeight});
+    }
+
+    useEffect(() => {
+        onSize();
+
+        window.addEventListener("resize", onSize);
+
+        return () => {
+            window.removeEventListener("resize", onSize);
+        }
     }, []);
 
     return (

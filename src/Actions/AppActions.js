@@ -1,6 +1,6 @@
 import { api } from "../Utils/api";
 import { get_class } from "./ClassActions";
-import { SET_CLASS, SET_CONFIG, SET_CURRENT_CLASS, SET_LOADING, SET_USER } from "./types";
+import { SET_CLASS, SET_CONFIG, SET_CURRENT_CLASS, SET_LOADING, SET_NAV_OPEN, SET_USER, TOGGLE_NAV } from "./types";
 
 export const set_user = (user) => {
     return {type: SET_USER, payload: {user}};
@@ -24,6 +24,22 @@ export const set_current_class = (_class) => {
         payload: { _class },
     };
 };
+
+export const set_nav_open = (open) => {
+    return {type: SET_NAV_OPEN, payload: {open}};
+}
+
+export const toggle_nav = () => {
+    return {type: TOGGLE_NAV};
+}
+
+export const open_nav = () => {
+    return set_nav_open(true);
+}
+
+export const close_nav = () => {
+    return set_nav_open(false);
+}
 
 export const get_current_class = (class_id) => async (dispatch) => {
     try{

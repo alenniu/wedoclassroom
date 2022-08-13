@@ -1,35 +1,21 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line, RiTimeLine} from "react-icons/ri";
+import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line, RiTimeLine, RiArrowRightSLine, RiArrowLeftSLine} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
-import { logout, set_loading } from '../../Actions';
+import { close_nav, logout, open_nav, set_loading, toggle_nav } from '../../Actions';
 
 import "./Dashboard.css";
 import { get_full_image_url } from '../../Utils';
 
-const DashboardLayout = ({user, is_admin, is_teacher, is_student, is_sales, logout, set_loading}) => {
+const DashboardLayout = ({user, is_admin, is_teacher, nav_open, toggle_nav, open_nav, close_nav, is_student, is_sales, logout, set_loading}) => {
     
     const {name={first: "Ruth", last: "Langmore"}, phone, type, photo_url="/Assets/Images/AuthBackground.png"} = user;
-    
-    const [navOpen, setNavOpen] = useState(null);
     
     const navigate = useNavigate();
     
     const location = useLocation();
     const is_on_new_class = location.pathname === "/dashboard/class/new";
-
-    const openNav = () => {
-        setNavOpen(true);
-    }
-
-    const closeNav = () => {
-        setNavOpen(false);
-    }
-
-    const toggleNav = () => {
-        setNavOpen((open) => !open);
-    }
 
     const onPressMessageIcon = async () => {
         set_loading(true);
@@ -45,7 +31,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, is_sales, logo
 
     return (
         <div className='page-container dashboard'>
-            <nav className={`admin-nav ${navOpen===false?"closed":navOpen===true?"open":""}`}>
+            <nav className={`admin-nav ${nav_open===false?"closed":nav_open===true?"open":""}`}>
                 <div className='nav-wrapper'>
                     <div className='nav-image-container'>
                         <img src="/Assets/Images/AuthBackground.png" />
@@ -96,12 +82,12 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, is_sales, logo
 
                         <button className='button primary'>Contact Support</button>
                     </div>
+
                 </div>
             </nav>
 
-
-            <div className={`admin-page-container ${navOpen===false?"nav-closed":navOpen===true?"nav-open":""}`}>
-                <header className={`admin-header ${navOpen===false?"nav-closed":navOpen===true?"nav-open":""}`}>
+            <div className={`admin-page-container ${nav_open===false?"nav-closed":nav_open===true?"nav-open":""}`}>
+                <header className={`admin-header ${nav_open===false?"nav-closed":nav_open===true?"nav-open":""}`}>
                     <div className='main-col'>
                         <div className='dashboard-greeting-action'>
                             <p className='dashboard-greeting'>Good Morning, <span className='username'>{name.first}</span></p>
@@ -131,12 +117,16 @@ const DashboardLayout = ({user, is_admin, is_teacher, is_student, is_sales, logo
                 </header>
                 <Outlet />
             </div>
+            
+            <span title='toggle nav ([)' className={`nav-toggle clickable ${nav_open===true?"open":nav_open===false?"closed":""}`} onClick={toggle_nav}>
+                <RiArrowLeftSLine className='nav-toogle-icon' />
+            </span>
         </div>
     );
 }
 
 function map_state_to_props({App, Auth}){
-    return {user: App.user, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student, is_sales: Auth.is_sales}
+    return {user: App.user, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student, is_sales: Auth.is_sales, nav_open: App.nav_open}
 }
 
-export default connect(map_state_to_props, {logout, set_loading})(DashboardLayout);
+export default connect(map_state_to_props, {logout, toggle_nav, open_nav, close_nav, set_loading})(DashboardLayout);

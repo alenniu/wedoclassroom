@@ -31,7 +31,7 @@ const routes = [
         authRedirect: "/login",
         children: [
             {
-                path: "/dashboard/",
+                path: "/dashboard",
                 component: Dashboard,
                 exact: true,
                 children: null,
