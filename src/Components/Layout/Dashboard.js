@@ -38,15 +38,15 @@ const DashboardLayout = ({user, is_admin, is_teacher, nav_open, toggle_nav, open
                     </div>
 
                     <ul className='nav-links'>
-                        <li className='nav-link'>
+                        <li title='Dashboard' className='nav-link'>
                             <NavLink to="/dashboard/" className="button"><RiDashboardLine className='link-icon' size={"20px"} /><span className='link-label'>Dashboard</span></NavLink>
                         </li>
 
-                        <li className='nav-link'>
+                        <li title='Discover Classes' className='nav-link'>
                             <NavLink to="/dashboard/classes" className="button"><RiBook2Line className='link-icon' size={"20px"} /><span className='link-label'>Classes</span></NavLink>
                         </li>
 
-                        <li className='nav-link'>
+                        <li title='Schedule' className='nav-link'>
                             <NavLink to="/dashboard/schedule" className="button"><RiCalendar2Line className='link-icon' size={"20px"} /><span className='link-label'>My Schedule</span></NavLink>
                         </li>
 
@@ -58,16 +58,16 @@ const DashboardLayout = ({user, is_admin, is_teacher, nav_open, toggle_nav, open
                             <NavLink to="/dashboard/reviews" className="button"><RiStarLine className='link-icon' size={"20px"} /><span className='link-label'>Reviews</span></NavLink>
                         </li> */}
 
-                        {is_teacher && <li className='nav-link'>
+                        {is_teacher && <li title='Payments' className='nav-link'>
                             <NavLink to="/dashboard/payments" className="button"><BsCurrencyDollar className='link-icon' size={"20px"} /><span className='link-label'>My Payments</span></NavLink>
                         </li>}
 
-                        {(is_admin || is_sales) && <li className='nav-link'>
+                        {(is_admin || is_sales) && <li title='Accounts' className='nav-link'>
                             <NavLink to="/dashboard/accounts" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>Accounts</span></NavLink>
                         </li>}
 
-                        {is_admin && <li className='nav-link'>
-                            <NavLink to="/dashboard/sessions" className="button"><RiTimeLine className='link-icon' size={"20px"} /><span className='link-label'>Session</span></NavLink>
+                        {is_admin && <li title='Sessions' className='nav-link'>
+                            <NavLink to="/dashboard/sessions" className="button"><RiTimeLine className='link-icon' size={"20px"} /><span className='link-label'>Sessions</span></NavLink>
                         </li>}
                     </ul>
 
