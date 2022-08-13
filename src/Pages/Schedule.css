@@ -1,0 +1,4 @@
+.page.schedule .main-col{
+    padding-right: 0px;
+    --calendar-height: max(700px, 60vh);
+}

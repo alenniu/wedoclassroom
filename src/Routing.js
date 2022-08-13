@@ -18,6 +18,7 @@ import Payments from './Pages/Payments';
 import Sessions from './Pages/Sessions';
 import EditAccount from './Pages/Account/EditAccount';
 import NewAccount from './Pages/Account/NewAccount';
+import Schedule from './Pages/Schedule';
 
 const routes = [
     {
@@ -59,7 +60,7 @@ const routes = [
             },
             {
                 path: "/dashboard/schedule",
-                component: Dashboard,
+                component: Schedule,
                 exact: true,
                 children: null,
                 isIndex: false,
