@@ -10,8 +10,12 @@ function App() {
 
   const onKeyPress = (e:KeyboardEvent) => {
     switch(e.key){
-      case "[":
-        store.dispatch({type: TOGGLE_NAV});
+      case "[":{
+        const {activeElement} = document;
+        if(activeElement.tagName !== "INPUT" && activeElement.tagName !== "TEXTAREA" && activeElement.tagName !== "SELECT"){
+          store.dispatch({type: TOGGLE_NAV});
+        }
+      }
       break;
 
       default:
