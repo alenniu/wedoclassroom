@@ -34,14 +34,14 @@ nav.admin-nav{
     left: var(--dashboard-opened-nav-width, 280px);
     top: calc(var(--dashboard-header-height, 90px) + 30px);
     transform: translateX(-50%) rotateZ(0deg);
-    width: 40px;
-    height: 40px;
-    border-radius: 40px;
+    width: var(--nav-toggle-size, 40px);
+    height: var(--nav-toggle-size, 40px);
+    border-radius: var(--nav-toggle-size, 40px);
     box-shadow: var(--input-box-shadow, none);
     background-color: var(--bg-color, white);
     color: var(--active-nav-link-text-color, black);
     border: 2px solid var(--active-nav-link-text-color, black);
-    font-size: 30px;
+    font-size: calc(var(--nav-toggle-size, 40px) - 10px);
     transition: transform .300s .300s, left .300s, top .300s;
 }
 
@@ -53,6 +53,11 @@ nav.admin-nav{
     top: calc(var(--dashboard-header-height, 90px) - 50px);
     left: var(--dashboard-closed-nav-width, 280px);
     transform: translateX(-50%) rotateZ(180deg);
+}
+
+.nav-toggle.closed svg{
+    position: relative;
+    right: 1px;
 }
 
 .nav-wrapper .nav-links{

@@ -1,4 +1,4 @@
-const { get_classes_handler, create_class_handler, request_class_handler, accept_request_handler, decline_request_handler, update_student_attendance_handle, get_class_attendance_handler, get_class_handler, get_class_client_secret_handler, create_student_attendance_handle, get_classes_by_subject_handler, start_class_handler, end_class_handler, set_class_meeting_link_handler, remove_class_student_request_handler, cancel_class_handler, uncancel_class_handler, get_classes_schedules_handler, update_class_handler } = require("../handlers/class");
+const { get_classes_handler, create_class_handler, request_class_handler, accept_request_handler, decline_request_handler, update_student_attendance_handle, get_class_attendance_handler, get_class_handler, get_class_client_secret_handler, create_student_attendance_handle, get_classes_by_subject_handler, start_class_handler, end_class_handler, set_class_meeting_link_handler, remove_class_student_request_handler, cancel_class_handler, uncancel_class_handler, get_classes_schedules_handler, update_class_handler, get_available_classes_handler } = require("../handlers/class");
 const verify_admin = require("../middleware/verify_admin");
 const verify_user = require("../middleware/verify_user");
 const verify_student = require("../middleware/verify_student");
@@ -19,7 +19,7 @@ const class_cover_upload = multer({storage: class_cover_storage, fileFilter: (re
 
 module.exports = (app) => {
 
-    router.route("/").get(verify_user, get_classes_handler).post(verify_user, class_cover_upload.single("cover"), create_class_handler).put(verify_user, class_cover_upload.single("cover"), update_class_handler);
+    router.route("/").get(verify_user, get_available_classes_handler).post(verify_user, class_cover_upload.single("cover"), create_class_handler).put(verify_user, class_cover_upload.single("cover"), update_class_handler);
 
     
     router.route("/attendance").get(verify_teacher, get_class_attendance_handler).post(verify_teacher, create_student_attendance_handle).put(verify_teacher, update_student_attendance_handle);

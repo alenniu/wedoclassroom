@@ -1,7 +1,7 @@
 import axios from "axios";
 import mongoose from "mongoose";
 import {Request, Response, NextFunction} from "express";
-import { accept_request, cancel_class, create_attendance, create_class, decline_request, end_class, get_class, get_classes, get_classes_schedules, get_class_attendance, get_class_payment_intent, get_user_classes, remove_student_from_class, request_class, set_meeting_link, start_class, uncancel_class, update_attendance, update_class } from "../functions/class";
+import { accept_request, cancel_class, create_attendance, create_class, decline_request, end_class, get_available_classes, get_class, get_classes, get_classes_schedules, get_class_attendance, get_class_payment_intent, get_user_classes, remove_student_from_class, request_class, set_meeting_link, start_class, uncancel_class, update_attendance, update_class } from "../functions/class";
 import { get_request } from "../functions/request";
 import { DAY } from "../../src/Data";
 
@@ -284,7 +284,7 @@ export const get_class_handler = async (req: Request, res: Response, next: NextF
     }
 }
 
-export const get_classes_handler = async (req: Request, res: Response, next: NextFunction) => {
+export const get_available_classes_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {user} = req;
         let {limit=20, offset=0, search="", sort="{}", filters="{}"} = req.query;
@@ -294,7 +294,7 @@ export const get_classes_handler = async (req: Request, res: Response, next: Nex
         sort = JSON.parse(sort) || {};
         filters = JSON.parse(filters) || {};
         
-        const {classes, total} = await get_classes(limit, offset, search, sort, filters);
+        const {classes, total} = await get_available_classes(limit, offset, search, sort, filters);
 
         return res.json({classes, total, success: true})
     }catch(e){

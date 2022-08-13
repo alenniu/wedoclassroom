@@ -1,5 +1,6 @@
 :root{
   --calendar-height: 500px;
+  --nav-toggle-size: 35px;
   --nav-border: 1px solid rgb(63, 63, 68, 0.1);
   --dashboard-header-height: 90px;
   --dashboard-opened-nav-width: 280px;

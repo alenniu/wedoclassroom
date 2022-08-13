@@ -17,7 +17,7 @@ module.exports = (app) => {
     
     router.route("/accounts/:account_id").get(verify_user, get_account_handler);
     
-    router.route("/classes").get(verify_admin, admin_get_classes)
+    router.route("/classes").get(verify_user, admin_get_classes)
     
     router.route("/set_class_teacher").post(verify_admin, set_class_teacher);
     

@@ -12,7 +12,7 @@ const KEY_ENTER = 13;
 const KEY_SHIFT = 16;
 const KEY_ESCAPE = 27;
 
-const TypeSelect = ({options=[], value, textValue, placeholder="Select", disabled=false, onChange, onChangeText, renderOption, renderSelected, placeholderAsOption=false, DrowDownIcon=RiArrowDownSLine, localSearch=true }) => {
+const TypeSelect = ({options=[], value, textValue, placeholder="Select", disabled=false, onChange, onChangeText, renderOption, renderSelected, placeholderAsOption=false, DrowDownIcon=RiArrowDownSLine, localSearch=true, name, onOpen, onClose}) => {
     const [open, setOpen] = useState(false);
     const [text, setText] = useState("");
     const [currentValue, setCurrentValue] = useState(undefined);
@@ -92,10 +92,12 @@ const TypeSelect = ({options=[], value, textValue, placeholder="Select", disable
             inputRef.current?.blur();
             setSuggestionIndex(-1);
             onNewText({target: {value: ""}});
+            typeof(onClose) === "function" && onClose({target: inputRef.current});
         }
         
         if(open){
-            inputRef.current?.focus()
+            inputRef.current?.focus();
+            typeof(onOpen) === "function" && onOpen({target: inputRef.current});
         }
     }, [open]);
     
@@ -126,7 +128,7 @@ const TypeSelect = ({options=[], value, textValue, placeholder="Select", disable
     return (
         <div ref={containerRef} className={`type-select-container ${open?"open":"close"} ${disabled?"disabled":""}`}>
             <div className='input-container'>
-                <input type="text" disabled={disabled} value={usedText} ref={inputRef} onChange={onNewText} onFocus={openSelect} placeholder={!selected_option && placeholder} onKeyDown={onKeyPress} />
+                <input name={name} type="text" disabled={disabled} value={usedText} ref={inputRef} onChange={onNewText} onFocus={openSelect} placeholder={!selected_option && placeholder} onKeyDown={onKeyPress} />
 
                 {!open && selected_option && renderSel(selected_option)}
 

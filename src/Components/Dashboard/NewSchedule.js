@@ -1,8 +1,8 @@
 import React from 'react';
-import {RiCalendarLine} from "react-icons/ri";
+import {RiArrowLeftSLine, RiArrowRightSLine, RiCalendarLine} from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
 
-import { DAYS, get_day, get_week_date_range, MONTHS } from '../../Data';
+import { DAY, DAYS, get_day, get_week_date_range, MONTHS } from '../../Data';
 import { isWebkit, ordinal_suffix, randomColor, ranges_overlaps } from '../../Utils';
 
 import "./NewSchedule.css";
@@ -48,37 +48,40 @@ const HOUR_SECTION_HEIGHT = 100;
 
 const is_webkit = isWebkit();
 
-const NewSchedule = ({schedules=[], date_range}) => {
+const NewSchedule = ({schedules=[], date_range={}, onClickNextDateRange, onClickPrevDateRange, is_admin, is_sales}) => {
 
     const navigate = useNavigate()
 
-    const current_date = new Date();
-    const month = current_date.getMonth();
-    const date = current_date.getDate();
-    const {min, max} = get_week_date_range(month, date);
-    const previous_month = min<1;
-    const month_obj = MONTHS[month - (previous_month?1:0)] 
+    const {min=new Date(), max=new Date()} = date_range || {};
+    const minDate = min.getDate();
+    const maxDate = max.getDate()-1;
+    const minMonth = MONTHS[min.getMonth()];
+    const maxMonth = MONTHS[max.getMonth()];
 
-    const goes_into_next_month = !previous_month && max>month_obj.days;
+    const onClickNextRange = (e) => {
+        typeof(onClickNextDateRange) === "function" && onClickNextDateRange(e);
+    }
     
-    const subtract = goes_into_next_month?month_obj.days:0;
+    const onClickPrevRange = (e) => {
+        typeof(onClickPrevDateRange) === "function" && onClickPrevDateRange(e);
+    }
 
     return (
         <div className='new-schedule-container'>
             <p className='schedule-date-range'>
-                <RiCalendarLine color='#99C183' size={24} /> {month_obj.long} {ordinal_suffix(min + (previous_month ? month_obj.days : 0))} - {(goes_into_next_month || previous_month) && MONTHS[month + (goes_into_next_month ? 1 : 0)].long} {ordinal_suffix(max - subtract)}, {current_date.getFullYear()}
+                <span onClick={onClickPrevRange} className='schedule-range-arrow prev clickable'><RiArrowLeftSLine color='#99C183' size={24} /></span>
+                <RiCalendarLine color='#99C183' size={24} /> {minMonth.long} {ordinal_suffix(minDate)} - {(maxMonth.short !== minMonth.short)?maxMonth.long+" ":""}{ordinal_suffix(maxDate)}, {min.getFullYear()}
+                <span onClick={onClickNextRange} className='schedule-range-arrow next clickable'><RiArrowRightSLine color='#99C183' size={24} /></span>
             </p>
 
             <div className='schedule-days-columns'>
                 {Array.from({length: 7}).map((_, i) => {
-                    const this_date = min+i;
-                    const subtract = this_date < 1 ? -month_obj.days : this_date > month_obj.days ? month_obj.days : 0;
-
+                    const this_date = new Date(min.getTime() + (i * DAY));
                     return (
                         <span className='new-schedule-column-container'>
                             <span className='day'>
-                                <p>{DAYS[i].short}</p>
-                                <p>{ordinal_suffix(this_date - subtract)}</p>
+                                <p>{DAYS[this_date.getDay()].short}</p>
+                                <p>{ordinal_suffix(this_date.getDate())}</p>
                             </span>
                             {/* <div className='schedule-column-day top'></div>
                             <div className='schedule-column-day main'>
@@ -150,7 +153,7 @@ const NewSchedule = ({schedules=[], date_range}) => {
                             return (si < i && s.days.includes(d) && ranges_overlaps({min: startDayTime, max: endDayTime}, {min: sStartDayTime, max: sEndDayTime}))
                         });
 
-                        console.log("overlapping_items_before", overlapping_items_before);
+                        // console.log("overlapping_items_before", overlapping_items_before);
 
                         const top = HOUR_SECTION_HEIGHT * startDayTime;
                         const leftOffset = overlapping_items_before.length * 30;
@@ -159,7 +162,7 @@ const NewSchedule = ({schedules=[], date_range}) => {
 
 
                         return (
-                            <div title={`${title} | ${time_range}`} className='schedule-event clickable' onClick={() => {navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, width: `50px`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: top}}>
+                            <div title={`${title} | ${time_range}`} className='schedule-event clickable' onClick={() => {(is_admin || is_sales) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, width: `50px`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: top}}>
                                 <p>{title}</p>
                                 <p>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</p>
                                 <p>{DAYS[d].short}</p>

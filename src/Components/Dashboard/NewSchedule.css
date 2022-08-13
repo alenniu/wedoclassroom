@@ -12,6 +12,15 @@
     margin-bottom: 20px;
 }
 
+.new-schedule-container .schedule-date-range .schedule-range-arrow{
+    position: relative;
+    top: 2px;
+}
+
+.new-schedule-container .schedule-range-arrow.next{
+    margin-left: 8px;
+}
+
 .new-schedule-container .schedule-date-range svg{
     margin-right: 10px;
 }

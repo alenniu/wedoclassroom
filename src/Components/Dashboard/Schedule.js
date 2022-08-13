@@ -1,8 +1,8 @@
 import React from 'react';
-import {RiCalendarLine} from "react-icons/ri";
+import {RiArrowLeftSLine, RiArrowRightSLine, RiCalendarLine} from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
 
-import { DAYS, get_day, get_week_date_range, MONTHS } from '../../Data';
+import { DAY, DAYS, get_day, get_week_date_range, MONTHS } from '../../Data';
 import { ordinal_suffix, randomColor, ranges_overlaps } from '../../Utils';
 
 import "./Schedule.css";
@@ -34,38 +34,43 @@ const EVENTS = [
     },
 ]
 
-const Schedule = ({schedules=[], date_range}) => {
+const Schedule = ({schedules=[], date_range={}, onClickNextDateRange, onClickPrevDateRange, is_admin, is_sales}) => {
 
     const navigate = useNavigate();
 
-    const current_date = new Date();
-    const month = current_date.getMonth();
-    const date = current_date.getDate();
-    const {min, max} = get_week_date_range(month, date);
-    const previous_month = min<1;
-    const month_obj = MONTHS[month - (previous_month?1:0)] 
+    const {min=new Date(), max=new Date()} = date_range || {};
+    const minDate = min.getDate();
+    const maxDate = max.getDate()-1;
+    const minMonth = MONTHS[min.getMonth()];
+    const maxMonth = MONTHS[max.getMonth()];
 
-    const goes_into_next_month = !previous_month && max>month_obj.days;
+    const onClickNextRange = (e) => {
+        typeof(onClickNextDateRange) === "function" && onClickNextDateRange(e);
+    }
     
-    const subtract = goes_into_next_month?month_obj.days:0;
+    const onClickPrevRange = (e) => {
+        typeof(onClickPrevDateRange) === "function" && onClickPrevDateRange(e);
+    }
 
     return (
         <div className='schedule-container'>
             <p className='schedule-date-range'>
-                <RiCalendarLine color='#99C183' size={24} /> {month_obj.long} {ordinal_suffix(min + (previous_month ? month_obj.days : 0))} - {(goes_into_next_month || previous_month) && MONTHS[month + (goes_into_next_month ? 1 : 0)].long} {ordinal_suffix(max - subtract)}, {current_date.getFullYear()}
+                <span onClick={onClickPrevRange} className='schedule-range-arrow prev clickable'><RiArrowLeftSLine color='#99C183' size={24} /></span>
+                <RiCalendarLine color='#99C183' size={24} /> {minMonth.long} {ordinal_suffix(minDate)} - {(maxMonth.short !== minMonth.short)?maxMonth.long+" ":""}{ordinal_suffix(maxDate)}, {min.getFullYear()}
+                <span onClick={onClickNextRange} className='schedule-range-arrow next clickable'><RiArrowRightSLine color='#99C183' size={24} /></span>
             </p>
 
             <div className='schedule-calender'>
                 {Array.from({length: 7}).map((_, i) => {
-                    const this_date = min+i;
-                    const subtract = this_date < 1 ? -month_obj.days : this_date > month_obj.days ? month_obj.days : 0;
+                    const this_date = new Date(min.getTime() + (i * DAY));
+                    
 
                     return (
                         <span className='schedule-column-container'>
-                            <span className='day'>{DAYS[i].short}</span>
+                            <span className='day'>{DAYS[this_date.getDay()].short}</span>
                             <div className='schedule-column-day top'></div>
                             <div className='schedule-column-day main'>
-                                {ordinal_suffix(this_date - subtract)}
+                                {ordinal_suffix(this_date.getDate())}
                             </div>
                             <div className='schedule-column-day bottom'></div>
                         </span>
@@ -106,7 +111,7 @@ const Schedule = ({schedules=[], date_range}) => {
                         const maxHeight = 265 / (items_on_same_day.length || 1);
 
                         return (
-                            <div title={`${title} - ${time_range}`} className='schedule-event clickable' onClick={() => {navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(${((100/7)*days[0])}% + 5px)`, width: `calc(${(100/7) * days.length}% - 10px)`, top: `${160 + (items_on_same_day_before.length * maxHeight)}px`, maxHeight: `${maxHeight}px`, backgroundColor: bg_color, color: text_color}}>
+                            <div title={`${title} - ${time_range}`} className='schedule-event clickable' onClick={() => {(is_admin || is_sales) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(${((100/7)*days[0])}% + 5px)`, width: `calc(${(100/7) * days.length}% - 10px)`, top: `${160 + (items_on_same_day_before.length * maxHeight)}px`, maxHeight: `${maxHeight}px`, backgroundColor: bg_color, color: text_color}}>
                                 <p>{title}</p>
                                 <p>{time_range}</p>
                                 <p>{DAYS[days[0]].short}{days.length>1?" - " + DAYS[days.at(-1)].short:""}</p>

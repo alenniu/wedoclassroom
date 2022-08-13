@@ -10,3 +10,23 @@
     text-align: center;
     margin-bottom: 20px;
 }
+
+.page.dashboard .filters-search-container{
+    display: flex;
+}
+
+.filters-search-container .filters-container{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex: 1;
+}
+
+.filters-container .input-container.select{
+    width: 150px;
+}
+
+.filters-search-container .search-container{
+    width: 200px;
+    margin-left: 20px;
+}

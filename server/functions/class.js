@@ -24,7 +24,7 @@ async function get_class(class_id, user){
     }
 }
 
-async function get_classes(limit=20, offset=0, search="", sort={}, filters={}){
+async function get_available_classes(limit=20, offset=0, search="", sort={}, filters={}){
     try{
         let classes = [];
         let total = 0;
@@ -37,12 +37,40 @@ async function get_classes(limit=20, offset=0, search="", sort={}, filters={}){
             total = await Classes.count({is_full: false, ...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]});
 
             if(total){
-                classes = await Classes.find({is_full: false, ...filters, $or: [{subject: search_regex}, {tags: search_regex}]}).sort(sort).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find({is_full: false, ...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }else{
             total = await Classes.count({is_full: false, ...filters});
             if(total){
                 classes = await Classes.find({is_full: false, ...filters}).sort(sort).limit(limit).skip(offset).lean(true);
+            }
+        }
+
+        return {classes, total};
+    }catch(e){
+        throw e;
+    }
+}
+
+async function get_classes(limit=20, offset=0, search="", sort={}, filters={}, user){
+    try{
+        let classes = [];
+        let total = 0;
+
+        if(search){
+            let escaped_search = escape_regex(search);
+
+            const search_regex = new RegExp(`${escaped_search}`, "i");
+
+            total = await Classes.count({...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]});
+
+            if(total){
+                classes = await Classes.find({...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}).sort(sort).limit(limit).skip(offset).lean(true);
+            }
+        }else{
+            total = await Classes.count(filters);
+            if(total){
+                classes = await Classes.find(filters).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }
 
@@ -360,6 +388,12 @@ async function uncancel_class(class_id, user){
 async function get_classes_schedules({startPeriod, endPeriod}, filters={}, search="", user){
     try{
         const is_admin_or_sales = (user.type === "admin") || (user.type === "sales");
+
+        Object.keys(filters).forEach((key) => {
+            if(mongoose.isValidObjectId(filters[key])){
+                filters[key] = new mongoose.Types.ObjectId(filters[key]);
+            };
+        });
     
         const match = {$and: [{end_date: {$gte: new Date(startPeriod)}, start_date: {$lte: new Date(endPeriod)}}, {...filters}]};
     
@@ -408,6 +442,7 @@ module.exports.create_attendance = create_attendance;
 module.exports.add_teacher_to_class = add_teacher_to_class;
 module.exports.get_class_attendance = get_class_attendance;
 module.exports.get_classes_schedules = get_classes_schedules;
+module.exports.get_available_classes = get_available_classes;
 module.exports.add_attachment_to_class = add_attachment_to_class;
 module.exports.get_class_payment_intent = get_class_payment_intent;
 module.exports.remove_student_from_class = remove_student_from_class;

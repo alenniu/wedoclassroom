@@ -151,13 +151,18 @@ export const set_class_teacher = async (req: Request, res: Response, next: NextF
 
 export const admin_get_classes = async (req: Request, res: Response, next: NextFunction) => {
     try{
+        const {user} = req;
         let {limit=20, offset=0, search=""} = req.query;
         limit = Number(limit) || 20;
         offset = Number(offset) || 0;
 
-        const {classes, total} = await get_classes(limit, offset, search);
-
-        res.json({classes, total, success: true});
+        if((user.type === "admin") || (user.type === "sales")){
+            const {classes, total} = await get_classes(limit, offset, search);
+    
+            res.json({classes, total, success: true});
+        }else{
+            return res.status(401).json({success: false, msg: "Only admins or sales can get all classes"});
+        }
     }catch(e){
         res.status(400).json({success: false, msg: e.message});
     }
