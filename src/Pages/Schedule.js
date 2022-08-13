@@ -49,7 +49,6 @@ const SchedulePage = ({classes=[], total=0, classes_schedules=[], get_classes_sc
         <div className='page schedule'>
             <div className='main-col fullwidth'>
                 <NewSchedule schedules={schedules} date_range={weekRange} />
-                <Schedule schedules={schedules} />
             </div>
         </div>
     );
