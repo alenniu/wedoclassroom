@@ -1,7 +1,7 @@
 import axios from "axios";
 import { api } from "../Utils/api";
 import { set_class } from "./AppActions";
-import { CREATE_CLASS, EDIT_NEW_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_CLASS, SET_CURRENT_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_SUBJECT_CLASSES, DECLINE_JOIN_REQUEST, EDIT_CLASS_VALUE, UPDATE_CLASS, SET_UPDATE_CLASS_ERROR } from "./types";
+import { CREATE_CLASS, EDIT_NEW_CLASS_VALUE, SET_CLASSES, SET_CREATE_CLASS_ERROR, SET_POPULAR_CLASSES, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_CLASS, SET_CURRENT_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_SUBJECT_CLASSES, DECLINE_JOIN_REQUEST, EDIT_CLASS_VALUE, UPDATE_CLASS, SET_UPDATE_CLASS_ERROR, GET_CLASS_RESCHEDULES } from "./types";
 
 export const set_classes = (classes = [], total = 0) => {
     return {
@@ -91,6 +91,26 @@ export const get_classes = (limit = 20, offset = 0, search = "", sort = "{}", fi
         console.error(e);
     }
 };
+
+export const get_class_reschedules = (class_id, limit=20, offset=0, sort='{}', filters='{}', action_to_dispatch=GET_CLASS_RESCHEDULES) => async (dispatch) => {
+    try{
+        const res = await api("get", `/api/reschedules/class/${class_id}`, {params: {limit, offset, sort, filters}});
+
+        if(res.data){
+            const {success, msg, reschedules=[], total=0} = res.data
+            if(success){
+                action_to_dispatch && dispatch({type: action_to_dispatch, payload: {reschedules, total}})
+                return res.data;
+            }
+
+            console.log(msg)
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.log(e);
+    }
+}
 
 export const get_classes_by_subject = (limit = 20, offset = 0, search = "", sort = "{}", filters = "{}", subject) => async (dispatch) => {
     try {

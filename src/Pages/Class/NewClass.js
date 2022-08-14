@@ -42,7 +42,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     const [coverPreview, setCoverPreview] = useState({file: null, url: ""});
     const [errors, setErrors] = useState({});
 
-    const {subjects=[], tags:configTags=["AP, K12"], levels=[]} = app_config;
+    const {subjects=[], tags:configTags=["AP, K12"], levels=[]} = app_config || {};
 
     const {title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error} = new_class;
 

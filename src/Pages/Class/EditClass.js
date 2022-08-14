@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { update_class, edit_class_value, get_class, get_teachers, set_loading, set_teachers } from '../../Actions';
+import { update_class, edit_class_value, get_class, get_teachers, set_loading, set_teachers, get_class_reschedules } from '../../Actions';
 import TypeSelect from '../../Components/Common/TypeSelect';
-import { debounce, get_full_image_url, throttle } from '../../Utils';
+import { debounce, get_full_image_url, ordinal_suffix, throttle } from '../../Utils';
 import {RiImageAddLine, RiCloseCircleFill} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
 import {TextField} from '@mui/material';
@@ -11,14 +11,16 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
 import { ListInput } from '../../Components/Common/ListInput';
-import { DAYS } from '../../Data';
+import { DAYS, MONTHS } from '../../Data';
 import FileUploadDropArea from '../../Components/Common/FileUploadDropArea';
 import { DatePicker } from '@mui/x-date-pickers';
+import {formatDistance, formatDistanceToNow} from "date-fns"
 
 import "./Class.css";
 import "./EditClass.css";
 import { useNavigate, useParams } from 'react-router-dom';
 import { INIT_EDIT_CLASS } from '../../Actions/types';
+import RescheduleModal from '../../Components/Class/RescheduleModal';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -37,16 +39,26 @@ const pricing_type_options = [{label: "Hourly", value: "hourly"}, {label: "Per S
 
 const schedules = [{days: [], start_time: "", end_time: ""}];
 
-const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_config={}, is_admin, is_teacher, get_teachers, edit_class_value, update_class, set_teachers, get_class, set_loading}) => {
+const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_config={}, is_admin, is_teacher, get_teachers, edit_class_value, update_class, set_teachers, get_class_reschedules, get_class, set_loading}) => {
+    const [showReschedule, setShowReschedule] = useState(false);
+
     const [teacherSearch, setTeacherSearch] = useState("");
     const [coverPreview, setCoverPreview] = useState({file: null, url: ""});
     const [errors, setErrors] = useState({});
 
-    const {subjects=[], tags:configTags=["AP, K12"], levels=[]} = app_config;
+    const {subjects=[], tags:configTags=["AP, K12"], levels=[]} = app_config || {};
 
-    const {_id, title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], students=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error} = edit_class;
+    const {_id, title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], students=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", sessions=[], reschedules=[], error} = edit_class;
 
-    console.log(edit_class);
+    const is_class_teacher = user._id === (teacher?._id || teacher)
+
+    const total_session_time = sessions.reduce((curr, prev, i, arr) => {
+        return prev + (new Date(curr.end_time).getTime() - new Date(curr.start_time).getTime());
+    }, 0);
+
+    const avg_session_time = sessions.length && (total_session_time/sessions.length);
+
+    // console.log(edit_class);
 
     const navigate = useNavigate();
     const {class_id} = useParams();
@@ -55,7 +67,8 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
         const init = async () => {
             if(class_id && class_id !== _id){
                 set_loading(true);
-                await get_class(class_id, INIT_EDIT_CLASS)
+                await get_class(class_id, INIT_EDIT_CLASS);
+                await get_class_reschedules(class_id, 20, 0, JSON.stringify({createdAt: "desc"}), "{}");
                 set_loading(false);
             }
         }
@@ -67,6 +80,10 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
 
     // console.log(teachers);
     // console.log(new_class);
+
+    const onClickReschedule = (e) => {
+        setShowReschedule(s => !s);
+    }
 
     const onChangeValueEvent = (keys=[], numeric=false) => (e, val) => {
         const value = val || e.target.value;
@@ -181,18 +198,18 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
     return (
         <div className='page new-class'>
             <form onSubmit={(e) => {e.preventDefault()}} enctype="multipart/form-data" className='main-col'>
-                <h3>Create New Class</h3>
+                <h3>Edit Class</h3>
 
                 <div className='input-container'>
                     <label>Title</label>
                     
-                    <input placeholder='Class Name' value={title} onChange={onChangeValueEvent(["title"])} />
+                    <input disabled={!is_admin || !is_class_teacher} placeholder='Class Name' value={title} onChange={onChangeValueEvent(["title"])} />
                 </div>
 
                 <div className='input-container cover-file-input'>
                     <label>Cover Image</label>
                     
-                    <input type="file" multiple={false} onChange={onSelectImage} />
+                    <input disabled={!is_admin || !is_class_teacher} type="file" multiple={false} onChange={onSelectImage} />
                     <FileUploadDropArea title='Upload Cover Image' />
                     {/* <div className='upload-content-container'>
                         <span className='add-icon-container'><RiImageAddLine size={"24px"} /></span>
@@ -253,7 +270,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                 <div className='input-container price'>
                     <label>Price</label>
                     
-                    <input placeholder='00000' style={{paddingLeft: "50px"}} value={price} onChange={onChangeValueEvent(["price"])} />
+                    <input disabled={!is_admin || !is_class_teacher} placeholder='00000' style={{paddingLeft: "50px"}} value={price} onChange={onChangeValueEvent(["price"])} />
                     
                     <div className='input-adornment start' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}>
                         <BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} />
@@ -263,7 +280,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                 <div className='input-container max-students'>
                     <label>Max Students</label>
                     
-                    <input placeholder='1' min={1} type="number" disabled={class_type === "private"} value={max_students} onChange={onChangeValueEvent(["max_students"])}  />
+                    <input disabled={!is_admin || !is_class_teacher || class_type === "private"} placeholder='1' min={1} type="number" value={max_students} onChange={onChangeValueEvent(["max_students"])}  />
                 </div>
 
                 <div className='input-container select pricing-type'>
@@ -275,13 +292,13 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                 <div className='input-container background color'>
                     <label>Background Color</label>
                     
-                    <input type="color" value={bg_color} onChange={onChangeValueEvent(["bg_color"])} />
+                    <input disabled={!is_admin || !is_class_teacher} type="color" value={bg_color} onChange={onChangeValueEvent(["bg_color"])} />
                 </div>
 
                 <div className='input-container color'>
                     <label>Text Color</label>
                     
-                    <input type="color" value={text_color} onChange={onChangeValueEvent(["text_color"])} />
+                    <input disabled={!is_admin || !is_class_teacher} type="color" value={text_color} onChange={onChangeValueEvent(["text_color"])} />
                 </div>
 
                 <div className='input-container color-preview'>
@@ -293,14 +310,14 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                 <div className='input-container'>
                     <label>Tags</label>
                     
-                    {/* <input type="text" placeholder='math, english, beginner, advance etc...' /> */}
+                    {/* <input disabled={!is_admin || !is_class_teacher} type="text" placeholder='math, english, beginner, advance etc...' /> */}
                     <ListInput always_show_matches items={tags} search_array={configTags} onAddItem={onAddTag} onRemoveItem={onRemoveTag} />
                 </div>
 
                 <div className='input-container meeting-link'>
                     <label>Meeting Link</label>
                     
-                    <input placeholder='Meeting Link' value={meeting_link} onChange={onChangeValueEvent(["meeting_link"])} />
+                    <input disabled={!is_admin || !is_class_teacher} placeholder='Meeting Link' value={meeting_link} onChange={onChangeValueEvent(["meeting_link"])} />
                 </div>
 
                 <div className='input-container'>
@@ -330,7 +347,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                 <div className='input-container fullwidth'>
                     <label>Students</label>
                     
-                    {/* <input type="text" placeholder='math, english, beginner, advance etc...' /> */}
+                    {/* <input disabled={!is_admin || !is_class_teacher} type="text" placeholder='math, english, beginner, advance etc...' /> */}
                     <ListInput items={students} render_property="_id" onRemoveItem={onRemoveStudent} disableAdding />
                 </div>
 
@@ -387,7 +404,35 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
             </form>
 
             <div className='misc-col'>
-                <h3>New Class</h3>
+                <p>Total Sessions: {sessions.length}</p>
+                <p>Total Session time: {formatDistance(total_session_time, 0, {includeSeconds: true, addSuffix: false})}</p>
+                <p>Average Session time: {formatDistance(avg_session_time, 0, {includeSeconds: true, addSuffix: false})}</p>
+
+                <h3 style={{marginBlock: "20px"}}>Reschedules</h3>
+
+                <div>
+                    {reschedules.map((r) => {
+                        const {old_date, new_date, new_start_time, new_end_time, reason, accepted, rejected} = r;
+
+                        const oldDate = new Date(old_date);
+                        const newDate = new_date && new Date(new_date);
+                        const newStartTime = new_start_time && new Date(new_start_time);
+                        const newEndTime = new_end_time && new Date(new_end_time);
+
+                        const time_range = `${newStartTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - ${newEndTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}`
+
+                        return (
+                            <div title={reason} className={`reschedule-request ${accepted?"accepted":rejected?"rejected":"unhandled"}`}>
+                                <p>{MONTHS[oldDate.getMonth()].short} {ordinal_suffix(oldDate.getDate())} - {newDate?`${MONTHS[newDate.getMonth()].short} ${ordinal_suffix(newDate.getDate())}`:"N/A"}</p>
+
+                                <p>{time_range}</p>
+                            </div>
+                        )
+                    })}
+                </div>
+                <button className='button primary fullwidth' onClick={onClickReschedule}>Reschedule</button>
+
+                <RescheduleModal show={showReschedule} />
             </div>
         </div>
     );
@@ -397,4 +442,4 @@ function map_state_to_props({App, Auth, Class, Admin}){
     return {user: App.user, teachers: Admin.teachers, total_teachers: Admin.total_teachers, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, edit_class: Class.edit, app_config: App.config};
 }
  
-export default connect(map_state_to_props, {get_teachers, edit_class_value, update_class, set_teachers, get_class, set_loading})(EditClass);
+export default connect(map_state_to_props, {get_teachers, edit_class_value, update_class, set_teachers, get_class, get_class_reschedules, set_loading})(EditClass);

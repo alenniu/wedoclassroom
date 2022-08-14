@@ -12,7 +12,7 @@ const session_schema = new schema({
     },
     end_time: {
         type: Date,
-        default: () => new date(0)
+        default: null
     },
     active: {
         type: Boolean,

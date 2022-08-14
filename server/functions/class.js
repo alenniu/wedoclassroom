@@ -17,7 +17,7 @@ async function get_class(class_id, user){
     try{
         const {_id, type} = user;
 
-        return await Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: (type === "admin") || (type === "sales")}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"}).populate({path: "current_session", populate: {path: "students", select: "-password"}});
+        return await Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: (type === "admin") || (type === "sales")}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"}).populate({path: "current_session", populate: {path: "students", select: "-password"}}).populate({path: "sessions"});
     }catch(e){
         console.error(e);
         throw e;
@@ -131,7 +131,7 @@ async function start_class({_class, meeting_link=""}, user){
         if(!_class.current_session){
             const new_session = await create_session({_class: _class, meeting_link}, user);
 
-            const updated_class = await Classes.findOneAndUpdate({_id: _class._id}, {$set: {current_session: new_session._id, meeting_link}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
+            const updated_class = await Classes.findOneAndUpdate({_id: _class._id}, {$set: {current_session: new_session._id, meeting_link}, $push: {sessions: new_session._id}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
 
             return {new_session, updated_class}
         }

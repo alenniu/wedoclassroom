@@ -25,10 +25,17 @@ require("./database/schemas/attachments");
 require("./database/schemas/assignments");
 require("./database/schemas/submissions");
 require("./database/schemas/withdrawals");
+require("./database/schemas/reschedules");
 require("./database/schemas/announcements");
 
 const app = express();
 const server = http.createServer(app);
+
+const io = sockets(server, {
+    pingTimeout: 10000,
+    pingInterval: 2500,
+    transports: ["websocket"]
+});
 
 const allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -41,6 +48,12 @@ const allowCrossDomain = function(req, res, next) {
 }
 
 app.use(allowCrossDomain);
+
+app.use((req, res, next) => {
+    req.socket_io = io;
+
+    next()
+});
 
 app.use("/api", express.json());
 app.use(express.urlencoded({extended: true}));
@@ -69,6 +82,7 @@ require("./routes/stripe_routes")(app);
 require("./routes/config_routes")(app);
 require("./routes/session_routes")(app);
 require("./routes/assignment_routes")(app);
+require("./routes/reschedule_routes")(app);
 require("./routes/announcement_routes")(app);
 
 app.get("*", async(req, res, next) => {

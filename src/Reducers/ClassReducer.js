@@ -1,4 +1,4 @@
-import { ADD_SUBJECT_CLASSES, CREATE_CLASS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, EDIT_CLASS_VALUE, EDIT_NEW_CLASS_VALUE, INIT_EDIT_CLASS, SET_CLASSES, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_CREATE_CLASS_ERROR, SET_EDITING_CLASS, SET_POPULAR_CLASSES, SET_SUBJECT_CLASSES, SET_UPDATE_CLASS_ERROR, UPDATE_CLASS } from "../Actions/types";
+import { ADD_SUBJECT_CLASSES, CREATE_CLASS, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, EDIT_CLASS_ANNOUNCEMENT, EDIT_CLASS_ASSIGNMENT, EDIT_CLASS_VALUE, EDIT_NEW_CLASS_VALUE, GET_CLASS_RESCHEDULES, INIT_EDIT_CLASS, SET_CLASSES, SET_CLASS_ANNOUNCEMENT_ERROR, SET_CLASS_ASSIGNMENT_ERROR, SET_CREATE_CLASS_ERROR, SET_EDITING_CLASS, SET_POPULAR_CLASSES, SET_SUBJECT_CLASSES, SET_UPDATE_CLASS_ERROR, UPDATE_CLASS } from "../Actions/types";
 import { update_object } from "../Utils";
 
 const INITIAL_STATE = {classes: [], total: 0, popular_classes: [], create: {schedules: [{days: [], daily_start_time: new Date(), daily_end_time: new Date()}], error: ""}, edit: {error: ""}, edit: {error: ""}, announcement: {error: ""}, assignment: {error: ""}, subject_classes: {}};
@@ -48,6 +48,13 @@ export default (state=INITIAL_STATE, action) => {
         }
         break;
 
+        case GET_CLASS_RESCHEDULES:{
+            const {reschedules=[], total=0} = payload;
+
+            new_state.edit = {...new_state.edit, reschedules};
+        }
+        break;
+
         case SET_EDITING_CLASS:
             new_state.edit = payload._class;
         break;
@@ -89,7 +96,7 @@ export default (state=INITIAL_STATE, action) => {
         break;
 
         case UPDATE_CLASS:
-            new_state.edit = {error: ""};
+            // new_state.edit = {error: ""};
         break;
 
         case SET_CREATE_CLASS_ERROR:

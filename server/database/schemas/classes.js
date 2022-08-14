@@ -94,6 +94,10 @@ const class_schema = new schema({
     stripe_product_price_id: {
         type: String
     },
+    sessions: [{
+        type: schema.Types.ObjectId,
+        ref: "class_session"
+    }],
     current_session: {
         type: schema.Types.ObjectId,
         ref: "class_session",

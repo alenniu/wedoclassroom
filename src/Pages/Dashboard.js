@@ -53,7 +53,7 @@ const Dashboard = ({classes=[], total=0, app_config={}, classes_schedules=[], ge
         return schedules.map((s) => ({...s, ...c}));
     }), [classes_schedules]);
 
-    const {subjects=[], levels=[]} = app_config;
+    const {subjects=[], levels=[]} = app_config || {};
     
     const [calendarSearch, setCalendarSearch] = useState("");
     const [calendarFilters, setCalendarFilters] = useState({});

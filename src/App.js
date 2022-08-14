@@ -5,6 +5,25 @@ import Loading from './Pages/Loading';
 import { store } from './Reducers';
 import { useEffect } from 'react';
 import { TOGGLE_NAV } from './Actions/types';
+import config from "./Config";
+import io from "socket.io-client"
+
+const {is_window, backend_url} = config;
+
+if(is_window){
+  var socket = io(backend_url, {
+      timeout: 10000,
+      jsonp: false,
+      transports: ["websocket"],
+  });
+
+  window.MyVars = window.MyVars || {};
+  window.MyVars.socket = socket;
+  
+  socket.on("connect", function(){
+    console.log("sockets connected to server.");
+  });
+}
 
 function App() {
 

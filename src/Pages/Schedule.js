@@ -38,7 +38,7 @@ const RenderClassOption = ({label, value, _class}) => {
 const CALENDAR_FILTERS = [{label: "Student", name: "students", renderOption: RenderUserOption}, {label: "Teacher", name: "teacher", renderOption: RenderUserOption}, {label: "Class", name: "_id", renderOption: RenderClassOption}, {label: "Subject", name: "subject", renderOption: null}, {label: "Level", name: "level", renderOption: null}, {label: "Class Type", name: "class_type", renderOption: null}];
 
 const SchedulePage = ({app_config, classes_schedules=[], get_classes_schedules, is_admin, is_sales, is_teacher, is_student, set_loading}) => {
-    const {subjects=[], levels=[]} = app_config;
+    const {subjects=[], levels=[]} = app_config || {};
 
     const schedules = classes_schedules.flatMap(({schedules, ...c}) => {
         return  schedules.map((s) => ({...s, ...c}));
