@@ -47,7 +47,7 @@ async function get_reschedules_for_period({startPeriod, endPeriod}, limit=20, of
     //     filters.$or = [];
     // }
 
-    filters.$and.push({$or: [{old_date: {$gte: new Date(startPeriod)}, old_date: {$lte: new Date(endPeriod)}}, {new_date: {$gte: new Date(startPeriod)}, new_date: {$lte: new Date(endPeriod)}}]})
+    filters.$and.push({$or: [{old_date: {$gte: new Date(startPeriod), $lte: new Date(endPeriod)}}, {new_date: {$gte: new Date(startPeriod), $lte: new Date(endPeriod)}}]})
 
     try{
         const total = await Reschedules.count(filters);
@@ -56,7 +56,7 @@ async function get_reschedules_for_period({startPeriod, endPeriod}, limit=20, of
             reschedules = await Reschedules.find(filters, {reason: 0}).skip(offset).limit(limit).sort(sort)/*.populate({path: "handled_by", select: "-password"})*/.lean(true);
         }
         
-        console.log(filters, reschedules, total);
+        console.log(filters.$and[0].$or, reschedules, total);
         return {reschedules, total}; 
     }catch(e){
         throw (e);
