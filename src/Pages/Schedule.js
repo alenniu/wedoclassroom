@@ -197,7 +197,7 @@ const SchedulePage = ({app_config, classes_schedules=[], get_classes_schedules, 
                         </div>
                     </div>
                 </div>
-                <NewSchedule schedules={schedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_sales={is_sales} />
+                <NewSchedule schedules={schedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_teacher={is_teacher} is_sales={is_sales} />
             </div>
         </div>
     );

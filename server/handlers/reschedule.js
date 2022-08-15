@@ -69,17 +69,25 @@ export const get_class_reschedules_handler = async (req: Request, res: Response,
 export const request_class_reschedule_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {user} = req;
-        const {_class, reason, old_date, old_start_time, old_end_time, new_date=null, new_start_time=null, new_end_time=null} = req.body;
+        const {_class, reason, old_date, new_date=null, new_start_time=null, new_end_time=null} = req.body;
 
         const current_class = await get_class(_class._id, user);
 
         if(current_class){
-            const reschedule = await create_reschedule_request({_class, reason, old_date, old_start_time, old_end_time, new_date, new_start_time, new_end_time}, user);
+            const reschedule = await create_reschedule_request({_class, reason, old_date, new_date, new_start_time, new_end_time}, user);
 
             if(reschedule){
                 const user_emails = await Users.find({type: "admin"}, {email: 1});
-
-                const mail = new Mail({subject: "Class Reschedule Requested", recipients: [user_emails.map((a) => a.email)], sender: APP_EMAIL}, {html: "Class Reschedule Requested", text: "Class Reschedule Requested"});
+                
+                try{
+                    const mail = new Mail({subject: "Class Reschedule Requested", recipients: [user_emails.map((a) => a.email)], sender: APP_EMAIL}, {html: "Class Reschedule Requested", text: "Class Reschedule Requested"});
+    
+                    mail.send().catch((e) => {
+                        console.log(e);
+                    });
+                }catch(e){
+                    console.log(e)
+                }
             }
 
             return res.json({success: true, reschedule});
@@ -103,9 +111,15 @@ export const accept_class_reschedule_handler = async (req: Request, res: Respons
             const current_class = await get_class(reschedule._class._id, user)
             const user_emails = await Users.find({_id: {$in: [...current_class.students.map((s) => s._id), current_class.teacher._id]}}, {email: 1});
 
-            const mail = new Mail({subject: "Class Rescheduled", recipients: [user_emails.map((a) => a.email)], sender: APP_EMAIL}, {html: "Class Rescheduled", text: "Class Rescheduled"});
-
-            mail.send();
+            try{
+                const mail = new Mail({subject: "Class Rescheduled", recipients: [user_emails.map((a) => a.email)], sender: APP_EMAIL}, {html: "Class Rescheduled", text: "Class Rescheduled"});
+    
+                mail.send().catch((e) => {
+                    console.log(e);
+                });
+            }catch(e){
+                console.log(e)
+            }
 
             return res.json({success: true, reschedule});
         }else{
@@ -125,9 +139,15 @@ export const reject_class_reschedule_handler = async (req: Request, res: Respons
         const reschedule = await reject_reschedule_request(reschedule_id, user);
 
         if(reschedule){
-            const mail = new Mail({subject: "Class Reschedule Declined", recipients: [reschedule.teacher.email], sender: APP_EMAIL}, {html: "Class Reschedule Declined", text: "Class Reschedule Declined"});
-
-            mail.send();
+            try{
+                const mail = new Mail({subject: "Class Reschedule Declined", recipients: [reschedule.teacher.email], sender: APP_EMAIL}, {html: "Class Reschedule Declined", text: "Class Reschedule Declined"});
+    
+                mail.send().catch((e) => {
+                    console.log(e);
+                });
+            }catch(e){
+                console.log(e)
+            }
 
             return res.json({success: true, reschedule});
         }else{

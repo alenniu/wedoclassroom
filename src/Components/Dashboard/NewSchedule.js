@@ -48,7 +48,7 @@ const HOUR_SECTION_HEIGHT = 100;
 
 const is_webkit = isWebkit();
 
-const NewSchedule = ({schedules=[], date_range={}, onClickNextDateRange, onClickPrevDateRange, is_admin, is_sales}) => {
+const NewSchedule = ({schedules=[], date_range={}, onClickNextDateRange, onClickPrevDateRange, is_admin, is_teacher, is_sales}) => {
 
     const navigate = useNavigate()
 
@@ -162,7 +162,7 @@ const NewSchedule = ({schedules=[], date_range={}, onClickNextDateRange, onClick
 
 
                         return (
-                            <div title={`${title} | ${time_range}`} className='schedule-event clickable' onClick={() => {(is_admin || is_sales) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, width: `50px`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: top}}>
+                            <div title={`${title} | ${time_range}`} className='schedule-event clickable' onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, width: `50px`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: top}}>
                                 <p>{title}</p>
                                 <p>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</p>
                                 <p>{DAYS[d].short}</p>

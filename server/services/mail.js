@@ -18,7 +18,11 @@ class Mail{
     }
     
     async send(){
-        return sgMail.send(this.msg);
+        try{
+            return sgMail.send(this.msg);
+        }catch(e){
+            throw e;
+        }
     }
 }
 
@@ -37,7 +41,11 @@ class TemplatedMail{
     }
     
     async send(){
-        return sgMail.send(this.msg);
+        try{
+            return sgMail.send(this.msg);
+        }catch(e){
+            throw e;
+        }
     }
 }
 

@@ -237,8 +237,8 @@ const Dashboard = ({classes=[], total=0, app_config={}, classes_schedules=[], ge
                         </div>
                     </div>
                 </div>
-                {/* <NewSchedule schedules={schedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_sales={is_sales} /> */}
-                <Schedule schedules={schedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_sales={is_sales} />
+                {/* <NewSchedule schedules={schedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_teacher={is_teacher} is_sales={is_sales} /> */}
+                <Schedule schedules={schedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_teacher={is_teacher} is_sales={is_sales} />
             </div>
 
             <div className='misc-col'>

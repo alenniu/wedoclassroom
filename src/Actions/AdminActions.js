@@ -249,3 +249,41 @@ export const get_sessions = (limit=20, offset, sort="{}", filters="{}") => async
         console.error(e);
     }
 }
+
+export const accept_class_reschedule = (reschedule_id, {new_date, new_start_time, new_end_time}) => async (dispatch) => {
+    try{
+        const res = await api("post", `/api/reschedules/accept/${reschedule_id}`, {new_date, new_start_time, new_end_time});
+        
+        if(res.data){
+            const {success, msg, reshedule} = res.data
+            if(success){
+                // dispatch({type: , payload: {reshedule}})
+                return res.data;
+            }
+            console.log(msg);
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.log(e);
+    }
+}
+
+export const reject_class_reschedule = (reschedule_id) => async (dispatch) => {
+    try{
+        const res = await api("post", `/api/reschedules/reject/${reschedule_id}`, {});
+        
+        if(res.data){
+            const {success, msg, reshedule} = res.data
+            if(success){
+                // dispatch({type: , payload: {reshedule}})
+                return res.data;
+            }
+            console.log(msg);
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.log(e);
+    }
+}

@@ -92,26 +92,6 @@ export const get_classes = (limit = 20, offset = 0, search = "", sort = "{}", fi
     }
 };
 
-export const get_class_reschedules = (class_id, limit=20, offset=0, sort='{}', filters='{}', action_to_dispatch=GET_CLASS_RESCHEDULES) => async (dispatch) => {
-    try{
-        const res = await api("get", `/api/reschedules/class/${class_id}`, {params: {limit, offset, sort, filters}});
-
-        if(res.data){
-            const {success, msg, reschedules=[], total=0} = res.data
-            if(success){
-                action_to_dispatch && dispatch({type: action_to_dispatch, payload: {reschedules, total}})
-                return res.data;
-            }
-
-            console.log(msg)
-        }else{
-            console.log(res);
-        }
-    }catch(e){
-        console.log(e);
-    }
-}
-
 export const get_classes_by_subject = (limit = 20, offset = 0, search = "", sort = "{}", filters = "{}", subject) => async (dispatch) => {
     try {
         const res = await api(
@@ -467,6 +447,45 @@ export const remove_student_from_class = ({student_id, _class}) => async (dispat
                 
                 return res.data;
             }
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.log(e);
+    }
+}
+
+export const get_class_reschedules = (class_id, limit=20, offset=0, sort='{}', filters='{}', action_to_dispatch=GET_CLASS_RESCHEDULES) => async (dispatch) => {
+    try{
+        const res = await api("get", `/api/reschedules/class/${class_id}`, {params: {limit, offset, sort, filters}});
+
+        if(res.data){
+            const {success, msg, reschedules=[], total=0} = res.data
+            if(success){
+                action_to_dispatch && dispatch({type: action_to_dispatch, payload: {reschedules, total}})
+                return res.data;
+            }
+
+            console.log(msg)
+        }else{
+            console.log(res);
+        }
+    }catch(e){
+        console.log(e);
+    }
+}
+
+export const request_class_reschedule = ({_class, old_date, new_date=null, new_start_time=null, new_end_time=null, reason=""}) => async (dispatch) => {
+    try{
+        const res = await api("post", `/api/reschedules/`, {_class, old_date, new_date, new_start_time, new_end_time, reason});
+        
+        if(res.data){
+            const {success, msg, reshedule} = res.data
+            if(success){
+                // dispatch({type: , payload: {reshedule}})
+                return res.data;
+            }
+            console.log(msg);
         }else{
             console.log(res);
         }

@@ -21,17 +21,17 @@ const reschedule_schema = new schema({
         type: Boolean,
         default: false
     },
-    old_start_time: {
-        type: Date,
-    },
-    old_end_time: {
-        type: Date,
-    },
-    oldDate: {
+    // old_start_time: {
+    //     type: Date,
+    // },
+    // old_end_time: {
+    //     type: Date,
+    // },
+    old_date: {
         type: Date,
         required: true
     },
-    newDate: {
+    new_date: {
         type: Date,
         default: null
     },

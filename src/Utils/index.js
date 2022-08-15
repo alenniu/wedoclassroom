@@ -17,6 +17,10 @@ export const is_full_url = (s:String) => {
     return url_regex.test(s);
 }
 
+export const unique_filter = (value, index, self) => {
+    return self.indexOf(value) === index;
+}
+
 export const get_full_image_url = (u:String="") => {
     if(is_full_url(u) || !u){
         return u;
