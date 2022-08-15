@@ -191,7 +191,7 @@ const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDa
                             const {old_date, _class} = r;
                             const oldDate = new Date(old_date);
 
-                            return _class === _id && (oldDate.getDay() === currentDate.getDay()) && ((oldDate.getTime() - currentDate.getTime()) < DAY);
+                            return _class === _id && (oldDate.getDay() === currentDate.getDay()) && ((currentDate.getTime() - oldDate.getTime()) < DAY);
                         });
 
                         return (
