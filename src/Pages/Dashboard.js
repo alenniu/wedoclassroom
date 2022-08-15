@@ -39,7 +39,7 @@ const RenderClassOption = ({label, value, _class}) => {
 
 const CALENDAR_FILTERS = [{label: "Student", name: "students", renderOption: RenderUserOption}, {label: "Teacher", name: "teacher", renderOption: RenderUserOption}, {label: "Class", name: "_id", renderOption: RenderClassOption}, {label: "Subject", name: "subject", renderOption: null}, {label: "Level", name: "level", renderOption: null}, {label: "Class Type", name: "class_type", renderOption: null}];
 
-const Dashboard = ({classes=[], total=0, app_config={}, classes_schedules=[], get_classes_schedules, get_my_classes, is_admin, is_teacher, is_sales, is_student, user, set_loading}) => {
+const Dashboard = ({classes=[], total=0, app_config={}, classes_schedules=[], reschedules=[], get_classes_schedules, get_my_classes, is_admin, is_teacher, is_sales, is_student, user, set_loading}) => {
     const [pageLimit, setPageLimit] = useState(20);
     const [page, setPage] = useState(0);
 
@@ -184,7 +184,7 @@ const Dashboard = ({classes=[], total=0, app_config={}, classes_schedules=[], ge
         const max = new Date(current_date.getTime() + ((7-current_day) * DAY));
 
         min.setHours(0, 0, 0);
-        max.setHours(0, 0, 0);
+        max.setHours(23, 59, 59);
 
         setDateRange({min, max});
         
@@ -238,7 +238,7 @@ const Dashboard = ({classes=[], total=0, app_config={}, classes_schedules=[], ge
                     </div>
                 </div>
                 {/* <NewSchedule schedules={schedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_teacher={is_teacher} is_sales={is_sales} /> */}
-                <Schedule schedules={schedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_teacher={is_teacher} is_sales={is_sales} />
+                <Schedule schedules={schedules} reschedules={reschedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_teacher={is_teacher} is_sales={is_sales} />
             </div>
 
             <div className='misc-col'>
@@ -257,7 +257,7 @@ const Dashboard = ({classes=[], total=0, app_config={}, classes_schedules=[], ge
 }
 
 function map_state_to_props({App, Auth, User}){
-    return {classes: User.classes, total: User.total_classes, classes_schedules: User.classes_schedules, app_config: App.config, user: App.user, is_admin: Auth.is_admin, is_sales: Auth.is_sales, is_teacher: Auth.is_teacher, is_student: Auth.is_student}
+    return {classes: User.classes, total: User.total_classes, classes_schedules: User.classes_schedules, reschedules: User.reschedules, app_config: App.config, user: App.user, is_admin: Auth.is_admin, is_sales: Auth.is_sales, is_teacher: Auth.is_teacher, is_student: Auth.is_student}
 }
 
 export default connect(map_state_to_props, {get_my_classes, get_classes_schedules, set_loading})(Dashboard);

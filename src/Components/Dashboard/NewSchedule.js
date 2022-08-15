@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {RiArrowLeftSLine, RiArrowRightSLine, RiCalendarLine} from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
 
@@ -48,7 +48,10 @@ const HOUR_SECTION_HEIGHT = 100;
 
 const is_webkit = isWebkit();
 
-const NewSchedule = ({schedules=[], date_range={}, onClickNextDateRange, onClickPrevDateRange, is_admin, is_teacher, is_sales}) => {
+const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDateRange, onClickPrevDateRange, is_admin, is_teacher, is_sales}) => {
+
+    const calendarRef = useRef(null);
+    const [calendarheight, setCalendarHeight] = useState(200);
 
     const navigate = useNavigate()
 
@@ -66,8 +69,40 @@ const NewSchedule = ({schedules=[], date_range={}, onClickNextDateRange, onClick
         typeof(onClickPrevDateRange) === "function" && onClickPrevDateRange(e);
     }
 
+    const getCalendarHeight = () => {
+        const {innerWidth, innerHeight, scrollY, scrollX} = window;
+        const { x, y, top, left, width, height, } = calendarRef.current?.getBoundingClientRect();
+
+        setCalendarHeight(innerHeight - (top + scrollY + 20))
+    }
+
+    const scrollToEarliestTime = () => {
+        const earliestStartTime = schedules.map(({daily_start_time}) => new Date(daily_start_time)).sort()[0];
+
+        if(earliestStartTime){
+            const earlieststartTimeHours = earliestStartTime.getHours() + (earliestStartTime.getMinutes()/60);
+
+            const earliestTop = HOUR_SECTION_HEIGHT * earlieststartTimeHours;
+
+            calendarRef.current?.scrollTo(0, earliestTop - 20)
+        }
+    }
+
+    useEffect(() => {
+        getCalendarHeight();
+        window.addEventListener("resize", getCalendarHeight);
+
+        return () => {
+            window.removeEventListener("resize", getCalendarHeight);
+        }
+    }, []);
+
+    useEffect(() => {
+        scrollToEarliestTime()
+    }, [schedules]);
+
     return (
-        <div className='new-schedule-container'>
+        <div className='new-schedule-container' style={{"--calendar-height": calendarheight+"px"}}>
             <p className='schedule-date-range'>
                 <span onClick={onClickPrevRange} className='schedule-range-arrow prev clickable'><RiArrowLeftSLine color='#99C183' size={24} /></span>
                 <RiCalendarLine color='#99C183' size={24} /> {minMonth.long} {ordinal_suffix(minDate)} - {(maxMonth.short !== minMonth.short)?maxMonth.long+" ":""}{ordinal_suffix(maxDate)}, {min.getFullYear()}
@@ -80,8 +115,7 @@ const NewSchedule = ({schedules=[], date_range={}, onClickNextDateRange, onClick
                     return (
                         <span className='new-schedule-column-container'>
                             <span className='day'>
-                                <p>{DAYS[this_date.getDay()].short}</p>
-                                <p>{ordinal_suffix(this_date.getDate())}</p>
+                                <p>{DAYS[this_date.getDay()].short} {ordinal_suffix(this_date.getDate())}</p>
                             </span>
                             {/* <div className='schedule-column-day top'></div>
                             <div className='schedule-column-day main'>
@@ -92,8 +126,7 @@ const NewSchedule = ({schedules=[], date_range={}, onClickNextDateRange, onClick
                 })}
             </div>
 
-            <div className='new-schedule-calender'>
-
+            <div ref={calendarRef} className='new-schedule-calender'>
                 <ul className='schedule-hours'>
                     {Array.from({length: HOURS_PER_DAY * 2}).map((_, i) => {
                         const is_half_hour = i % 2;
@@ -135,13 +168,7 @@ const NewSchedule = ({schedules=[], date_range={}, onClickNextDateRange, onClick
                     const time_range = `${startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - ${endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}`
 
                     return days.map((d) => {
-                        // const items_on_same_day_before = arr.filter((a, ai) => ai < i && a.name !== name && ranges_overlaps({min: d[0], max: d.at(-1)}, {min: a.days[0], max: a.days.at(-1)}));
-
-                        // const items_on_same_day = arr.filter((a, ai) => ranges_overlaps({min: d[0], max: d.at(-1)}, {min: a.days[0], max: a.days.at(-1)}));
-
-                        // console.log(items_on_same_day_before, items_on_same_day);
-
-                        // const maxHeight = 265 / (items_on_same_day.length || 1);
+                        const currentDate = new Date(min.getTime() + (d * DAY));
 
                         const overlapping_items_before = arr.filter((s, si) => {
 
@@ -160,9 +187,15 @@ const NewSchedule = ({schedules=[], date_range={}, onClickNextDateRange, onClick
 
                         const height = HOUR_SECTION_HEIGHT * (endDayTime - startDayTime);
 
+                        const is_rescheduled = reschedules.find((r) => {
+                            const {old_date, _class} = r;
+                            const oldDate = new Date(old_date);
+
+                            return _class === _id && (oldDate.getDay() === currentDate.getDay()) && ((oldDate.getTime() - currentDate.getTime()) < DAY);
+                        });
 
                         return (
-                            <div title={`${title} | ${time_range}`} className='schedule-event clickable' onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, width: `50px`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: top}}>
+                            <div title={`${title} | ${time_range} ${is_rescheduled?"(rescheduled)":""}`} className={`schedule-event clickable ${is_rescheduled?"rescheduled":""}`} onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, width: `50px`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: top}}>
                                 <p>{title}</p>
                                 <p>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</p>
                                 <p>{DAYS[d].short}</p>

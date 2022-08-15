@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { get_classes_schedules, get_my_classes, set_loading } from '../Actions';
 import Schedule from '../Components/Dashboard/Schedule';
@@ -23,6 +23,18 @@ const RenderUserOption = ({label, value, user}) => {
     )
 }
 
+const RenderUserValue = ({label, value, user}) => {
+    return (
+        <div style={{display: "flex", alignItems: "center", whiteSpace: "nowrap", overflowX: "hidden"}}>
+            <div className='user-image-container' style={{flexShrink: 0, height: "calc(var(--input-height, 40px) - 10px)", width: "calc(var(--input-height, 40px) - 10px)", overflow: 'hidden', backgroundColor: "black", borderRadius: "50%", marginRight: "10px"}}>
+                <img src={get_full_image_url(user.photo_url || '/Assets/Images/AuthBackground.png')} style={{height: "100%", width: "100%", objectFit: "cover"}} />
+            </div>
+
+            <span>{label}</span>
+        </div>
+    )
+}
+
 const RenderClassOption = ({label, value, _class}) => {
     return (
         <div style={{display: "flex", alignItems: "center"}}>
@@ -35,14 +47,26 @@ const RenderClassOption = ({label, value, _class}) => {
     )
 }
 
-const CALENDAR_FILTERS = [{label: "Student", name: "students", renderOption: RenderUserOption}, {label: "Teacher", name: "teacher", renderOption: RenderUserOption}, {label: "Class", name: "_id", renderOption: RenderClassOption}, {label: "Subject", name: "subject", renderOption: null}, {label: "Level", name: "level", renderOption: null}, {label: "Class Type", name: "class_type", renderOption: null}];
+const RenderClassValue = ({label, value, _class}) => {
+    return (
+        <div style={{display: "flex", alignItems: "center", whiteSpace: "nowrap", overflowX: "hidden"}}>
+            <div className='class-image-container' style={{flexShrink: 0, height: "calc(var(--input-height, 40px) - 10px)", width: "calc(var(--input-height, 40px) - 10px)", overflow: 'hidden', backgroundColor: "black", borderRadius: "50%", marginRight: "10px"}}>
+                <img src={get_full_image_url(_class.cover_image || '/Assets/Images/AuthBackground.png')} style={{height: "100%", width: "100%", objectFit: "cover"}} />
+            </div>
 
-const SchedulePage = ({app_config, classes_schedules=[], get_classes_schedules, is_admin, is_sales, is_teacher, is_student, set_loading}) => {
+            <span>{label}</span>
+        </div>
+    )
+}
+
+const CALENDAR_FILTERS = [{label: "Student", name: "students", renderOption: RenderUserOption, renderValue: RenderUserValue}, {label: "Teacher", name: "teacher", renderOption: RenderUserOption, renderValue: RenderUserValue}, {label: "Class", name: "_id", renderOption: RenderClassOption, renderValue: RenderClassValue}, {label: "Subject", name: "subject", renderOption: null}, {label: "Level", name: "level", renderOption: null}, {label: "Class Type", name: "class_type", renderOption: null}];
+
+const SchedulePage = ({app_config, classes_schedules=[], reschedules=[], get_classes_schedules, is_admin, is_sales, is_teacher, is_student, set_loading}) => {
     const {subjects=[], levels=[]} = app_config || {};
 
-    const schedules = classes_schedules.flatMap(({schedules, ...c}) => {
+    const schedules = useMemo(() => classes_schedules.flatMap(({schedules, ...c}) => {
         return  schedules.map((s) => ({...s, ...c}));
-    });
+    }), [classes_schedules]);
     
     const [calendarSearch, setCalendarSearch] = useState("");
     const [calendarFilters, setCalendarFilters] = useState({});
@@ -167,7 +191,7 @@ const SchedulePage = ({app_config, classes_schedules=[], get_classes_schedules, 
         const max = new Date(current_date.getTime() + ((7-current_day) * DAY));
 
         min.setHours(0, 0, 0);
-        max.setHours(0, 0, 0);
+        max.setHours(23, 59, 59);
 
         setDateRange({min, max});
     }, []);
@@ -186,7 +210,7 @@ const SchedulePage = ({app_config, classes_schedules=[], get_classes_schedules, 
 
                             return (
                                 <div className='input-container select' key={f.name}>
-                                    <TypeSelect options={options} placeholder={f.label} value={calendarFilters[f.name] || ""} localSearch={false} onChange={setFilter(f.name)} renderOption={f.renderOption} renderSelected={f.renderOption} onChangeText={onChangeSelectText} placeholderAsOption name={f.name} onOpen={(e) => {!options.length && onChangeSelectText(e)}} />
+                                    <TypeSelect options={options} placeholder={f.label} value={calendarFilters[f.name] || ""} localSearch={false} onChange={setFilter(f.name)} renderOption={f.renderOption} renderSelected={f.renderValue || f.renderOption} onChangeText={onChangeSelectText} placeholderAsOption name={f.name} onOpen={(e) => {!options.length && onChangeSelectText(e)}} />
                                 </div>
                             )
                         })}
@@ -197,14 +221,14 @@ const SchedulePage = ({app_config, classes_schedules=[], get_classes_schedules, 
                         </div>
                     </div>
                 </div>
-                <NewSchedule schedules={schedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_teacher={is_teacher} is_sales={is_sales} />
+                <NewSchedule schedules={schedules} reschedules={reschedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_teacher={is_teacher} is_sales={is_sales} />
             </div>
         </div>
     );
 }
 
 function map_state_to_props({App, Auth, User}){
-    return {classes: User.classes, total: User.total_classes, classes_schedules: User.classes_schedules, app_config: App.config, user: App.user, is_admin: Auth.is_admin, is_sales: Auth.is_sales, is_teacher: Auth.is_teacher, is_student: Auth.is_student}
+    return {classes: User.classes, total: User.total_classes, classes_schedules: User.classes_schedules, reschedules: User.reschedules, app_config: App.config, user: App.user, is_admin: Auth.is_admin, is_sales: Auth.is_sales, is_teacher: Auth.is_teacher, is_student: Auth.is_student}
 }
 
 export default connect(map_state_to_props, {get_classes_schedules, set_loading})(SchedulePage);

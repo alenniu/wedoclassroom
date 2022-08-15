@@ -34,7 +34,7 @@ const EVENTS = [
     },
 ]
 
-const Schedule = ({schedules=[], date_range={}, onClickNextDateRange, onClickPrevDateRange, is_admin, is_teacher, is_sales}) => {
+const Schedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDateRange, onClickPrevDateRange, is_admin, is_teacher, is_sales}) => {
 
     const navigate = useNavigate();
 

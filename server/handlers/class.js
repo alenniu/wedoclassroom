@@ -4,6 +4,7 @@ import {Request, Response, NextFunction} from "express";
 import { accept_request, cancel_class, create_attendance, create_class, decline_request, end_class, get_available_classes, get_class, get_classes, get_classes_schedules, get_class_attendance, get_class_payment_intent, get_user_classes, remove_student_from_class, request_class, set_meeting_link, start_class, uncancel_class, update_attendance, update_class } from "../functions/class";
 import { get_request } from "../functions/request";
 import { DAY } from "../../src/Data";
+import { get_reschedules, get_reschedules_for_period } from "../functions/reschedule";
 
 const Classes = mongoose.model("class");
 const Class = Classes;
@@ -429,9 +430,11 @@ export const get_classes_schedules_handler = async (req: Request, res: Response,
         
         const classes_schedules = await get_classes_schedules({startPeriod, endPeriod}, filters, search, user);
 
+        const {reschedules, total} = await get_reschedules_for_period({startPeriod, endPeriod}, 0, 0, {accepted: true}, {}, user)
+
         // console.log("class_schedules", class_schedules);
 
-        return res.json({success: true, classes_schedules});
+        return res.json({success: true, classes_schedules, reschedules, total_reschedules: total});
     }catch(e){
         console.log(e);
         return res.status(400).json({success: false, msg: e.message});

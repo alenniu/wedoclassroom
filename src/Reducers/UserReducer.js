@@ -1,6 +1,6 @@
 import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE, DECLINE_JOIN_REQUEST, SET_CLASSES_SCHEDULES } from "../Actions/types";
 
-const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, current_class_requests: [], total_class_requests: 0, requests: [], total_requests: 0, assignments: [], total_assignments: 0, class_attendance: [], classes_schedules: []};
+const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, current_class_requests: [], total_class_requests: 0, requests: [], total_requests: 0, assignments: [], total_assignments: 0, class_attendance: [], classes_schedules: [], reschedules: []};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -31,6 +31,7 @@ export default (state=INITIAL_STATE, action) => {
 
         case SET_CLASSES_SCHEDULES:
             new_state.classes_schedules = payload.classes_schedules;
+            new_state.reschedules = payload.reschedules;
         break;
 
         case UPDATE_STUDENT_CLASS_ATTENDANCE:{

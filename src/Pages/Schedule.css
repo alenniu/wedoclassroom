@@ -3,6 +3,12 @@
     --calendar-height: max(700px, 60vh);
 }
 
+.page.schedule .input-container{
+    margin-bottom: 0px;
+    margin-top: 0px;
+    --input-height: 30px;
+}
+
 .page.schedule .filters-search-container{
     display: flex;
 }

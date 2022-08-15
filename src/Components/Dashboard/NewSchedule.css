@@ -9,7 +9,7 @@
     align-items: center;
     text-transform: capitalize;
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
 }
 
 .new-schedule-container .schedule-date-range .schedule-range-arrow{
@@ -35,12 +35,14 @@
     height: var(--calendar-height, 500px);
     border-radius: 16px;
     border: 2px solid #ECECEC;
-    margin-top: 20px;
+    margin-top: 5px;
     display: flex;
     flex-wrap: nowrap;
     position: relative;
     justify-content: space-between;
     overflow-y: auto;
+
+    scroll-behavior: smooth;
 }
 
 .new-schedule-container .new-schedule-calender::-webkit-scrollbar{
@@ -56,6 +58,10 @@
     overflow: hidden;
     min-width: 50px;
     background-color: gold;
+}
+
+.new-schedule-calender .schedule-event.rescheduled{
+    opacity: 0.3;
 }
 
 .new-schedule-calender .schedule-event p{
@@ -76,7 +82,7 @@
     height: var(--calendar-height, 500px);
     background-color: #ECECEC;
     top: 100%;
-    transform: translateY(20px);
+    transform: translateY(5px);
 }
 
 .new-schedule-container .new-schedule-column-container:last-of-type::after{

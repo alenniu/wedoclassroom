@@ -27,8 +27,8 @@ export const set_class_attendance = (attendance=[]) => {
     return {type: SET_CLASS_ATTENDANCE, payload: {attendance}};
 }
 
-export const set_classes_schedules = (classes_schedules) => {
-    return {type: SET_CLASSES_SCHEDULES, payload: {classes_schedules}};
+export const set_classes_schedules = (classes_schedules=[], reschedules=[]) => {
+    return {type: SET_CLASSES_SCHEDULES, payload: {classes_schedules, reschedules}};
 }
 
 export const get_user_class = (class_id) => async (dispatch) => {
@@ -153,8 +153,8 @@ export const get_classes_schedules = ({startPeriod, endPeriod}, filters="{}", se
 
         if(res.data){
             if(res.data.success){
-                const {classes_schedules=[]} = res.data;
-                dispatch(set_classes_schedules(classes_schedules))
+                const {classes_schedules=[], reschedules=[]} = res.data;
+                dispatch(set_classes_schedules(classes_schedules, reschedules))
                 return res.data;
             }
 

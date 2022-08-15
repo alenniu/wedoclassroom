@@ -262,7 +262,7 @@ input:focus-visible, textarea:focus-visible{
 .input-container > input, .input-container > select, .input-container > textarea, .input-container .MuiSelect-select, .input-container .MuiTextField-root{
   padding: 10px;
   border-radius: 8px;
-  height: 56px;
+  height: var(--input-height, 56px);
   width: 100%;
   border: none;
   background-color: var(--input-bgcolor, #F6F6F6);
