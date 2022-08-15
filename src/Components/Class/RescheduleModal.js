@@ -16,7 +16,7 @@ const style = {
     borderRadius: "8px"
 };
 
-const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldDate, onPickNewDate, onPickNewStartTime, onPickNewEndTime, newStartTime, newEndTime, onChangeReason, reason, end_date, onClose, onRequestReschedule}) => {
+const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldDate, onPickNewDate, onPickNewStartTime, onPickNewEndTime, newStartTime, newEndTime, onChangeReason, reason, end_date, onClose, onRequestReschedule, newTimeOnly=false, acceptRequest}) => {
     const [step, setStep] = useState(0);
     const [selectNewDate, setSelectNewDate] = useState(true);
 
@@ -44,7 +44,7 @@ const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldD
             <Box sx={style}>
                 <Slide in={show} direction="up">
                 <div style={{width: "100%", display: "flex", flexWrap: "nowrap", overflow: "hidden"}}>
-                    <div style={{transition: "transform .500s", width: "100%", flexShrink: 0, transform: `translateX(${-100 * step}%)`, padding: "20px", paddingTop: "50px"}}>
+                    {!newTimeOnly && <div style={{transition: "transform .500s", width: "100%", flexShrink: 0, transform: `translateX(${-100 * step}%)`, padding: "20px", paddingTop: "50px"}}>
                         <label>Select Old Date</label>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <StaticDatePicker displayStaticWrapperAs="desktop" shouldDisableDate={(day) => !validDays.includes(day.getDay())} disablePast maxDate={new Date(end_date)} value={oldDate} renderInput={(params) => <TextField {...params} />} onChange={onPickOldDate} label="Select Old Date"  />
@@ -53,7 +53,7 @@ const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldD
                         <div style={{textAlign: "end"}}>
                             <button className="button primary" disabled={!oldDate} onClick={() => setStep(1)}>NEXT</button>
                         </div>
-                    </div>
+                    </div>}
 
                     <div style={{transition: "transform .500s", width: "100%", flexShrink: 0, transform: `translateX(${-100 * step}%)`, padding: "20px"}}>
                         <span style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -61,9 +61,9 @@ const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldD
                                 <span className='clickable' onClick={() => setStep(0)}><RiArrowLeftSLine size={30} /></span>
                                 <label>Select New Date</label>
                             </span>
-                            <span>
+                            {!newTimeOnly && <span>
                                 <Switch checked={selectNewDate} onChange={(e) => setSelectNewDate(e.target.checked)} />
-                            </span>
+                            </span>}
                         </span>
 
                         <div style={{display: "flex", marginBlock: "20px", gap: "20px"}}>
@@ -80,12 +80,16 @@ const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldD
                             <StaticDatePicker disabled={!selectNewDate} displayStaticWrapperAs="desktop" disablePast maxDate={new Date(end_date)} value={newDate} renderInput={(params) => <TextField {...params} />} onChange={onPickNewDate} label="Select New Date"  />
                         </LocalizationProvider>
 
-                        <div style={{textAlign: "end"}}>
-                            <button className="button primary" disabled={selectNewDate && !newDate} onClick={() => setStep(2)}>NEXT</button>
-                        </div>
+                        {!newTimeOnly && <div style={{textAlign: "end"}}>
+                            <button className="button primary" disabled={selectNewDate && (!newDate || !newStartTime || !newEndTime)} onClick={() => setStep(2)}>NEXT</button>
+                        </div>}
+
+                        {newTimeOnly && <div style={{textAlign: "end"}}>
+                            <button className="button primary" disabled={(!newDate || !newStartTime || !newEndTime)} onClick={acceptRequest}>Accept Request</button>
+                        </div>}
                     </div>
 
-                    <div style={{transition: "transform .500s", width: "100%", flexShrink: 0, transform: `translateX(${-100 * step}%)`, padding: "20px"}}>
+                    {!newTimeOnly && <div style={{transition: "transform .500s", width: "100%", flexShrink: 0, transform: `translateX(${-100 * step}%)`, padding: "20px"}}>
                         <span style={{display: "flex", alignItems: "center"}}>
                             <span className='clickable' onClick={() => setStep(1)}><RiArrowLeftSLine size={30} /></span>
                             <label>Give A Reason (Optional)</label>
@@ -98,7 +102,7 @@ const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldD
                         <div style={{textAlign: "end"}}>
                             <button className="button primary" disabled={selectNewDate && !newDate} onClick={onRequestReschedule}>Request Reschedule</button>
                         </div>
-                    </div>
+                    </div>}
                 </div>
                 </Slide>
             </Box>

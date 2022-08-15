@@ -1,0 +1,79 @@
+.reschedules{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.reschedules .reschedule-request{
+    position: relative;
+    margin: 15px 0;
+    padding: 10px;
+    border: 2px solid #ECECEC;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.reschedules .reschedule-request.accepted, .reschedule-request.accepted .reason-toggle, .reschedule-request.accepted .swap-icon{
+    color: #699F49;
+    border-color: #699F49;
+}
+
+.reschedules .reschedule-request.rejected, .reschedule-request.rejected .reason-toggle, .reschedule-request.rejected .swap-icon{
+    color: #ff0066;
+    border-color: #ff0066;
+}
+
+.reschedule-request .reschedule-time{
+    margin-top: 10px;
+}
+
+.reschedule-request .reschedule-reason{
+    max-height: 0px;
+    transition: max-height .300s ease-in-out;
+    overflow: hidden;
+}
+
+.reschedule-request .reschedule-reason.show{
+    max-height: 200px;
+}
+
+.reschedule-request .reason-toggle{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 20px;
+    border-radius: 0 0 40px 40px;
+    border: 2px solid #ECECEC;
+    background-color: var(--bg-color, white);
+    color: var(--text-color, black);
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.reschedule-request .actions{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 20px;
+    position: absolute;
+    top: -15px;
+    border: 2px solid #ECECEC;
+    background-color: var(--bg-color, white);
+}
+
+.reschedule-request .actions.accept{
+    color: #699F49;
+    border-color: #699F49;
+    right: -15px;
+}
+
+.reschedule-request .actions.reject{
+    color: #ff0066;
+    border-color: #ff0066;
+    left: -15px;
+}

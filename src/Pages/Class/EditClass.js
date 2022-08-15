@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { update_class, edit_class_value, get_class, get_teachers, set_loading, set_teachers, get_class_reschedules, request_class_reschedule } from '../../Actions';
+import { update_class, edit_class_value, get_class, get_teachers, set_loading, set_teachers, get_class_reschedules, request_class_reschedule, accept_class_reschedule, reject_class_reschedule } from '../../Actions';
 import TypeSelect from '../../Components/Common/TypeSelect';
 import { debounce, get_full_image_url, ordinal_suffix, throttle, unique_filter } from '../../Utils';
 import {RiImageAddLine, RiCloseCircleFill} from "react-icons/ri";
@@ -21,6 +21,7 @@ import "./EditClass.css";
 import { useNavigate, useParams } from 'react-router-dom';
 import { INIT_EDIT_CLASS } from '../../Actions/types';
 import RescheduleModal from '../../Components/Class/RescheduleModal';
+import Reschedule from '../../Components/Class/Reschedule';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -39,7 +40,9 @@ const pricing_type_options = [{label: "Hourly", value: "hourly"}, {label: "Per S
 
 const schedules = [{days: [], start_time: "", end_time: ""}];
 
-const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_config={}, is_admin, is_teacher, get_teachers, edit_class_value, update_class, set_teachers, get_class_reschedules, get_class, request_class_reschedule, set_loading}) => {
+const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_config={}, is_admin, is_teacher, get_teachers, edit_class_value, update_class, set_teachers, get_class_reschedules, get_class, request_class_reschedule , accept_class_reschedule, reject_class_reschedule, set_loading}) => {
+
+    const [currentReschedule, setCurrentReschedule] = useState(null);
     const [showReschedule, setShowReschedule] = useState(false);
     const [rescheduleOldDate, setRescheduleOldDate] = useState(null);
     const [rescheduleNewDate, setRescheduleNewDate] = useState(null);
@@ -96,6 +99,47 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
 
     const openRescheduleModal = () => {
         setShowReschedule(true);
+    }
+
+    const acceptRescheduleRequestNewDate = async () => {
+        if(currentReschedule && rescheduleNewDate && rescheduleNewStartTime && rescheduleNewEndTime){
+            set_loading(true);
+            
+            const {_id} = currentReschedule;
+            
+            if(await accept_class_reschedule(_id, {new_date: rescheduleNewDate, new_start_time: rescheduleNewStartTime, new_end_time: rescheduleNewEndTime})){
+                await get_class_reschedules(class_id, 20, 0, JSON.stringify({createdAt: "desc"}), "{}");
+                
+                closeRescheduleModal();
+                setRescheduleNewDate(null);
+                setCurrentReschedule(null);
+            }
+            
+            set_loading(false);
+        }
+    }
+
+    const onAcceptReschedule = async (r) => {
+        const {_id, new_date, new_start_time, new_end_time} = r;
+
+        if(new_date && new_start_time && new_end_time){
+            set_loading(true);
+            if(await accept_class_reschedule(_id, {new_date, new_start_time, new_end_time})){
+                await get_class_reschedules(class_id, 20, 0, JSON.stringify({createdAt: "desc"}), "{}");
+            }
+            set_loading(false);
+        }else{
+            setCurrentReschedule(r);
+            openRescheduleModal();
+        }
+    }
+
+    const onRejectReschedule = async (r) => {
+        set_loading(true);
+        if(await reject_class_reschedule(r._id)){
+            await get_class_reschedules(class_id, 20, 0, JSON.stringify({createdAt: "desc"}), "{}");
+        }
+        set_loading(false);
     }
 
     const onRequestReschedule = async () => {
@@ -224,7 +268,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
     }, [teacherSearch, is_admin]);
 
     return (
-        <div className='page new-class'>
+        <div className='page edit-class'>
             <form onSubmit={(e) => {e.preventDefault()}} enctype="multipart/form-data" className='main-col'>
                 <h3>Edit Class</h3>
 
@@ -438,30 +482,25 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
 
                 <h3 style={{marginBlock: "20px"}}>Reschedules</h3>
 
-                <div>
+                <ul className='reschedules'>
                     {reschedules.map((r) => {
-                        const {old_date, new_date, new_start_time, new_end_time, reason, accepted, rejected} = r;
-
-                        const oldDate = new Date(old_date);
-                        const newDate = new_date && new Date(new_date);
-                        const newStartTime = new_start_time && new Date(new_start_time);
-                        const newEndTime = new_end_time && new Date(new_end_time);
-
-                        const time_range = (newStartTime && newEndTime)?`${newStartTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - ${newEndTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}`:"N/A - N/A"
+                        const {_id, reason} = r;
 
                         return (
-                            <div title={reason} className={`reschedule-request ${accepted?"accepted":rejected?"rejected":"unhandled"}`}>
-                                <p>{MONTHS[oldDate.getMonth()].short} {ordinal_suffix(oldDate.getDate())} - {newDate?`${MONTHS[newDate.getMonth()].short} ${ordinal_suffix(newDate.getDate())}`:"N/A"}</p>
-
-                                <p>{time_range}</p>
-                            </div>
+                            <li key={_id} title={reason}>
+                                <Reschedule reschedule={r} is_admin={is_admin} onAccept={onAcceptReschedule} onReject={onRejectReschedule} />
+                            </li>
                         )
                     })}
-                </div>
+                </ul>
 
-                <button className='button primary fullwidth' onClick={onClickReschedule}>Reschedule</button>
+                {is_teacher && <>
+                    <button className='button primary fullwidth' onClick={onClickReschedule}>Reschedule</button>
 
-                <RescheduleModal show={showReschedule} onClose={closeRescheduleModal} end_date={end_date} oldDate={rescheduleOldDate} newDate={rescheduleNewDate} onPickOldDate={setRescheduleOldDate} onPickNewDate={setRescheduleNewDate} onPickNewStartTime={setRescheduleNewStartTime} newStartTime={rescheduleNewStartTime} onPickNewEndTime={setRescheduleNewEndTime} newEndTime={rescheduleNewEndTime} onChangeReason={(e) => setRescheduleReason(e.target.value)} reason={rescheduleReason} validDays={schedules.flatMap((s) => s.days).filter(unique_filter)} onRequestReschedule={onRequestReschedule} />
+                    <RescheduleModal show={showReschedule} onClose={closeRescheduleModal} end_date={end_date} oldDate={rescheduleOldDate} newDate={rescheduleNewDate} onPickOldDate={setRescheduleOldDate} onPickNewDate={setRescheduleNewDate} onPickNewStartTime={setRescheduleNewStartTime} newStartTime={rescheduleNewStartTime} onPickNewEndTime={setRescheduleNewEndTime} newEndTime={rescheduleNewEndTime} onChangeReason={(e) => setRescheduleReason(e.target.value)} reason={rescheduleReason} validDays={schedules.flatMap((s) => s.days).filter(unique_filter)} onRequestReschedule={onRequestReschedule} />
+                </>}
+
+                {is_admin && <RescheduleModal show={showReschedule} onClose={closeRescheduleModal} end_date={end_date} newDate={rescheduleNewDate} onPickNewDate={setRescheduleNewDate} onPickNewStartTime={setRescheduleNewStartTime} newStartTime={rescheduleNewStartTime} onPickNewEndTime={setRescheduleNewEndTime} newEndTime={rescheduleNewEndTime} acceptRequest={acceptRescheduleRequestNewDate} newTimeOnly />}
             </div>
         </div>
     );
@@ -471,4 +510,4 @@ function map_state_to_props({App, Auth, Class, Admin}){
     return {user: App.user, teachers: Admin.teachers, total_teachers: Admin.total_teachers, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, edit_class: Class.edit, app_config: App.config};
 }
  
-export default connect(map_state_to_props, {get_teachers, edit_class_value, update_class, set_teachers, get_class, get_class_reschedules, request_class_reschedule, set_loading})(EditClass);
+export default connect(map_state_to_props, {get_teachers, edit_class_value, update_class, set_teachers, get_class, get_class_reschedules, request_class_reschedule, accept_class_reschedule, reject_class_reschedule, set_loading})(EditClass);

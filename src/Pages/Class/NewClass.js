@@ -160,7 +160,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     }, [teacherSearch, is_admin]);
 
     return (
-        <div className='page new-class'>
+        <div className='page edit-class new'>
             <form onSubmit={(e) => {e.preventDefault()}} enctype="multipart/form-data" className='main-col'>
                 <h3>Create New Class</h3>
 
