@@ -116,6 +116,16 @@ const routes = [
                 adminRequired: true
             },
             {
+                path: "/dashboard/config",
+                component: Dashboard,
+                exact: true,
+                children: null,
+                isIndex: false,
+                teacherRequired: false,
+                adminRequired: true,
+                salesRequired: false,
+            },
+            {
                 path: "/dashboard/class/new",
                 component: NewClass,
                 exact: true,

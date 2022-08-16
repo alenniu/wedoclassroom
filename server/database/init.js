@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const init = () => {
     // if(!mongoose.connection){
-        mongoose.connect(`${config.DB_HOST}/${config.DB_NAME}`, {useNewUrlParser: true, autoIndex: true, user: config.DB_USER, pass: config.DB_PASS}, (err) => {
+        mongoose.connect(`${config.DB_HOST}/${config.DB_NAME}?${config.DB_CONNECTION_QUERY}`, {useUnifiedTopology: true, useNewUrlParser: true, autoIndex: true, user: config.DB_USER, pass: config.DB_PASS, serverSelectionTimeoutMS: 5000}, (err) => {
             if(err){
                 console.log("err connecting to database!!!", err);
                 return

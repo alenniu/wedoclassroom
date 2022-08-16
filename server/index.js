@@ -2,11 +2,13 @@ const path = require("path");
 const http = require("http");
 const config = require("./config");
 const express = require("express");
-const sockets = require("socket.io");
+const {Server:IoServer} = require("socket.io");
 const cookie_parser = require("cookie-parser")
 const express_session = require("express-session")
 const { get_file_extension } = require("./functions/utils");
 const mongoStore = require("connect-mongo");
+const {createAdapter:createSocketIoMongoAdapter} = require("@socket.io/mongo-adapter")
+const { DB_NAME, SOCKET_IO_DB_NAME } = require("./config");
 
 const db_init = require("./database/init");
 const db = db_init();
@@ -30,12 +32,17 @@ require("./database/schemas/announcements");
 
 const app = express();
 const server = http.createServer(app);
+const mongoClient = db.getClient();
 
-const io = sockets(server, {
+const io = new IoServer(server, {
     pingTimeout: 10000,
     pingInterval: 2500,
     transports: ["websocket"]
 });
+
+io.on("connection", (s) => {
+    console.log("socket_id: ", s.id);
+})
 
 const allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -63,7 +70,7 @@ app.use(express_session({
     cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000,
     },
-    store: mongoStore.create({client: db.getClient(), collectionName: "sessions"}), /// should use mongostore in future
+    store: mongoStore.create({client: mongoClient, collectionName: "sessions"}), /// should use mongostore in future
     resave: false,
     saveUninitialized: false,
     secret: config.SECRET, 
@@ -98,10 +105,22 @@ app.get("*", async(req, res, next) => {
 app.use(express.static("./build"));
 app.use("/uploads", express.static("./uploads"));
 
-server.listen(config.PORT, "0.0.0.0", () => {
-    require("dns").lookup(require("os").hostname(), (err, add, fam) => {
-        console.log(add);
-    });
+(async () => {
+    try{
+        await mongoClient.db(DB_NAME).createCollection(SOCKET_IO_DB_NAME, {capped: true, size: 1e6})
+    }catch(e){
+        console.log("Collection may already exist", e.message);
+    }
+
+    const socketIoMongoAdapterCollection = mongoClient.db(DB_NAME).collection(SOCKET_IO_DB_NAME);
     
-    console.log("app is listening on port " + config.PORT);
-});
+    io.adapter(createSocketIoMongoAdapter(socketIoMongoAdapterCollection, {}));
+
+    server.listen(config.PORT, "0.0.0.0", () => {
+        require("dns").lookup(require("os").hostname(), (err, add, fam) => {
+            console.log(add);
+        });
+        
+        console.log("app is listening on port " + config.PORT);
+    });
+})()

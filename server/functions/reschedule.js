@@ -56,7 +56,7 @@ async function get_reschedules_for_period({startPeriod, endPeriod}, limit=20, of
             reschedules = await Reschedules.find(filters, {reason: 0}).skip(offset).limit(limit).sort(sort)/*.populate({path: "handled_by", select: "-password"})*/.lean(true);
         }
         
-        console.log(filters.$and[0].$or, reschedules, total);
+        // console.log(filters.$and[0].$or, reschedules, total);
         return {reschedules, total}; 
     }catch(e){
         throw (e);
