@@ -9,7 +9,7 @@ async function get_attachments(user, limit=20, offset=0, search){
         let total = 0;
         let attachments = [];
 
-        console.log(user);
+        // console.log(user);
 
         total = await Attachments.count({owner: user._id});
         

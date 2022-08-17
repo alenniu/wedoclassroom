@@ -59,7 +59,6 @@ async function add_item_to_schedule({name, description, start_date, duration, en
 
                 return user_schedule;
             }else{
-                console.log
                 throw new Error(`This new item conflicts with an existing item in your schedule. existing Item: ${JSON.stringify(overlapping_item)}`);
             }
         }else{

@@ -66,7 +66,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
 
     const onChangeValue = (keys=[], numeric=false) => (val) => {
         const value = val;
-        console.log(keys, value);
+        // console.log(keys, value);
 
         edit_new_class_value(keys, numeric?(Number(value) || value):value);
         setErrors(err => ({...err, [keys.join(".")]: ""}));

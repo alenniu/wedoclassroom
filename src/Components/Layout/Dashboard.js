@@ -46,7 +46,6 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], incoming
     useEffect(() => {
         let timeout;
         if(user){
-            console.log("SOCKET EMIT");
             socket?.emit(SOCKET_EVENT_LOGIN, user);
             // TESTING
             timeout = setTimeout(() => {

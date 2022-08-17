@@ -139,7 +139,7 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
         set_loading(true);
         const res = await get_class_client_secret(_class._id);
         
-        console.log(res);
+        // console.log(res);
         if(res.success){
             setJoiningClass(_class);
             setClientSecret(res.client_secret);

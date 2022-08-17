@@ -17,7 +17,7 @@ const ListInput = ({items=[], renderItem, search_array=[], search_property="", r
 
     const type_search = () => {
         const regex = new RegExp(`^${addInputValue}`, "i");
-        console.log(search_array);
+        // console.log(search_array);
         const matches = search_array.filter((item,i)=>{
             const regex_matches = search_prop?item[search_prop].match(regex):item.match(regex);
             

@@ -168,7 +168,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
 
     const onChangeValue = (keys=[], numeric=false) => (val) => {
         const value = val;
-        console.log(keys, value);
+        // console.log(keys, value);
 
         edit_class_value(keys, numeric?(Number(value) || value):value);
         setErrors(err => ({...err, [keys.join(".")]: ""}));

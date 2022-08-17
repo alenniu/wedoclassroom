@@ -28,7 +28,7 @@ export const create_stripe_session_handler = async (req: Request, res: Response,
     
             const stripe_session = await create_stripe_session({customer_email: customer_email || user.email, line_items, automatic_tax: {enabled: false}});
 
-            console.log("stripe_session", stripe_session);
+            // console.log("stripe_session", stripe_session);
 
             return res.json({success: true, session: stripe_session});
         }else{
@@ -54,7 +54,7 @@ export const create_stripe_payment_intent_handler = async (req: Request, res: Re
             
             const payment_intent = await create_stripe_payment_intent({amount, currency: "usd", customer: user.stripe_customer_id, description: "[TEST] MERN SCHOOL", receipt_email: receipt_email || user.email});
             
-            console.log("payment_intent", payment_intent);
+            // console.log("payment_intent", payment_intent);
             
             return res.json({success: true, intent: payment_intent});
         }else{

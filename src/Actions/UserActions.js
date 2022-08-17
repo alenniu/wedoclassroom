@@ -330,7 +330,7 @@ export const get_unread_notifications_count = () => async (dispatch) => {
 export const add_socket_events = (socket:Socket) => async (dispatch) => {
     if(socket){
         socket.on(SOCKET_EVENT_NOTIFICATION, (notification) => {
-            console.log(SOCKET_EVENT_NOTIFICATION, notification);
+            // console.log(SOCKET_EVENT_NOTIFICATION, notification);
             dispatch(add_new_notification(notification));
         })
     }
