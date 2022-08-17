@@ -1,6 +1,6 @@
-import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE, DECLINE_JOIN_REQUEST, SET_CLASSES_SCHEDULES } from "../Actions/types";
+import { SET_USER_REQUESTS, SET_USER_CLASSES, CREATE_CLASS, REQUEST_JOIN_CLASS, ACCEPT_JOIN_REQUEST, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE, DECLINE_JOIN_REQUEST, SET_CLASSES_SCHEDULES, SET_NOTIFICATIONS, SET_UNREAD_NOTIFICATIONS_COUNT, NEW_NOTIFICATION, REMOVE_INCOMING_NOTIFICATION, REMOVE_ALL_INCOMING_NOTIFICATION, READ_NOTIFICATIONS, UNREAD_NOTIFICATIONS, HIDE_INCOMING_NOTIFICATION } from "../Actions/types";
 
-const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, current_class_requests: [], total_class_requests: 0, requests: [], total_requests: 0, assignments: [], total_assignments: 0, class_attendance: [], classes_schedules: [], reschedules: []};
+const INITIAL_STATE = {classes: [], total_classes: 0, current_class: {}, current_class_requests: [], total_class_requests: 0, requests: [], total_requests: 0, assignments: [], total_assignments: 0, class_attendance: [], classes_schedules: [], reschedules: [], notifications: [], incoming_notifications: [], total_notifications: 0, unread_notifications_count: 0};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -32,6 +32,41 @@ export default (state=INITIAL_STATE, action) => {
         case SET_CLASSES_SCHEDULES:
             new_state.classes_schedules = payload.classes_schedules;
             new_state.reschedules = payload.reschedules;
+        break;
+
+        case SET_NOTIFICATIONS:
+            new_state.notifications = payload.notifications;
+            new_state.total_notifications = payload.total;
+        break;
+
+        case NEW_NOTIFICATION:
+            new_state.incoming_notifications = [...new_state.incoming_notifications, payload.notification];
+            new_state.notifications = [payload.notification, ...new_state.notifications];
+            new_state.unread_notifications_count += 1;
+        break;
+
+        case REMOVE_INCOMING_NOTIFICATION:
+            new_state.incoming_notifications = new_state.incoming_notifications.filter((n) => n._id !== payload.notification._id);
+        break;
+
+        case HIDE_INCOMING_NOTIFICATION:
+            new_state.incoming_notifications = new_state.incoming_notifications.map((n) => n._id === payload.notification._id?({...n, hide: true}):n);
+        break;
+
+        case REMOVE_ALL_INCOMING_NOTIFICATION:
+            new_state.incoming_notifications = [];
+        break;
+
+        case READ_NOTIFICATIONS:
+            new_state.unread_notifications_count -= payload.count;
+        break;
+
+        case UNREAD_NOTIFICATIONS:
+            new_state.unread_notifications_count += payload.count;
+        break;
+
+        case SET_UNREAD_NOTIFICATIONS_COUNT:
+            new_state.unread_notifications_count = payload.count;
         break;
 
         case UPDATE_STUDENT_CLASS_ATTENDANCE:{

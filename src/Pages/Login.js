@@ -9,6 +9,8 @@ import { check_login, edit_auth_value, get_user_assignments, login, set_loading 
 import { onPressReturn, validate_email, validate_password } from '../Utils';
 
 const Login = ({email, error, logged_in, is_admin, user, login, check_login, get_user_assignments, set_loading, edit_auth_value}) => {
+    // const [socket, setSocket] = useSocket();
+
     const navigate = useNavigate()
     const [errors, setErrors] = useState({});
     
@@ -33,9 +35,11 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, get
     useEffect(() => {
         const from = query.get("from");
         if(logged_in && user){
+            // console.log("Logged in, Socket: ", socket);
+            // socket?.emit(SOCKET_EVENT_LOGIN, user);
             get_user_assignments()
             // if(is_admin){
-                navigate(from || "/dashboard");
+                navigate(from || "/dashboard/");
             // }else{
             //     navigate(`/dashboard`);
             // }

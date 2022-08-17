@@ -1,25 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line, RiTimeLine, RiArrowRightSLine, RiArrowLeftSLine, RiSettings3Line} from "react-icons/ri";
+import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line, RiTimeLine, RiArrowRightSLine, RiArrowLeftSLine, RiSettings3Line, RiLogoutBoxRLine} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
-import { close_nav, logout, open_nav, set_loading, toggle_nav } from '../../Actions';
+import { add_socket_events, close_nav, get_notifications, get_unread_notifications_count, hide_incoming_notification, logout, open_nav, remove_all_incoming_notification, remove_incoming_notification, add_new_notification, remove_socket_events, set_loading, toggle_nav } from '../../Actions';
+import {CSSTransition, TransitionGroup} from "react-transition-group"
 
 import "./Dashboard.css";
 import { get_full_image_url } from '../../Utils';
+import { useSocket } from '../../Context/SocketContext';
+import { SOCKET_EVENT_LOGIN, SOCKET_EVENT_LOGOUT } from 'my-server/socket_events';
+import Notification from '../Dashboard/Notification';
 
-const DashboardLayout = ({user, is_admin, is_teacher, nav_open, toggle_nav, open_nav, close_nav, is_student, is_sales, logout, set_loading}) => {
+const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], incoming_notifications=[], unread_notifications_count=0, nav_open, toggle_nav, open_nav, close_nav, is_student, is_sales, get_notifications, get_unread_notifications_count, remove_incoming_notification, remove_all_incoming_notification, add_socket_events, remove_socket_events, add_new_notification, logout, set_loading}) => {
     
     const {name={first: "Ruth", last: "Langmore"}, phone, type, photo_url="/Assets/Images/AuthBackground.png"} = user;
+
+    const [showIncoming, setShowIncoming] = useState(false);
     
+    const [socket, setSocket] = useSocket();
+
     const navigate = useNavigate();
     
     const location = useLocation();
+
     const is_on_new_class = location.pathname === "/dashboard/class/new";
 
-    const onPressMessageIcon = async () => {
+    const onNotificationExit = (n) => {
+        remove_incoming_notification(n)
+    };
+
+    const onPressLogout = async () => {
         set_loading(true);
         if(await logout()){
+            socket?.emit(SOCKET_EVENT_LOGOUT);
             navigate("/login");
         }
         set_loading(false);
@@ -27,6 +41,38 @@ const DashboardLayout = ({user, is_admin, is_teacher, nav_open, toggle_nav, open
 
     const onPressNewClass = async () => {
         navigate("/dashboard/class/new");
+    }
+
+    useEffect(() => {
+        let timeout;
+        if(user){
+            console.log("SOCKET EMIT");
+            socket?.emit(SOCKET_EVENT_LOGIN, user);
+            // TESTING
+            timeout = setTimeout(() => {
+                add_new_notification({_id: "12345", text: "Hello. This is a test notification\nShould be on new line.", type: "TEST_NOTIFICATION"});
+                add_new_notification({_id: "123456", text: "Hello. This is a test notification\nShould be on new line.", type: "TEST_NOTIFICATION"});
+            }, 500);
+            // TESTING
+            add_socket_events(socket);
+            get_notifications(20, 0);
+            get_unread_notifications_count();
+        }
+
+        return () => {
+            clearTimeout(timeout);
+            remove_socket_events(socket);
+        }
+    }, [user]);
+
+    const onIncomingNotificationMount = (n) => {
+        setTimeout(() => {
+            remove_incoming_notification(n);
+        }, [5000]);
+    }
+
+    const onOpenNotifications = () => {
+        remove_all_incoming_notification();
     }
 
     return (
@@ -113,14 +159,29 @@ const DashboardLayout = ({user, is_admin, is_teacher, nav_open, toggle_nav, open
                             </div>
 
                             <div className='user-actions icons'>
-                                <span className='action-icon-container' onClick={onPressMessageIcon}><RiMessage3Line size={25} className="clickable" /></span>
-                                <span className='action-icon-container'><RiNotification3Line size={25} className="clickable" /></span>
+                                <span title='Notifications' className='action-icon-container notifications'>
+                                    <span className='badge notification-count'>{unread_notifications_count>99?"99+":unread_notifications_count}</span>
+                                    <RiNotification3Line size={25} className="clickable" />
+                                </span>
+
+                                <span title='Logout' className='action-icon-container logout' onClick={onPressLogout}><RiLogoutBoxRLine size={25} className="clickable" /></span>
                             </div>
                         </div>
                     </div>
                 </header>
                 <Outlet />
             </div>
+            <TransitionGroup>
+                {incoming_notifications.map((n, i) => {
+                    return (
+                        <CSSTransition timeout={300} classNames="incoming-notification" unmountOnExit onExited={() => {
+                            onNotificationExit(n);
+                        }} key={n._id}>
+                            <span className="incoming-notification" style={{"--index": i}} key={n._id}><Notification notification={n} onMount={onIncomingNotificationMount} /></span>
+                        </CSSTransition>
+                    )
+                })}
+            </TransitionGroup>
             
             <span title='toggle nav ([)' className={`nav-toggle clickable ${nav_open===true?"open":nav_open===false?"closed":""}`} onClick={toggle_nav}>
                 <RiArrowLeftSLine className='nav-toogle-icon' />
@@ -129,8 +190,8 @@ const DashboardLayout = ({user, is_admin, is_teacher, nav_open, toggle_nav, open
     );
 }
 
-function map_state_to_props({App, Auth}){
-    return {user: App.user, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student, is_sales: Auth.is_sales, nav_open: App.nav_open}
+function map_state_to_props({App, User, Auth}){
+    return {user: App.user, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student, is_sales: Auth.is_sales, nav_open: App.nav_open, notifications: User.notifications, incoming_notifications: User.incoming_notifications, unread_notifications_count: User.unread_notifications_count}
 }
 
-export default connect(map_state_to_props, {logout, toggle_nav, open_nav, close_nav, set_loading})(DashboardLayout);
+export default connect(map_state_to_props, {logout, toggle_nav, open_nav, close_nav, get_notifications, get_unread_notifications_count, remove_incoming_notification, remove_all_incoming_notification, add_socket_events, remove_socket_events, add_new_notification, set_loading})(DashboardLayout);

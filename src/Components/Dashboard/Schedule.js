@@ -66,7 +66,7 @@ const Schedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDateR
                     
 
                     return (
-                        <span className='schedule-column-container'>
+                        <span key={this_date.toDateString()} className='schedule-column-container'>
                             <span className='day'>{DAYS[this_date.getDay()].short}</span>
                             <div className='schedule-column-day top'></div>
                             <div className='schedule-column-day main'>
@@ -111,7 +111,7 @@ const Schedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDateR
                         const maxHeight = 265 / (items_on_same_day.length || 1);
 
                         return (
-                            <div title={`${title} - ${time_range}`} className='schedule-event clickable' onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(${((100/7)*days[0])}% + 5px)`, width: `calc(${(100/7) * days.length}% - 10px)`, top: `${160 + (items_on_same_day_before.length * maxHeight)}px`, maxHeight: `${maxHeight}px`, backgroundColor: bg_color, color: text_color}}>
+                            <div key={_id+time_range} title={`${title} - ${time_range}`} className='schedule-event clickable' onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(${((100/7)*days[0])}% + 5px)`, width: `calc(${(100/7) * days.length}% - 10px)`, top: `${160 + (items_on_same_day_before.length * maxHeight)}px`, maxHeight: `${maxHeight}px`, backgroundColor: bg_color, color: text_color}}>
                                 <p>{title}</p>
                                 <p>{time_range}</p>
                                 <p>{DAYS[days[0]].short}{days.length>1?" - " + DAYS[days.at(-1)].short:""}</p>

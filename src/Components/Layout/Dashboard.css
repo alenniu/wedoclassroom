@@ -277,6 +277,24 @@ nav.admin-nav.closed .nav-wrapper .nav-image-container{
     color: var(--text-color, #3F3F44);
 }
 
+.action-icon-container .badge{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 100%;
+    left: 100%;
+    transform: translateX(-50%);
+    padding: 5px;
+    font-size: 10px;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: var(--error-button-hover-bgcolor, #ff0066);
+}
+
 .admin-nav .support-container{
     bottom: 20px;
     padding: 20px;
@@ -324,4 +342,37 @@ nav.admin-nav.closed .nav-wrapper .nav-image-container{
 }
 
 .admin-nav .support-container .support-text p{
+}
+
+.dashboard .incoming-notification{
+    --notification-height: 100px;
+    position: absolute;
+    z-index: 999999999;
+    top: calc((var(--dashboard-header-height, 90px) + 20px) + (var(--index, 0) * ((var(--notification-height, 60px) + 20px))));
+    right: 20px;
+}
+
+.dashboard .incoming-notification-enter {
+    transform: translateX(100%);
+}
+
+.dashboard .incoming-notification-enter-active {
+    /* opacity: 1; */
+    transform: translateX(0%);
+    transition: transform 300ms;
+}
+
+.dashboard .incoming-notification-exit {
+    opacity: 1;
+    transform: translateX(0%);
+}
+
+.dashboard .incoming-notification-exit-active {
+    transform: translateX(100%);
+    transition: opacity 300ms, transform 300ms;
+}
+
+.dashboard {
+    position: relative;
+    overflow-x: hidden;
 }

@@ -21,7 +21,8 @@ const attachment_schema = new schema({
     },
     _class: {
         type: schema.Types.ObjectId,
-        ref: "class"
+        ref: "class",
+        default: null
     },
     assignment: {
         type: schema.Types.ObjectId,

@@ -11,6 +11,8 @@ const {createAdapter:createSocketIoMongoAdapter} = require("@socket.io/mongo-ada
 const { DB_NAME, SOCKET_IO_DB_NAME } = require("./config");
 
 const db_init = require("./database/init");
+const { SOCKET_ROOM_ADMINS, SOCKET_ROOM_SALES, SOCKET_ROOM_STUDENTS, SOCKET_ROOM_TEACHERS } = require("./socket_rooms");
+const { SOCKET_EVENT_LOGIN, SOCKET_EVENT_LOGOUT } = require("./socket_events");
 const db = db_init();
 
 require("./database/schemas/users");
@@ -29,6 +31,7 @@ require("./database/schemas/submissions");
 require("./database/schemas/withdrawals");
 require("./database/schemas/reschedules");
 require("./database/schemas/announcements");
+require("./database/schemas/notifications");
 
 const app = express();
 const server = http.createServer(app);
@@ -40,8 +43,29 @@ const io = new IoServer(server, {
     transports: ["websocket"]
 });
 
-io.on("connection", (s) => {
-    console.log("socket_id: ", s.id);
+const roomMap = {
+    sales: SOCKET_ROOM_SALES,
+    admin: SOCKET_ROOM_ADMINS,
+    teacher: SOCKET_ROOM_TEACHERS,
+    student: SOCKET_ROOM_STUDENTS
+}
+
+io.on("connection", (socket) => {
+    console.log("socket connected ⚡⚡⚡ ", socket.id);
+
+    socket.on(SOCKET_EVENT_LOGIN, (user) => {
+        // console.log(user);
+        socket.join([user._id, user.email, roomMap[user.type]]);
+        console.log(socket.rooms)
+    });
+
+    socket.on(SOCKET_EVENT_LOGOUT, () => {
+        for(const room of socket.rooms){
+            if(room !== socket.id){
+                socket.leave(room);
+            }
+        }
+    });
 })
 
 const allowCrossDomain = function(req, res, next) {
@@ -91,6 +115,7 @@ require("./routes/session_routes")(app);
 require("./routes/assignment_routes")(app);
 require("./routes/reschedule_routes")(app);
 require("./routes/announcement_routes")(app);
+require("./routes/notification_routes")(app);
 
 app.get("*", async(req, res, next) => {
     const url_path = req.url.split("?")[0];

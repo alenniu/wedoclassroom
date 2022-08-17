@@ -9,6 +9,8 @@ import { connect } from 'react-redux';
 import { onPressReturn, password_requirements, validate_email, validate_name, validate_password } from '../Utils';
 
 const Register = ({email, name={}, logged_in, is_admin, user, error, check_login, register, set_loading, edit_auth_value}) => {
+    // const [socket, setSocket] = useSocket();
+
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState({});
@@ -37,11 +39,13 @@ const Register = ({email, name={}, logged_in, is_admin, user, error, check_login
     useEffect(() => {
         const from = query.get("from");
         if(logged_in && user){
-            if(is_admin){
+            // socket?.emit(SOCKET_EVENT_LOGIN, user);
+
+            // if(is_admin){
                 navigate(from || "/dashboard/");
-            }else{
-                navigate(`/dashboard/`);
-            }
+            // }else{
+            //     navigate(`/dashboard/`);
+            // }
         }
     }, [logged_in, is_admin, user]);
 

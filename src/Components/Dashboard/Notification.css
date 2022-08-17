@@ -1,0 +1,24 @@
+.notification-container{
+    display: inline-block;
+    height: var(--notification-height, 100px);
+    text-overflow: ellipsis;
+    padding: 10px;
+    border-radius: 3px;
+    background-color: var(--bg-color, white);
+    color: var(--text-color, black);
+    box-shadow: var(--notification-box-shadow, (1px, 1px, 5px grey));
+    border: var(--notification-border, 1px solid #ECECEC);
+    width: min(75vw, 350px);
+    overflow: hidden;
+}
+
+.notification-container p{
+    margin: 0;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+    text-overflow: ellipsis;
+}
+
+.notification-container p:last-of-type{
+    margin-bottom: 0;
+}

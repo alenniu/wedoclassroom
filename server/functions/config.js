@@ -5,7 +5,7 @@ const Config = Configs;
 
 async function get_or_create_config(defaults={subjects: ["Math", "English"], tags: ["math", "english", "ap", "beginner", "advanced"], levels: ["AP", "Beginner", "Advanced"]}){
     try{
-        let config = await Configs.findOne({});
+        let config = await Configs.findOne({}).lean(true);
 
         if(!config){
             config = await (new Config(defaults || {subjects: [], tags: []})).save();
@@ -22,7 +22,7 @@ async function update_config(config){
     try{
         delete config._id;
     
-        return await Configs.findOneAndUpdate({}, {$set: config}, {new: true, upsert: false});
+        return await Configs.findOneAndUpdate({}, {$set: config}, {new: true, upsert: false}).lean(true);
     }catch(e){
         console.log(e);
         throw e;

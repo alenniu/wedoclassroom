@@ -113,7 +113,7 @@ const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDa
                 {Array.from({length: 7}).map((_, i) => {
                     const this_date = new Date(min.getTime() + (i * DAY));
                     return (
-                        <span className='new-schedule-column-container'>
+                        <span key={this_date.toDateString()} className='new-schedule-column-container'>
                             <span className='day'>
                                 <p>{DAYS[this_date.getDay()].short} {ordinal_suffix(this_date.getDate())}</p>
                             </span>
@@ -134,7 +134,7 @@ const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDa
                         const hour12Time = hour > 12 ? (hour-12) : hour || 12
                         const suffix = hour >= 12 ? "PM" : "AM"
                         return (
-                            <li style={{"--section-height": (HOUR_SECTION_HEIGHT/2)+"px"}} className={`schedule-calendar-hour-period ${is_half_hour?"half":"full"}`}>
+                            <li key={hour.toString()} style={{"--section-height": (HOUR_SECTION_HEIGHT/2)+"px"}} className={`schedule-calendar-hour-period ${is_half_hour?"half":"full"}`}>
                                 {!is_half_hour && <span className='schedule-time'>{hour12Time}{suffix}</span>}
                             </li>
                         )
@@ -195,7 +195,7 @@ const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDa
                         });
 
                         return (
-                            <div title={`${title} | ${time_range} ${is_rescheduled?"(rescheduled)":""}`} className={`schedule-event clickable ${is_rescheduled?"rescheduled":""}`} onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, width: `50px`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: top}}>
+                            <div key={_id+d+time_range} title={`${title} | ${time_range} ${is_rescheduled?"(rescheduled)":""}`} className={`schedule-event clickable ${is_rescheduled?"rescheduled":""}`} onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, width: `50px`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: top}}>
                                 <p>{title}</p>
                                 <p>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</p>
                                 <p>{DAYS[d].short}</p>
