@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
     socket.on(SOCKET_EVENT_LOGIN, (user) => {
         // console.log(user);
         socket.join([user._id, user.email, roomMap[user.type]]);
-        console.log(socket.rooms)
+        // console.log(socket.rooms)
     });
 
     socket.on(SOCKET_EVENT_LOGOUT, () => {
