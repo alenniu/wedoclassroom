@@ -1,5 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import mongoose from "mongoose";
+import { ADD_NEW_CLASS_RESCHEDULE, UPDATE_CLASS_RESCHEDULE } from "../../src/Actions/types";
 import { APP_EMAIL } from "../config";
 import { get_class } from "../functions/class";
 import { create_notification } from "../functions/notifications";
@@ -97,7 +98,7 @@ export const request_class_reschedule_handler = async (req: Request, res: Respon
                     delete request_notification.everyone_of_type;
     
                     console.log(socket_io);
-                    socket_io?.to(SOCKET_ROOM_ADMINS).emit(SOCKET_EVENT_NOTIFICATION, request_notification);
+                    socket_io?.to(SOCKET_ROOM_ADMINS).emit(SOCKET_EVENT_NOTIFICATION, request_notification, {dispatchObj: {type: ADD_NEW_CLASS_RESCHEDULE, payload: {reschedule}}});
 
                     const mail = new Mail({subject: "Class Reschedule Requested", recipients: user_emails, sender: APP_EMAIL}, {html: "Class Reschedule Requested", text: "Class Reschedule Requested"});
     
@@ -142,7 +143,7 @@ export const accept_class_reschedule_handler = async (req: Request, res: Respons
                 delete reschedule_notification.excluded_users;
                 delete reschedule_notification.everyone_of_type;
                 
-                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, reschedule_notification);
+                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, reschedule_notification, {dispatchObj: {type: UPDATE_CLASS_RESCHEDULE, payload: {reschedule}}});
 
                 const mail = new Mail({subject: "Class Rescheduled", recipients: user_emails, sender: APP_EMAIL}, {html: "Class Rescheduled", text: "Class Rescheduled"});
     
@@ -182,7 +183,7 @@ export const reject_class_reschedule_handler = async (req: Request, res: Respons
                 delete reschedule_notification.excluded_users;
                 delete reschedule_notification.everyone_of_type;
 
-                socket_io?.to(reschedule.teacher._id.toString()).emit(SOCKET_EVENT_NOTIFICATION, reschedule_notification);
+                socket_io?.to(reschedule.teacher._id.toString()).emit(SOCKET_EVENT_NOTIFICATION, reschedule_notification, {dispatchObj: {type: UPDATE_CLASS_RESCHEDULE, payload: {reschedule}}});
                 
                 const mail = new Mail({subject: "Class Reschedule Declined", recipients: [reschedule.teacher.email], sender: APP_EMAIL}, {html: "Class Reschedule Declined", text: "Class Reschedule Declined"});
     

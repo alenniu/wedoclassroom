@@ -50,7 +50,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], incoming
             // TESTING
             timeout = setTimeout(() => {
                 add_new_notification({_id: "12345", text: "Hello. This is a test notification\nShould be on new line.", type: "TEST_NOTIFICATION"});
-                add_new_notification({_id: "123456", text: "Hello. This is a test notification\nShould be on new line.", type: "TEST_NOTIFICATION"});
+                // add_new_notification({_id: "123456", text: "Hello. This is a test notification\nShould be on new line.", type: "TEST_NOTIFICATION"});
             }, 500);
             // TESTING
             add_socket_events(socket);

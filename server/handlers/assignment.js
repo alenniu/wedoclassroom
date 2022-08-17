@@ -8,6 +8,8 @@ import { NOTIFICATION_TYPE_NEW_ASSIGNMENT } from "../notification_types";
 import { Mail } from "@sendgrid/helpers/classes";
 import { create_notification } from "../functions/notifications";
 import { SOCKET_EVENT_NOTIFICATION } from "../socket_events";
+import { ADD_NEW_CLASS_ASSIGNMENT } from "../../src/Actions/types";
+import { APP_EMAIL } from "../config";
 
 export const get_assignments_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -79,7 +81,7 @@ export const create_assignment_handler = async (req: Request, res: Response, nex
                 const user_emails = current_class.students.map((s) => s.email);
                 const user_ids = current_class.students.map((s) => s._id.toString());
 
-                const assignment_notification = await create_notification({type: NOTIFICATION_TYPE_NEW_ASSIGNMENT, text: `New assignment for ${current_class.title}.\n${title}`, attachments: attachments, from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, assignment: new_assignment}});
+                let assignment_notification = await create_notification({type: NOTIFICATION_TYPE_NEW_ASSIGNMENT, text: `New assignment for ${current_class.title}.\n${title}`, attachments: attachments, from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, assignment: new_assignment}});
 
                 assignment_notification = assignment_notification.toObject();
                 delete assignment_notification.to;
@@ -87,7 +89,7 @@ export const create_assignment_handler = async (req: Request, res: Response, nex
                 delete assignment_notification.excluded_users;
                 delete assignment_notification.everyone_of_type;
                 
-                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, assignment_notification);
+                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, assignment_notification, {dispatchObj: {type: ADD_NEW_CLASS_ASSIGNMENT, payload: {assignment: new_assignment}}});
 
                 const mail = new Mail({subject: "New Assignment", recipients: user_emails, sender: APP_EMAIL}, {html: `New Assignment for ${current_class.title}: ${title}`, text: `New Assignment for ${current_class.title}: ${title}`});
     
@@ -116,7 +118,7 @@ export const update_assignment_handler = async (req: Request, res: Response, nex
         const updated_assignment = await update_assignment(assignment, user);
 
         if(updated_assignment){
-            return res.json({success: true, announcement: updated_announcement})
+            return res.json({success: true, announcement: updated_assignment})
         }
 
         throw new Error("Assignment not found");

@@ -101,7 +101,7 @@ const Schedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDateR
                     const endTime = new Date(daily_end_time);
                     const time_range = `${startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - ${endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}`
 
-                    return consecutive_periods.map((days) => {
+                    return consecutive_periods.map((days, di) => {
                         const items_on_same_day_before = arr.filter((a, ai) => ai < i && a.title !== title && ranges_overlaps({min: days[0], max: days.at(-1)}, {min: a.days[0], max: a.days.at(-1)}));
 
                         const items_on_same_day = arr.filter((a, ai) => ranges_overlaps({min: days[0], max: days.at(-1)}, {min: a.days[0], max: a.days.at(-1)}));
@@ -111,7 +111,7 @@ const Schedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDateR
                         const maxHeight = 265 / (items_on_same_day.length || 1);
 
                         return (
-                            <div key={_id+time_range} title={`${title} - ${time_range}`} className='schedule-event clickable' onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(${((100/7)*days[0])}% + 5px)`, width: `calc(${(100/7) * days.length}% - 10px)`, top: `${160 + (items_on_same_day_before.length * maxHeight)}px`, maxHeight: `${maxHeight}px`, backgroundColor: bg_color, color: text_color}}>
+                            <div key={_id+time_range+di} title={`${title} - ${time_range}`} className='schedule-event clickable' onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(${((100/7)*days[0])}% + 5px)`, width: `calc(${(100/7) * days.length}% - 10px)`, top: `${160 + (items_on_same_day_before.length * maxHeight)}px`, maxHeight: `${maxHeight}px`, backgroundColor: bg_color, color: text_color}}>
                                 <p>{title}</p>
                                 <p>{time_range}</p>
                                 <p>{DAYS[days[0]].short}{days.length>1?" - " + DAYS[days.at(-1)].short:""}</p>

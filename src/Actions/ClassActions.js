@@ -251,7 +251,7 @@ export const update_class = (_class_formdata) => async (dispatch) => {
         if(res.data){
             if(res.data.success){
                 const {updated_class} = res.data;
-                dispatch({type: UPDATE_CLASS, payload: {updated_class}})
+                dispatch({type: UPDATE_CLASS, payload: {_class: updated_class}})
                 return res.data;
             }
 

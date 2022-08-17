@@ -60,8 +60,8 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
 
     const is_class_teacher = user._id === (teacher?._id || teacher)
 
-    const total_session_time = sessions.reduce((curr, prev, i, arr) => {
-        return prev + (new Date(curr.end_time).getTime() - new Date(curr.start_time).getTime());
+    const total_session_time = sessions.reduce((prev, curr, i, arr) => {
+        return prev + (((new Date(curr.end_time)).getTime()) - ((new Date(curr.start_time)).getTime()));
     }, 0);
 
     const avg_session_time = sessions.length && (total_session_time/sessions.length);
@@ -266,6 +266,8 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
             searchTeachers(teacherSearch);
         }
     }, [teacherSearch, is_admin]);
+
+    console.log(total_session_time);
 
     return (
         <div className='page edit-class'>
@@ -477,8 +479,8 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
 
             <div className='misc-col'>
                 <p>Total Sessions: {sessions.length}</p>
-                <p>Total Session time: {formatDistance(total_session_time, 0, {includeSeconds: true, addSuffix: false})}</p>
-                <p>Average Session time: {formatDistance(avg_session_time, 0, {includeSeconds: true, addSuffix: false})}</p>
+                <p>Total Session time: {total_session_time && formatDistance(total_session_time, 0, {includeSeconds: true, addSuffix: false})}</p>
+                <p>Average Session time: {total_session_time && formatDistance(avg_session_time, 0, {includeSeconds: true, addSuffix: false})}</p>
 
                 <h3 style={{marginBlock: "20px"}}>Reschedules</h3>
 

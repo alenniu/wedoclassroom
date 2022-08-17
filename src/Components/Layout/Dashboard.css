@@ -346,7 +346,7 @@ nav.admin-nav.closed .nav-wrapper .nav-image-container{
 
 .dashboard .incoming-notification{
     --notification-height: 100px;
-    position: absolute;
+    position: fixed;
     z-index: 999999999;
     top: calc((var(--dashboard-header-height, 90px) + 20px) + (var(--index, 0) * ((var(--notification-height, 60px) + 20px))));
     right: 20px;
@@ -374,5 +374,5 @@ nav.admin-nav.closed .nav-wrapper .nav-image-container{
 
 .dashboard {
     position: relative;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
 }

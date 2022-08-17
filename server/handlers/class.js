@@ -9,6 +9,8 @@ import { create_notification } from "../functions/notifications";
 import { NOTIFICATION_TYPE_CLASS_END, NOTIFICATION_TYPE_CLASS_START } from "../notification_types";
 import { Mail } from "../services/mail";
 import { SOCKET_EVENT_NOTIFICATION } from "../socket_events";
+import { UPDATE_CLASS } from "../../src/Actions/types";
+import { APP_EMAIL } from "../config";
 
 const Classes = mongoose.model("class");
 const Class = Classes;
@@ -111,7 +113,7 @@ export const uncancel_class_handler = async (req: Request, res: Response, next: 
 
 export const start_class_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {user} = req;
+        const {user, socket_io} = req;
         const {class_id} = req.params;
         const {meeting_link=""} = req.body;
         
@@ -124,7 +126,7 @@ export const start_class_handler = async (req: Request, res: Response, next: Nex
                 const user_emails = current_class.students.map((s) => s.email);
                 const user_ids = current_class.students.map((s) => s._id.toString());
 
-                const class_start_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_START, text: `Your class ${current_class.title} has started.`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class/* , session: new_session */}});
+                let class_start_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_START, text: `Your class ${current_class.title} has started.`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class/* , session: new_session */}});
 
                 class_start_notification = class_start_notification.toObject();
                 delete class_start_notification.to;
@@ -132,7 +134,7 @@ export const start_class_handler = async (req: Request, res: Response, next: Nex
                 delete class_start_notification.excluded_users;
                 delete class_start_notification.everyone_of_type;
                 
-                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, class_start_notification);
+                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, class_start_notification, {dispatchObj: {type: UPDATE_CLASS, payload: {_class: updated_class}}});
 
                 const mail = new Mail({subject: "Class Started", recipients: user_emails, sender: APP_EMAIL}, {html: `${current_class.title} has started`, text: `${current_class.title} has Started`});
     
@@ -154,7 +156,7 @@ export const start_class_handler = async (req: Request, res: Response, next: Nex
 
 export const end_class_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {user} = req;
+        const {user, socket_io} = req;
         const {class_id} = req.params;
         
         const current_class = await get_class(class_id, user);
@@ -166,7 +168,7 @@ export const end_class_handler = async (req: Request, res: Response, next: NextF
                 const user_emails = current_class.students.map((s) => s.email);
                 const user_ids = current_class.students.map((s) => s._id.toString());
 
-                const class_end_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_END, text: `Your class ${current_class.title} has ended.`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class/* , session: new_session */}});
+                let class_end_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_END, text: `Your class ${current_class.title} has ended.`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class/* , session: new_session */}});
 
                 class_end_notification = class_end_notification.toObject();
                 delete class_end_notification.to;
@@ -174,7 +176,7 @@ export const end_class_handler = async (req: Request, res: Response, next: NextF
                 delete class_end_notification.excluded_users;
                 delete class_end_notification.everyone_of_type;
                 
-                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, class_end_notification);
+                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, class_end_notification, {dispatchObj: {type: UPDATE_CLASS, payload: {_class: updated_class}}});
 
                 const mail = new Mail({subject: "Class Ended", recipients: user_emails, sender: APP_EMAIL}, {html: `${current_class.title} has ended`, text: `${current_class.title} has ended`});
     

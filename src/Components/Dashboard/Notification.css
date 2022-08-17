@@ -1,15 +1,23 @@
 .notification-container{
-    display: inline-block;
+    display: flex;
     height: var(--notification-height, 100px);
+    align-items: center;
     text-overflow: ellipsis;
-    padding: 10px;
-    border-radius: 3px;
+    padding: 10px 20px;
+    border-radius: 8px;
     background-color: var(--bg-color, white);
     color: var(--text-color, black);
-    box-shadow: var(--notification-box-shadow, (1px, 1px, 5px grey));
+    box-shadow: var(--notification-box-shadow, (0px, 0px, 3px grey));
     border: var(--notification-border, 1px solid #ECECEC);
     width: min(75vw, 350px);
     overflow: hidden;
+}
+
+.notification-container .notification-icon{
+    width: var(--notification-icon-size, 30px);
+    height: var(--notification-icon-size, 30px);
+    margin-right: 20px;
+    flex-shrink: 0;
 }
 
 .notification-container p{
@@ -17,6 +25,7 @@
     margin-bottom: 10px;
     white-space: pre-wrap;
     text-overflow: ellipsis;
+    flex: 1;
 }
 
 .notification-container p:last-of-type{

@@ -27,7 +27,7 @@ async function create_announcement({_class, title, message, assignment=null}, us
 async function update_announcement({_id, title, message}, user){
     try{
         if(_id && title && message){
-            const updated_announcement = await Announcement.updateOne({_id, user: user._id}, {$set: {title, message}}, {new: true, upsert: false});
+            const updated_announcement = await Announcement.findOneAndUpdate({_id, user: user._id}, {$set: {title, message}}, {new: true, upsert: false});
 
             return updated_announcement;
         }

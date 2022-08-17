@@ -30,7 +30,7 @@ async function update_assignment(assignment, user){
     try{
         const {_id} = assignment;
         if(_id, title && description && due_date){
-            const updated_assignment = await Assignments.updateOne({_id}, {$set: {title, description, attachments, students, due_date}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"}).populate({path: "attachments"});
+            const updated_assignment = await Assignments.findOneAndUpdate({_id}, {$set: {title, description, attachments, students, due_date}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"}).populate({path: "attachments"});
             
             return updated_assignment;
         }

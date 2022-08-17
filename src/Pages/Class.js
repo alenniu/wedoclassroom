@@ -31,7 +31,7 @@ const Class = ({_class, announcements=[], assignments=[], attendance=[], user, i
     const [announcementFilters, setAnnouncementFilters] = useState({});
 
     const [showStartModal, setShowStartModal] = useState(false);
-    const [newMeetingLink, setNewMeetingLink] = useState("");
+    const [newMeetingLink, setNewMeetingLink] = useState(meeting_link);
     const [newMeetingLinkError, setNewMeetingLinkError] = useState("");
 
     const [attendanceDay, setAttendanceDay] = useState(new Date());
@@ -56,10 +56,11 @@ const Class = ({_class, announcements=[], assignments=[], attendance=[], user, i
         }
         
         init();
-    }, []);
+    }, [class_id]);
     
     useEffect(() => {
         if(class_id === id && is_teacher && current_session){
+            setNewMeetingLink(_class.meeting_link);
             get_class_attendance(id, JSON.stringify({current_session: current_session._id}));
         }
     }, [_class, is_teacher]);

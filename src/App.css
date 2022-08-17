@@ -1,4 +1,5 @@
 :root{
+  --active-class-indicator-color: #55CC99;
   --calendar-height: 500px;
   --nav-toggle-size: 35px;
   --nav-border: 1px solid rgb(63, 63, 68, 0.1);
@@ -10,7 +11,9 @@
   --class-border: none;
   --class-box-shadow: 1px 1px 5px grey;
   --notification-border: none;
-  --notification-box-shadow: 0px 0px 7px #555;
+  --notification-box-shadow: 1px 1px 5px grey;
+  --notification-icon-size: 30px;
+  --notification-height: 80px;
   --link-color: #1B1BBA;
   --bg-color: white;
   --input-height: 56px;
@@ -42,19 +45,19 @@
   --table-box-shadow: 1px 1px 5px #bfbfbf;
   --scollbar-track-color: #efefef;
   --scollbar-thumb-color: #bfbfbf;
-  --notification-height: 60px;
   background-color: var(--bg-color, white);
 }
 
 @media screen and (prefers-color-scheme: dark){
   :root{
+    --active-class-indicator-color: lime;
     --bg-color: #121212;
     --nav-border: 1px solid #3f3f43;
     --class-bg-color: #2c2c2d;
     --class-border: 1px solid #3f3f43;
     --class-box-shadow: 0 0 1px rgba(255,255,255, 0.5);
-    --notification-border: 1px solid #AAA;
-    --notification-box-shadow: 0px 0px 7px #aaa;
+    --notification-border: 1px solid #666;
+    --notification-box-shadow: 0px 0px 1px rgba(255,255,255, 0.5);
     --link-color: #8BABFA;
     --input-bgcolor: #565656;
     --input-box-shadow: 0px 0px 3px rgba(255,255,255,0.3);
@@ -108,6 +111,7 @@ input:focus-visible, textarea:focus-visible{
 .App {
   background-color: var(--bg-color, white);
   font-family: "Worker Sans", sans-serif;
+  overflow-x: hidden;
 }
 
 .not-visible{

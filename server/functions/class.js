@@ -94,13 +94,13 @@ async function get_user_classes(user, limit=20, offset=0, search=""){
             total = await Classes.count({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}]}]});
 
             if(total){
-                classes = await Classes.find({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}]}).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}]}).limit(limit).skip(offset).populate("sessions").lean(true);
             }
         }else{
             total = await Classes.count({$or: [{teacher: _id}, {students: _id}, {created_by: _id}]});
 
             if(total){
-                classes = await Classes.find({$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find({$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}).limit(limit).skip(offset).populate("sessions").lean(true);
             }
         }
 
@@ -147,7 +147,7 @@ async function end_class({_class}, user){
         if(_class.current_session){
             const updated_session = await end_session({_class: _class}, user);
 
-            const updated_class = await Classes.findOneAndUpdate({_id: _class._id}, {$set: {meeting_link: "", current_session: null}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
+            const updated_class = await Classes.findOneAndUpdate({_id: _class._id}, {$set: {current_session: null}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
 
             return {updated_class, updated_session};
         }

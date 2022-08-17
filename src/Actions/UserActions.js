@@ -13,9 +13,9 @@ export const remove_incoming_notification = (notification) => {
     return {type: REMOVE_INCOMING_NOTIFICATION, payload: {notification}}
 }
 
-export const hide_incoming_notification = (notification) => {
-    return {type: HIDE_INCOMING_NOTIFICATION, payload: {notification}}
-}
+// export const hide_incoming_notification = (notification) => {
+//     return {type: HIDE_INCOMING_NOTIFICATION, payload: {notification}}
+// }
 
 export const remove_all_incoming_notification = () => {
     return {type: REMOVE_INCOMING_NOTIFICATION}
@@ -329,9 +329,13 @@ export const get_unread_notifications_count = () => async (dispatch) => {
 
 export const add_socket_events = (socket:Socket) => async (dispatch) => {
     if(socket){
-        socket.on(SOCKET_EVENT_NOTIFICATION, (notification) => {
+        socket.on(SOCKET_EVENT_NOTIFICATION, (notification, additional_data={}) => {
             // console.log(SOCKET_EVENT_NOTIFICATION, notification);
+            const {dispatchObj} = additional_data || {};
+
             dispatch(add_new_notification(notification));
+            
+            dispatchObj && dispatch(dispatchObj);
         })
     }
 } 

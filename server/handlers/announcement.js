@@ -6,6 +6,8 @@ import { NOTIFICATION_TYPE_CLASS_ANNOUNCEMENT } from "../notification_types";
 import { Mail } from "../services/mail";
 import { create_notification } from "../functions/notifications";
 import { SOCKET_EVENT_NOTIFICATION } from "../socket_events";
+import { ADD_NEW_CLASS_ANNOUNCEMENT } from "../../src/Actions/types";
+import { APP_EMAIL } from "../config";
 
 export const get_class_announcements_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -39,7 +41,7 @@ export const create_announcement_handler = async (req: Request, res: Response, n
                 const user_emails = current_class.students.map((s) => s.email);
                 const user_ids = current_class.students.map((s) => s._id.toString());
 
-                const announcement_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_ANNOUNCEMENT, text: `New announcement for ${current_class.title}.\n${message}`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, announcement: new_announcement}});
+                let announcement_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_ANNOUNCEMENT, text: `New announcement for ${current_class.title}.\n${message}`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, announcement: new_announcement}});
 
                 announcement_notification = announcement_notification.toObject();
                 delete announcement_notification.to;
@@ -47,7 +49,7 @@ export const create_announcement_handler = async (req: Request, res: Response, n
                 delete announcement_notification.excluded_users;
                 delete announcement_notification.everyone_of_type;
                 
-                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, announcement_notification);
+                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, announcement_notification, {dispatchObj: {type: ADD_NEW_CLASS_ANNOUNCEMENT, payload: {announcement: new_announcement}}});
 
                 const mail = new Mail({subject: "New Announcement", recipients: user_emails, sender: APP_EMAIL}, {html: `<h1>New Announcement for ${current_class.title}<h1><p>${message}</p>`, text: `New Announcement for ${current_class.title}.\n${message}`});
     
