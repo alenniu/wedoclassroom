@@ -77,7 +77,7 @@ export const create_assignment_handler = async (req: Request, res: Response, nex
 
             try{
                 const user_emails = current_class.students.map((s) => s.email);
-                const user_ids = current_class.students.map((s) => s._id);
+                const user_ids = current_class.students.map((s) => s._id.toString());
 
                 const assignment_notification = await create_notification({type: NOTIFICATION_TYPE_NEW_ASSIGNMENT, text: `New assignment for ${current_class.title}.\n${title}`, attachments: attachments, from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, assignment: new_assignment}});
 

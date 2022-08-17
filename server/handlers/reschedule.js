@@ -86,7 +86,7 @@ export const request_class_reschedule_handler = async (req: Request, res: Respon
                 
                 try{
                     const user_emails = users.map((u) => u.email);
-                    const user_ids = users.map((u) => u._id);
+                    const user_ids = users.map((u) => u._id.toString());
 
                     let request_notification = await create_notification({type: NOTIFICATION_TYPE_REQUEST_CLASS_RESCHEDULE, text: `Reschedule requested for ${current_class.title}.\nReason: ${reschedule.reason || "None Provided"}`, attachments: [], from: user._id, to: [], everyone: false, everyone_of_type: ["admin"], excluded_users: [], metadata: {_class: current_class, reschedule}});
 
@@ -101,9 +101,9 @@ export const request_class_reschedule_handler = async (req: Request, res: Respon
 
                     const mail = new Mail({subject: "Class Reschedule Requested", recipients: user_emails, sender: APP_EMAIL}, {html: "Class Reschedule Requested", text: "Class Reschedule Requested"});
     
-                    // mail.send().catch((e) => {
-                    //     console.log(e);
-                    // });
+                    mail.send().catch((e) => {
+                        console.log(e);
+                    });
                 }catch(e){
                     console.log(e)
                 }
@@ -132,9 +132,9 @@ export const accept_class_reschedule_handler = async (req: Request, res: Respons
                 const users = await Users.find({_id: {$in: [...current_class.students.map((s) => s._id), current_class.teacher._id]}}, {_id: 1, email: 1});
 
                 const user_emails = users.map((u) => u.email);
-                const user_ids = users.map((u) => u._id);
+                const user_ids = users.map((u) => u._id.toString());
 
-                const reschedule_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_RESCHEDULE, text: `${current_class.title} has been rescheduled.`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, reschedule}});
+                let reschedule_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_RESCHEDULE, text: `${current_class.title} has been rescheduled.`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, reschedule}});
 
                 reschedule_notification = reschedule_notification.toObject();
                 delete reschedule_notification.to;
@@ -174,7 +174,7 @@ export const reject_class_reschedule_handler = async (req: Request, res: Respons
             try{
                 const current_class = await get_class(reschedule._class._id, user);
 
-                const reschedule_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_RESCHEDULE_DECLINE, text: `Reschedule for ${current_class.title} has been declined.`, attachments: [], from: user._id, to: [reschedule.teacher._id], everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, reschedule}});
+                let reschedule_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_RESCHEDULE_DECLINE, text: `Reschedule for ${current_class.title} has been declined.`, attachments: [], from: user._id, to: [reschedule.teacher._id], everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, reschedule}});
 
                 reschedule_notification = reschedule_notification.toObject();
                 delete reschedule_notification.to;
@@ -182,7 +182,7 @@ export const reject_class_reschedule_handler = async (req: Request, res: Respons
                 delete reschedule_notification.excluded_users;
                 delete reschedule_notification.everyone_of_type;
 
-                socket_io?.to(reschedule.teacher._id).emit(SOCKET_EVENT_NOTIFICATION, reschedule_notification);
+                socket_io?.to(reschedule.teacher._id.toString()).emit(SOCKET_EVENT_NOTIFICATION, reschedule_notification);
                 
                 const mail = new Mail({subject: "Class Reschedule Declined", recipients: [reschedule.teacher.email], sender: APP_EMAIL}, {html: "Class Reschedule Declined", text: "Class Reschedule Declined"});
     

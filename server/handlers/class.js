@@ -122,7 +122,7 @@ export const start_class_handler = async (req: Request, res: Response, next: Nex
 
             try{
                 const user_emails = current_class.students.map((s) => s.email);
-                const user_ids = current_class.students.map((s) => s._id);
+                const user_ids = current_class.students.map((s) => s._id.toString());
 
                 const class_start_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_START, text: `Your class ${current_class.title} has started.`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class/* , session: new_session */}});
 
@@ -164,7 +164,7 @@ export const end_class_handler = async (req: Request, res: Response, next: NextF
 
             try{
                 const user_emails = current_class.students.map((s) => s.email);
-                const user_ids = current_class.students.map((s) => s._id);
+                const user_ids = current_class.students.map((s) => s._id.toString());
 
                 const class_end_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_END, text: `Your class ${current_class.title} has ended.`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class/* , session: new_session */}});
 

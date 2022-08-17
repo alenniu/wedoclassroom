@@ -37,7 +37,7 @@ export const create_announcement_handler = async (req: Request, res: Response, n
 
             try{
                 const user_emails = current_class.students.map((s) => s.email);
-                const user_ids = current_class.students.map((s) => s._id);
+                const user_ids = current_class.students.map((s) => s._id.toString());
 
                 const announcement_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_ANNOUNCEMENT, text: `New announcement for ${current_class.title}.\n${message}`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, announcement: new_announcement}});
 
