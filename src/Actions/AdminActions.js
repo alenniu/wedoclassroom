@@ -1,7 +1,7 @@
 import { validate_email, validate_password } from "../Utils";
 import { api } from "../Utils/api";
 import { set_config } from "./AppActions";
-import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_INIT_CONFIG, UPDATE_CONFIG } from "./types";
+import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_INIT_CONFIG, UPDATE_CONFIG, SET_EDIT_ACCOUNT_ERROR } from "./types";
 
 export const set_admins = (admins=[], total=0) => {
     return {type: SET_ADMINS, payload: {admins, total: total || admins.length}};
@@ -25,6 +25,10 @@ export const set_accounts = (accounts=[], total=0) => {
 
 export const set_create_account_error = (error) => {
     return {type: SET_CREATE_ACCOUNT_ERROR, payload: {error}};
+}
+
+export const set_edit_account_error = (error) => {
+    return {type: SET_EDIT_ACCOUNT_ERROR, payload: {error}};
 }
 
 export const init_edit_account = (account) => {
@@ -158,10 +162,10 @@ export const get_account = (account_id, action_to_dispatch) => async (dispatch) 
     }
 }
 
-export const create_account = ({name, photo_url, email, phone, gender, school, grade, date_enrolled, type, password, emergency_contact={name: "", email: "", phone: "", relation: ""}}) => async (dispatch) => {
+export const create_account = ({name, photo_url, email, phone, gender, school, grade, date_enrolled, type, password, emergency_contact={name: "", email: "", phone: "", relation: ""}, credits=0}) => async (dispatch) => {
     try{
         if(name && name.first && name.last && validate_email(email) && validate_password(password) && type){
-            const res = await api("post", "/api/admin/accounts", {name, photo_url, email, phone, gender, school, grade, date_enrolled, type, password, emergency_contact});
+            const res = await api("post", "/api/admin/accounts", {name, photo_url, email, phone, gender, school, grade, date_enrolled, type, password, emergency_contact, credits});
 
             if(res.data){
                 if(res.data.success){
@@ -200,17 +204,17 @@ export const update_account = (account) => async (dispatch) => {
                 }
 
                 console.log(res.data);
-                dispatch(set_create_account_error(res.data.msg));
+                dispatch(set_edit_account_error(res.data.msg));
             }else{
                 console.log(res);
-                dispatch(set_create_account_error(res));
+                dispatch(set_edit_account_error(res));
             }
         }else{
             throw new Error("name (first and last), valid email, valid password and account type must be provided");
         }
     }catch(e){
         console.error(e);
-        dispatch(set_create_account_error(e.message));
+        dispatch(set_edit_account_error(e.message));
     }
 }
 

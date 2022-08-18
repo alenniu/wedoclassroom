@@ -56,9 +56,10 @@ const Dashboard = ({app_config, edit_config, user, is_admin, edit_init_config, e
     const onChangeValueEvent = (keys=[]) => (e) => {
         const {name, value, checked, type} = e.target;
         const is_checkbox = type === "checkbox";
+        const is_number = type === "number";
         
         const errKey = name || keys.join(".");
-        edit_config_value(keys, is_checkbox?checked:value);
+        edit_config_value(keys, is_checkbox?checked:is_number?(Number(value) || ""):value);
         
         setErrors(err => ({...err, [errKey]: ""}));
     }

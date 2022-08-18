@@ -6,10 +6,10 @@ import { get_request } from "../functions/request";
 import { DAY } from "../../src/Data";
 import { get_reschedules, get_reschedules_for_period } from "../functions/reschedule";
 import { create_notification } from "../functions/notifications";
-import { NOTIFICATION_TYPE_CLASS_END, NOTIFICATION_TYPE_CLASS_START } from "../notification_types";
+import { NOTIFICATION_TYPE_CLASS_END, NOTIFICATION_TYPE_CLASS_REQUEST, NOTIFICATION_TYPE_CLASS_REQUEST_ACCEPTED, NOTIFICATION_TYPE_CLASS_REQUEST_REJECTED, NOTIFICATION_TYPE_CLASS_START } from "../notification_types";
 import { Mail } from "../services/mail";
 import { SOCKET_EVENT_NOTIFICATION } from "../socket_events";
-import { UPDATE_CLASS } from "../../src/Actions/types";
+import { ADD_NEW_CLASS, ADD_NEW_CLASS_ASSIGNMENT, ADD_NEW_CLASS_JOIN_REQUEST, UPDATE_CLASS, UPDATE_CLASS_REQUEST } from "../../src/Actions/types";
 import { APP_EMAIL } from "../config";
 
 const Classes = mongoose.model("class");
@@ -218,13 +218,12 @@ export const set_class_meeting_link_handler = async (req: Request, res: Response
 
 export const request_class_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {user} = req;
+        const {user, socket_io} = req;
 
         let {_class} = req.body;
 
-        const current_class = await Classes.findOne({_id: _class._id});
+        const current_class = await Classes.findOne({_id: _class._id}).populate({path: "teacher", select: "-password"});
     
-        
         const existing_request = await get_request({_class: current_class._id, student: user._id, accepted: false, declined: false});
         
         if(!existing_request){
@@ -232,6 +231,26 @@ export const request_class_handler = async (req: Request, res: Response, next: N
 
             if(index === -1){
                 const request = await request_class({_class: current_class, student: user});
+
+                try{
+                    let request_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_REQUEST, text: `New Request to join ${current_class.title}\nFrom ${user.name.first} ${user.name.last}`, attachments: [], from: user._id, to: [current_class.teacher._id], everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, request}});
+    
+                    request_notification = request_notification.toObject();
+                    delete request_notification.to;
+                    delete request_notification.read_by;
+                    delete request_notification.excluded_users;
+                    delete request_notification.everyone_of_type;
+                    
+                    socket_io?.to(current_class.teacher._id.toString()).emit(SOCKET_EVENT_NOTIFICATION, request_notification, {dispatchObj: {type: ADD_NEW_CLASS_JOIN_REQUEST, payload: {request}}});
+
+                    const mail = new Mail({subject: "Request To Join Class", recipients: [current_class.teacher.email], sender: APP_EMAIL}, {html: `${user.name.first} ${user.name.last} has requested to join your class: ${current_class.title}`, text: `${user.name.first} ${user.name.last} has requested to join your class: ${current_class.title}`});
+    
+                    mail.send().catch((e) => {
+                        console.log(e);
+                    });
+                }catch(e){
+                    console.log(e);
+                }
 
                 return res.json({success: true, request});
             }else{
@@ -247,7 +266,8 @@ export const request_class_handler = async (req: Request, res: Response, next: N
 
 export const accept_request_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {user} = req;
+        const {user, socket_io} = req;
+
         if((user.type === "admin") || (user.type === "teacher")){
             let {request} = req.body;
 
@@ -255,6 +275,26 @@ export const accept_request_handler = async (req: Request, res: Response, next: 
         
             if((user.type === "admin") || (user._id.toString() === _class.teacher._id.toString())){
                 const {request:updated_request, updated_class} = await accept_request({request_id: request._id}, user);
+
+                try{
+                    let request_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_REQUEST_ACCEPTED, text: `Request to join ${_class.title} accepted.`, attachments: [], from: user._id, to: [updated_request.student._id], everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: updated_class, request: updated_request}});
+    
+                    request_notification = request_notification.toObject();
+                    delete request_notification.to;
+                    delete request_notification.read_by;
+                    delete request_notification.excluded_users;
+                    delete request_notification.everyone_of_type;
+                    
+                    socket_io?.to(updated_request.student._id.toString()).emit(SOCKET_EVENT_NOTIFICATION, request_notification, {dispatchObj: {type: ADD_NEW_CLASS, payload: {_class: updated_class}}});
+
+                    const mail = new Mail({subject: "Request Accepted", recipients: [updated_request.student.email], sender: APP_EMAIL}, {html: `Request to join ${_class.title} accepted.`, text: `Request to join ${_class.title} accepted.`});
+    
+                    mail.send().catch((e) => {
+                        console.log(e);
+                    });
+                }catch(e){
+                    console.log(e);
+                }
 
                 return res.json({success: true, updated_class, updated_request});
             }else{
@@ -269,7 +309,51 @@ export const accept_request_handler = async (req: Request, res: Response, next: 
     }
 }
 
-export const remove_class_student_request_handler = async (req: Request, res: Response, next: NextFunction) => {
+export const decline_request_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user, socket_io} = req;
+
+        if((user.type === "admin") || (user.type === "teacher")){
+            let {request} = req.body;
+
+            const _class = await get_class(request._class, user);
+        
+            if((user.type === "admin") || (user._id.toString() === _class.teacher._id.toString())){
+                const updated_request = await decline_request({request_id: request._id}, user);
+
+                try{
+                    let request_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_REQUEST_REJECTED, text: `Request to join ${_class.title} declined.`, attachments: [], from: user._id, to: [updated_request.student._id], everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class, request: updated_request}});
+    
+                    request_notification = request_notification.toObject();
+                    delete request_notification.to;
+                    delete request_notification.read_by;
+                    delete request_notification.excluded_users;
+                    delete request_notification.everyone_of_type;
+                    
+                    socket_io?.to(updated_request.student._id.toString()).emit(SOCKET_EVENT_NOTIFICATION, request_notification, {dispatchObj: {type: UPDATE_CLASS_REQUEST, payload: {request: updated_request}}});
+
+                    const mail = new Mail({subject: "Request Declined", recipients: [updated_request.student.email], sender: APP_EMAIL}, {html: `Request to join ${_class.title} declined.`, text: `Request to join ${_class.title} declined.`});
+    
+                    mail.send().catch((e) => {
+                        console.log(e);
+                    });
+                }catch(e){
+                    console.log(e);
+                }
+
+                return res.json({success: true, updated_request});
+            }else{
+                throw new Error("Only this class' teacher or an admin can decline this request");
+            }
+        }else{
+            throw new Error("Only admins or teachers can decline requests");
+        }
+    }catch(e){
+        return res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const remove_class_student_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {user} = req;
         const {class_id} = req.params;
@@ -290,29 +374,6 @@ export const remove_class_student_request_handler = async (req: Request, res: Re
         }
     }catch(e){
         console.error(e);
-        return res.status(400).json({success: false, msg: e.message});
-    }
-}
-
-export const decline_request_handler = async (req: Request, res: Response, next: NextFunction) => {
-    try{
-        const {user} = req;
-        if((user.type === "admin") || (user.type === "teacher")){
-            let {request} = req.body;
-
-            const _class = await get_class(request._class, user);
-        
-            if((user.type === "admin") || (user._id.toString() === _class.teacher._id.toString())){
-                const updated_request = await decline_request({request_id: request._id});
-
-                return res.json({success: true, updated_request});
-            }else{
-                throw new Error("Only this class' teacher or an admin can decline this request");
-            }
-        }else{
-            throw new Error("Only admins or teachers can decline requests");
-        }
-    }catch(e){
         return res.status(400).json({success: false, msg: e.message});
     }
 }

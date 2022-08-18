@@ -76,11 +76,11 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
                     </div>
                 </div>
                 <table>
-                    <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Type", id: "type"}, {label: "Created", id: "createdAt"}]} order={order} orderBy={orderBy} onSort={onSortTable} />
+                    <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Type", id: "type"}, {label: "$", id: "credits"}, {label: "Created", id: "createdAt"}]} order={order} orderBy={orderBy} onSort={onSortTable} />
 
                     <tbody>
                         {accounts.map((a) => {
-                            const {_id, name={}, email, phone, type, createdAt} = a;
+                            const {_id, name={}, email, phone, type, credits=0, createdAt} = a;
 
                             return (
                                 <tr key={_id}>
@@ -88,6 +88,7 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
                                     <td>{email}</td>
                                     <td>{phone || <span style={{opacity: 0.5}}>No Phone</span>}</td>
                                     <td>{type}</td>
+                                    <td>{type==="student"?`$${credits}`:"N/A"}</td>
                                     <td>{(new Date(createdAt)).toLocaleDateString(undefined, {hour: "numeric", minute: "2-digit"})}</td>
                                 </tr>
                             )

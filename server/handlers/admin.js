@@ -6,11 +6,11 @@ const { create_user, update_user } = require("../functions/user");
 
 export const admin_create_user_handler = async (req: Request, res: Response, next: NextFunction) => {
     const {user} = req;
-    const {email, name, phone, password, gender, school, grade, date_enrolled, birth, type, role, emergency_contact} = req.body;
+    const {email, name, phone, password, gender, school, grade, date_enrolled, birth, type, role, emergency_contact, credits=0} = req.body;
 
     try{
         if(user.type === "admin" || (user.type === "sales" && type === "student")){
-            const new_user = await create_user({email, name, phone, password, gender, school, grade, date_enrolled, birth, type, role, emergency_contact}, user);
+            const new_user = await create_user({email, name, phone, password, gender, school, grade, date_enrolled, birth, type, role, emergency_contact, credits}, user);
     
             delete new_user.password;
     
@@ -19,7 +19,7 @@ export const admin_create_user_handler = async (req: Request, res: Response, nex
 
         throw new Error("Only admins or sales can create accounts. Sales can only create student accounts");
     }catch(e){
-        return res.status(400).json({success: true, msg: e.message});
+        return res.status(400).json({success: false, msg: e.message});
     }
 }
 
@@ -38,7 +38,7 @@ export const admin_update_user_handler = async (req: Request, res: Response, nex
         
         // throw new Error("Only admins or sales can edit accounts. Sales can only edit student accounts");
     }catch(e){
-        return res.status(400).json({success: true, msg: e.message});
+        return res.status(400).json({success: false, msg: e.message});
     }
 }
 
@@ -55,7 +55,7 @@ export const get_students_handler = async (req: Request, res: Response, next: Ne
 
         return res.json({students, total, success: true});
     }catch(e){
-        return res.status(400).json({success: true, msg: e.message});
+        return res.status(400).json({success: false, msg: e.message});
     }
 }
 
@@ -72,7 +72,7 @@ export const get_teachers_handler = async (req: Request, res: Response, next: Ne
 
         return res.json({teachers, total, success: true});
     }catch(e){
-        return res.status(400).json({success: true, msg: e.message});
+        return res.status(400).json({success: false, msg: e.message});
     }
 }
 
@@ -89,7 +89,7 @@ export const get_admins_handler = async (req: Request, res: Response, next: Next
 
         return res.json({admins, total, success: true});
     }catch(e){
-        return res.status(400).json({success: true, msg: e.message});
+        return res.status(400).json({success: false, msg: e.message});
     }
 }
 
@@ -111,7 +111,7 @@ export const get_accounts_handler = async (req: Request, res: Response, next: Ne
         }
 
     }catch(e){
-        return res.status(400).json({success: true, msg: e.message});
+        return res.status(400).json({success: false, msg: e.message});
     }
 }
 
@@ -133,7 +133,7 @@ export const get_account_handler = async (req: Request, res: Response, next: Nex
         }
 
     }catch(e){
-        return res.status(400).json({success: true, msg: e.message});
+        return res.status(400).json({success: false, msg: e.message});
     }
 }
 
@@ -145,7 +145,7 @@ export const set_class_teacher = async (req: Request, res: Response, next: NextF
 
         res.json({updated_class, success: true});
     }catch(e){
-        return res.status(400).json({success: true, msg: e.message});
+        return res.status(400).json({success: false, msg: e.message});
     }
 }
 

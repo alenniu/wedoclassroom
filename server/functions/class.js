@@ -246,6 +246,8 @@ async function request_class({_class, student}){
         if(_class && student){
             const new_request = await ((new Request({_class: _class._id, student: student._id})).save());
 
+            await new_request.populate({path: "student", select: "-password"});
+
             await Classes.updateOne({_id: _class._id}, {$inc: {popularity: 1}});
 
             return new_request;
@@ -260,7 +262,7 @@ async function request_class({_class, student}){
 async function accept_request({request_id}, handler){ //handler is the user accepting/declining the request
     try{
         if(request_id){
-            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: true, declined: false, handled_by: handler._id}}, {new: true, upsert: false, });
+            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: true, declined: false, handled_by: handler._id}}, {new: true, upsert: false, }).populate({path: "student", select: "-password"});
 
             const updated_class = await add_student_to_class({student_id: request.student, class_id: request._class});
 
@@ -276,7 +278,7 @@ async function accept_request({request_id}, handler){ //handler is the user acce
 async function decline_request({request_id}, handler){ //handler is the user accepting/declining the request
     try{
         if(request_id){
-            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: false, declined: true, handled_by: handler._id}}, {new: true, upsert: false, });
+            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: false, declined: true, handled_by: handler._id}}, {new: true, upsert: false, }).populate({path: "student", select: "-password"});
 
             return request;
         }else{

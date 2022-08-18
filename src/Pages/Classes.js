@@ -90,7 +90,7 @@ const Checkout = ({_class, isLoading, setIsLoading, error, setError, open, onPay
 
 const SUBJECTS = ["Math", "English"];
 
-const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_requests=0, app_config, get_classes, get_classes_by_subject, get_popular_classes, request_join_class, get_my_requests, get_class_client_secret, set_loading, is_student}) => {
+const Classes = ({classes=[], total=0, popular_classes=[], requests=[], user={}, total_requests=0, app_config, get_classes, get_classes_by_subject, get_popular_classes, request_join_class, get_my_requests, get_class_client_secret, set_loading, is_student}) => {
 
     // const stripe = useStripe();
     // const elements = useElements();
@@ -187,10 +187,11 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
                 <Tabs tabs={[{label: "Popular Classes", id: ""}, {label: "Group Classes", id: "group"}, {label: "Private Classes", id: "private"}]} />
                 <ul className='popular-class-list'>
                     {popular_classes.map((c, i) => {
-                        const already_requested = requests.some((r) => r._class === c._id);
+                        const already_requested = requests.some((r) => (r._class === c._id) && !r.declined);
+                        const already_joined = c.students.some((s) => s === user._id);
 
                         return (
-                            <li key={c._id+i}><PopularClass _class={c} onPressJoin={onPressJoinClass} can_join={is_student && !already_requested} /></li>
+                            <li key={c._id+i}><PopularClass _class={c} onPressJoin={onPressJoinClass} can_join={!already_joined && is_student && !already_requested} /></li>
                         )
                     })}
                 </ul>
@@ -237,9 +238,10 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
                         <h3 className='list-subject'>{subject}</h3>    
                         <ul className='classes-list' key={subject}>
                             {classes.map((c, i) => {
-                                const already_requested = requests.some((r) => r._class === c._id);
+                                const already_requested = requests.some((r) => (r._class === c._id) && !r.declined);
+                                const already_joined = c.students.some((s) => s === user._id);
 
-                                return <li key={c._id+i}><Class _class={c} can_join={is_student && !already_requested} onPressJoin={onPressJoinClass} /></li>
+                                return <li key={c._id+i}><Class _class={c} can_join={!already_joined && is_student && !already_requested} onPressJoin={onPressJoinClass} /></li>
                             })}
                         </ul>
                     </div>
@@ -265,7 +267,7 @@ const Classes = ({classes=[], total=0, popular_classes=[], requests=[], total_re
 }
 
 function map_state_to_props({App, Auth, User, Class}){
-    return {app_config: App.config, classes: Class.subject_classes, total: Class.total, popular_classes: Class.popular_classes, requests: User.requests, total_requests: User.total_requests, is_student: Auth.is_student}
+    return {app_config: App.config, classes: Class.subject_classes, total: Class.total, popular_classes: Class.popular_classes, requests: User.requests, total_requests: User.total_requests, is_student: Auth.is_student, user: App.user}
 }
 
 export default connect(map_state_to_props, {get_classes, get_classes_by_subject, request_join_class, get_popular_classes, get_my_requests, get_class_client_secret, set_loading})(Classes);

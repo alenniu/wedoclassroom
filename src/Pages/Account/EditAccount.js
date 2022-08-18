@@ -2,7 +2,7 @@ import { TextField } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import React, { useEffect, useState } from 'react';
-import { BsEye, BsEyeSlash } from 'react-icons/bs';
+import { BsCurrencyDollar, BsEye, BsEyeSlash } from 'react-icons/bs';
 import { connect } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { update_account, edit_existing_account, init_edit_account, set_loading, cancel_account_edit, get_account } from '../../Actions';
@@ -18,9 +18,13 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [errors, setErrors] = useState({});
     
-    const {_id, name={}, email="", phone="", type="", gender, school, grade, date_enrolled, emergency_contact={}, error} = edit_account;
+    const {_id, name={}, email="", phone="", type="", credits=0, gender, school, grade, date_enrolled=new Date(), emergency_contact={}, error} = edit_account;
     const {name:emergency_name="", email:emergency_email="", phone:emergency_phone="", relation=""} = emergency_contact;
     const {first="", last=""} = name;
+    const is_admin_account = type === "admin";
+    const is_sales_account = type === "sales";
+    const is_student_account = type === "student";
+    const is_teacher_account = type === "teacher";
     
     const navigate = useNavigate()
     const {account_id} = useParams();
@@ -54,7 +58,11 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
     }
 
     const onChangeValueEvent = (keys=[]) => (e) =>{
-        edit_existing_account(keys, e.target.value);
+        const {name, value, checked, type} = e.target;
+        const is_checkbox = type === "checkbox";
+        const is_number = type === "number";
+        
+        edit_existing_account(keys, is_checkbox?checked:is_number?(Number(value)||""):value);
         setErrors((e) => ({...e, [keys.join(".")]: ""}));
     }
 
@@ -75,7 +83,7 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
     const onPressEditAccount = async () => {
         set_loading(true);
         if(validate_fields()){
-            if(await update_account({...edit_account, password: password || undefined})){
+            if(await update_account({...edit_account, credits: credits || 0, password: password || undefined})){
                 setPassword("");
             }
         }
@@ -131,7 +139,7 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
                     {errors["type"] && <p className='error'>{errors["type"]}</p>}
                 </div>
 
-                {type === "student" && (
+                {is_student_account && (
                     <>
                     <div className='input-container'>
                         <input type="text" value={school} onChange={onChangeValueEvent(["school"])} placeholder='Current School' />
@@ -149,7 +157,7 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
                         <DatePicker
                             // label="Start Time"
                             value={date_enrolled}
-                            onChange={(v) => onChangeValue(["date_enrolled"])((v || (new Date())).getTime())}
+                            onChange={(v) => onChangeValue(["date_enrolled"])(v || new Date())}
                             renderInput={(params) => <TextField {...params} />}
                         />
                         </LocalizationProvider>
@@ -180,6 +188,13 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
                 <div className='input-container'>
                     <input type="text" value={relation} onChange={onChangeValueEvent(["emergency_contact", "relation"])} placeholder='Emergency Contact relation' />
                 </div>
+
+                {is_student_account && <div className='input-container'>
+                    <input type="number" value={credits} onChange={onChangeValueEvent(["credits"])} placeholder='Credits' style={{paddingLeft: "50px"}} />
+                    <div className='input-adornment start' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}>
+                        <BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} />
+                    </div>
+                </div>}
 
                 <button style={{marginBottom: 20}} className='button error fullwidth' onClick={() => {cancel_account_edit(); navigate("/dashboard/accounts")}}>Cancel Edit</button>
                 <button className='button primary fullwidth' onClick={onPressEditAccount}>Edit Account</button>

@@ -86,7 +86,7 @@ export const get_schedule_handler = async (req: Request, res: Response, next: Ne
 
         return res.json({success: true, schedule});
     }catch(e){
-        res.status(400).json({success: true, msg: e.message});
+        res.status(400).json({success: false, msg: e.message});
     }
 }
 
@@ -99,7 +99,7 @@ export const add_item_to_schedule_handler = async (req: Request, res: Response, 
 
         return res.json({success: true, schedule});
     }catch(e){
-        res.status(400).json({success: true, msg: e.message});
+        res.status(400).json({success: false, msg: e.message});
     }
 }
 
@@ -112,7 +112,7 @@ export const update_schedule_item_handler = async (req: Request, res: Response, 
 
         return res.json({success: true, schedule});
     }catch(e){
-        res.status(400).json({success: true, msg: e.message});
+        res.status(400).json({success: false, msg: e.message});
     }
 }
 
@@ -125,6 +125,6 @@ export const remove_item_from_schedule_handler = async (req: Request, res: Respo
 
         return res.json({success: true, schedule});
     }catch(e){
-        res.status(400).json({success: true, msg: e.message});
+        res.status(400).json({success: false, msg: e.message});
     }
 }

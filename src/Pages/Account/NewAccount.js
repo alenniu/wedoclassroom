@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TextField } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { BsEye, BsEyeSlash } from 'react-icons/bs';
+import { BsCurrencyDollar, BsEye, BsEyeSlash } from 'react-icons/bs';
 import { connect } from 'react-redux';
 import { create_account, edit_new_account, init_edit_account, set_loading } from '../../Actions';
 import { password_requirements, validate_email, validate_name, validate_password } from '../../Utils';
@@ -19,9 +19,13 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
 
     const navigate = useNavigate();
 
-    const {name={}, email="", phone="", type="", gender, school, grade, date_enrolled, emergency_contact={}, error} = new_account
+    const {name={}, email="", phone="", type="", credits="", gender, school, grade, date_enrolled=new Date(), emergency_contact={}, error} = new_account
     const {name:emergency_name="", email:emergency_email="", phone:emergency_phone="", relation=""} = emergency_contact;
     const {first="", last=""} = name;
+    const is_admin_account = type === "admin";
+    const is_sales_account = type === "sales";
+    const is_student_account = type === "student";
+    const is_teacher_account = type === "teacher";
 
 
     const validate_fields = () => {
@@ -41,7 +45,11 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
     }
 
     const onChangeValueEvent = (keys=[]) => (e) =>{
-        edit_new_account(keys, e.target.value);
+        const {name, value, checked, type} = e.target;
+        const is_checkbox = type === "checkbox";
+        const is_number = type === "number";
+
+        edit_new_account(keys, is_checkbox?checked:is_number?(Number(value)||""):value);
         setErrors((e) => ({...e, [keys.join(".")]: ""}));
     }
 
@@ -62,7 +70,7 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
     const onPressCreateAccount = async () => {
         set_loading(true);
         if(validate_fields()){
-            if(await create_account({name, email, phone, type, password, gender, school, grade, date_enrolled, emergency_contact: {name: emergency_name, email: emergency_email, phone: emergency_phone, relation}})){
+            if(await create_account({name, email, phone, type, password, gender, school, grade, date_enrolled, credits: credits || 0, emergency_contact: {name: emergency_name, email: emergency_email, phone: emergency_phone, relation}})){
                 setPassword("");
             }
         }
@@ -118,7 +126,7 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
                     {errors["type"] && <p className='error'>{errors["type"]}</p>}
                 </div>
 
-                {type === "student" && (
+                {is_student_account && (
                     <>
                     <div className='input-container'>
                         <input type="text" value={school} onChange={onChangeValueEvent(["school"])} placeholder='Current School' />
@@ -136,7 +144,7 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
                         <DatePicker
                             // label="Start Time"
                             value={date_enrolled}
-                            onChange={(v) => onChangeValue(["date_enrolled"])((v || (new Date())).getTime())}
+                            onChange={(v) => onChangeValue(["date_enrolled"])(v || new Date())}
                             renderInput={(params) => <TextField {...params} />}
                         />
                         </LocalizationProvider>
@@ -167,6 +175,13 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
                 <div className='input-container'>
                     <input type="text" value={relation} onChange={onChangeValueEvent(["emergency_contact", "relation"])} placeholder='Emergency Contact relation' />
                 </div>
+
+                {is_student_account && <div className='input-container'>
+                    <input type="number" value={credits} onChange={onChangeValueEvent(["credits"])} placeholder='Starting Credits' style={{paddingLeft: "50px"}} />
+                    <div className='input-adornment start' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}>
+                        <BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} />
+                    </div>
+                </div>}
 
                 <button style={{marginBottom: 20}} className='button error fullwidth' onClick={() => {navigate("/dashboard/accounts")}}>Back</button>
                 <button className='button primary fullwidth' onClick={onPressCreateAccount}>Create Account</button>

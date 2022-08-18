@@ -203,10 +203,8 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifica
             <TransitionGroup>
                 {incoming_notifications.map((n, i) => {
                     return (
-                        <CSSTransition timeout={300} classNames="incoming-notification" unmountOnExit onExited={() => {
-                            onNotificationExit(n);
-                        }} key={n._id}>
-                            <span className="incoming-notification" style={{"--index": i}} key={n._id}><Notification notification={n} onMount={onIncomingNotificationMount} /></span>
+                        <CSSTransition timeout={300} classNames="incoming-notification" unmountOnExit key={n._id}>
+                            <span className="incoming-notification" onClick={() => {remove_incoming_notification(n)}} style={{"--index": i}} key={n._id}><Notification notification={n} onMount={onIncomingNotificationMount} /></span>
                         </CSSTransition>
                     )
                 })}
