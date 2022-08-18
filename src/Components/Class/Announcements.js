@@ -1,13 +1,13 @@
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { create_announcement, create_assignment, edit_class_announcement, edit_class_assignment, set_loading } from '../../Actions';
+import { ImFileText2 } from 'react-icons/im';
+import { RiCloseCircleFill } from 'react-icons/ri';
 import { TextField } from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import React, { useState } from 'react';
-import { ImFileText2 } from 'react-icons/im';
-import { RiCloseCircleFill } from 'react-icons/ri';
-import { connect } from 'react-redux';
-import { create_announcement, create_assignment, edit_class_announcement, edit_class_assignment, set_loading } from '../../Actions';
-import FileUploadDropArea from '../Common/FileUploadDropArea';
 import Announcement from './Announcement';
+import { FileUploadDropArea } from '../Common';
 
 import "./Announcements.css";
 

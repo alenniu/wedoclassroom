@@ -14,4 +14,4 @@ const FileUploadDropArea = ({title="Upload File", text="Drop your file here or b
     );
 }
  
-export default FileUploadDropArea;
+export {FileUploadDropArea};

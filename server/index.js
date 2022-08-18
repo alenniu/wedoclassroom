@@ -11,7 +11,7 @@ const {createAdapter:createSocketIoMongoAdapter} = require("@socket.io/mongo-ada
 const { DB_NAME, SOCKET_IO_DB_NAME } = require("./config");
 
 const db_init = require("./database/init");
-const { SOCKET_ROOM_ADMINS, SOCKET_ROOM_SALES, SOCKET_ROOM_STUDENTS, SOCKET_ROOM_TEACHERS } = require("./socket_rooms");
+const { SOCKET_ROOM_ADMINS, SOCKET_ROOM_SALES, SOCKET_ROOM_STUDENTS, SOCKET_ROOM_TEACHERS, SOCKET_ROOM_USERS } = require("./socket_rooms");
 const { SOCKET_EVENT_LOGIN, SOCKET_EVENT_LOGOUT } = require("./socket_events");
 const db = db_init();
 
@@ -51,7 +51,8 @@ const roomMap = {
 }
 
 io.on("connection", (socket) => {
-    console.log("socket connected ⚡⚡⚡ ", socket.id);
+    // console.log("socket connected ⚡⚡⚡ ", socket.id);
+    // socket.join(SOCKET_ROOM_USERS);
 
     socket.on(SOCKET_EVENT_LOGIN, (user) => {
         // console.log(user);

@@ -1,15 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { get_classes_schedules, get_my_classes, set_loading } from '../Actions';
-import Schedule from '../Components/Dashboard/Schedule';
 import { useNavigate } from 'react-router-dom';
 import NewSchedule from '../Components/Dashboard/NewSchedule';
 import { DAY, get_week_date_range, MONTHS } from '../Data';
-
-import "./Schedule.css";
 import { debounce, get_full_image_url } from '../Utils';
 import { api } from '../Utils/api';
-import TypeSelect from '../Components/Common/TypeSelect';
+import { TypeSelect } from '../Components/Common';
+
+import "./Schedule.css";
 
 const RenderUserOption = ({label, value, user}) => {
     return (

@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { get_sessions, get_teachers, set_loading } from '../Actions';
-import TableHead from '../Components/Common/TableHead';
-import TypeSelect from '../Components/Common/TypeSelect';
 import { debounce, get_full_image_url, toMoneyString } from '../Utils';
 import { formatDistance, formatDuration, intervalToDuration } from 'date-fns';
+import { TypeSelect, TableHead } from '../Components/Common';
 
 import "./Sessions.css";
 
@@ -78,9 +77,9 @@ const Sessions = ({sessions=[], total_sessions=0, teachers=[], total_teachers=0,
                         {sessions.map((s, i) => {
                             const {_id, _class, teacher, students, start_time, end_time, active, meeting_link} = s;
                             const startTime = new Date(start_time);
-                            const endTime = new Date(end_time);
+                            const endTime = end_time && new Date(end_time);
 
-                            const duration = endTime && intervalToDuration({start: startTime, end: endTime});
+                            const duration = endTime && endTime.getTime() && intervalToDuration({start: startTime, end: endTime});
 
                             return (
                                 <tr key={_id}>

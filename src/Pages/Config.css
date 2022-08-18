@@ -1,0 +1,7 @@
+.page.config .input-container{
+    width: 48%;
+}
+
+.page.config .input-container:nth-of-type(even){
+    margin-left: 4%;
+}

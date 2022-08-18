@@ -1,23 +1,21 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { create_new_class, edit_new_class_value, get_teachers, set_loading, set_teachers } from '../../Actions';
-import TypeSelect from '../../Components/Common/TypeSelect';
-import { debounce, get_full_image_url, throttle } from '../../Utils';
 import {RiImageAddLine, RiCloseCircleFill} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
 import {TextField} from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-
-import { ListInput } from '../../Components/Common/ListInput';
-import { DAYS } from '../../Data';
-import FileUploadDropArea from '../../Components/Common/FileUploadDropArea';
 import { DatePicker } from '@mui/x-date-pickers';
+import { DAYS } from '../../Data';
+import { debounce, get_full_image_url, throttle } from '../../Utils';
+import { TypeSelect, FileUploadDropArea, ListInput } from '../../Components/Common';
+
 
 import "./Class.css";
 import "./NewClass.css";
-import { useNavigate } from 'react-router-dom';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (

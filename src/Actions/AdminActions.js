@@ -1,7 +1,7 @@
 import { validate_email, validate_password } from "../Utils";
 import { api } from "../Utils/api";
 import { set_config } from "./AppActions";
-import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT } from "./types";
+import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_INIT_CONFIG, UPDATE_CONFIG } from "./types";
 
 export const set_admins = (admins=[], total=0) => {
     return {type: SET_ADMINS, payload: {admins, total: total || admins.length}};
@@ -41,6 +41,14 @@ export const edit_new_account = (keys=[], value) => {
 
 export const edit_existing_account = (keys=[], value) => {
     return {type: EDIT_EXISTING_ACCOUNT, payload:{keys, value}};
+}
+
+export const edit_init_config = (config) => {
+    return {type: EDIT_INIT_CONFIG, payload: {config}};
+}
+
+export const edit_config_value = (keys=[], value) => {
+    return {type: EDIT_CONFIG_VALUE, payload: {keys, value}};
 }
 
 export const get_admins = (limit=20, offset=0, search="", sort="{}", filters="{}") => async (dispatch) => {
@@ -206,25 +214,31 @@ export const update_account = (account) => async (dispatch) => {
     }
 }
 
-export const update_config = (updated_config) => async (dispatch) => {
+export const update_config = (formData) => async (dispatch) => {
     try{
-        const res = await api("put", "/api/config", {updated_config});
+        const res = await api("put", "/api/config", formData);
     
         if(res && res.data){
             if(res.data.success){
                 const {config} = res.data;
                 
+                console.log(config);
                 dispatch(set_config(config));
+                dispatch({type: UPDATE_CONFIG, payload: {config}});
     
                 return res.data;
             }
-    
+
+            dispatch(edit_config_value(["error"], res.data.msg));
+            
             console.error(res.data);
         }else{
+            dispatch(edit_config_value(["error"], res));
             console.error(res);
         }
     }catch(e){
         console.error(e);
+        dispatch(edit_config_value(["error"], e.message));
     }
 }
 

@@ -19,6 +19,7 @@ import Sessions from './Pages/Sessions';
 import EditAccount from './Pages/Account/EditAccount';
 import NewAccount from './Pages/Account/NewAccount';
 import Schedule from './Pages/Schedule';
+import Config from './Pages/Config';
 
 const routes = [
     {
@@ -117,7 +118,7 @@ const routes = [
             },
             {
                 path: "/dashboard/config",
-                component: Dashboard,
+                component: Config,
                 exact: true,
                 children: null,
                 isIndex: false,

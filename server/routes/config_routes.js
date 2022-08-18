@@ -13,7 +13,7 @@ const router = require("express").Router();
 const upload = multer({storage: multer.diskStorage({}), fileFilter: (req, file, cb) => {}, limits: {fileSize: MB * 5}});
 
 module.exports = (app) => {
-    router.route("/").get(get_user, get_config_handler).put(verify_admin, update_config_handler);
+    router.route("/").get(get_user, get_config_handler).put(verify_admin, upload.fields([]), update_config_handler);
 
     app.use("/api/config", router);
 }

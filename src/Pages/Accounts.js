@@ -1,16 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import { cancel_account_edit, create_account, edit_new_account, get_accounts, init_edit_account, set_loading, update_account } from '../Actions';
-import Tabs from '../Components/Common/Tabs';
-import Class from '../Components/Dashboard/Class';
-import {BsEye, BsEyeSlash} from "react-icons/bs";
+import { debounce, password_requirements, validate_email, validate_name, validate_password } from '../Utils';
+import { TableHead, Tabs } from '@mui/material';
 
 import "./Dashboard.css";
 import "./Accounts.css";
-import TableHead from '../Components/Common/TableHead';
-import { debounce, password_requirements, validate_email, validate_name, validate_password } from '../Utils';
-
-import { Link, useNavigate } from 'react-router-dom';
 
 const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account={}, editing_account, get_accounts, create_account, update_account, edit_new_account, init_edit_account, cancel_account_edit, set_loading}) => {
     const [pageLimit, setPageLimit] = useState(20);

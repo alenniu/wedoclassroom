@@ -17,7 +17,7 @@ async function get_class(class_id, user){
     try{
         const {_id, type} = user;
 
-        return await Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: (type === "admin") || (type === "sales")}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"}).populate({path: "current_session", populate: {path: "students", select: "-password"}}).populate({path: "sessions", sort: {createdAt: "desc"}});
+        return await Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: (type === "admin") || (type === "sales")}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"}).populate({path: "current_session", populate: {path: "students", select: "-password"}}).populate({path: "sessions"});
     }catch(e){
         console.error(e);
         throw e;

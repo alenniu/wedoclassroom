@@ -46,4 +46,4 @@ const InfiniteScroller = forwardRef(({children, onLayout, loadNext, loadPrev, ho
     );
 })
  
-export default InfiniteScroller;
+export {InfiniteScroller};

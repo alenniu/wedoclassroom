@@ -1,9 +1,9 @@
-import { CANCEL_ACCOUNT_EDIT, CREATE_ACCOUNT, EDIT_ACCOUNT, EDIT_EXISTING_ACCOUNT, EDIT_NEW_ACCOUNT, INIT_EDIT_ACCOUNT, SET_ACCOUNTS, SET_ADMINS, SET_CREATE_ACCOUNT_ERROR, SET_SESSIONS, SET_STUDENTS, SET_TEACHERS } from "../Actions/types";
+import { CANCEL_ACCOUNT_EDIT, CREATE_ACCOUNT, EDIT_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_EXISTING_ACCOUNT, EDIT_INIT_CONFIG, EDIT_NEW_ACCOUNT, INIT_EDIT_ACCOUNT, SET_ACCOUNTS, SET_ADMINS, SET_CREATE_ACCOUNT_ERROR, SET_SESSIONS, SET_STUDENTS, SET_TEACHERS, UPDATE_CONFIG } from "../Actions/types";
 import { update_object } from "../Utils";
 
 const NEW_ACCOUNT_PROPS = {name: {first: "", last: ""}, email: "", phone: "", type: ""}
 
-const INITIAL_STATE = {accounts: [], total_accounts: 0, sessions: [], total_sessions: 0, teachers: [], total_teachers: 0, students: [], total_students: 0, admins: [], total_admins: 0, edit_account: {error: ""}, editing_account: false, new_account: {error: ""}};
+const INITIAL_STATE = {accounts: [], total_accounts: 0, sessions: [], total_sessions: 0, teachers: [], total_teachers: 0, students: [], total_students: 0, admins: [], total_admins: 0, edit_account: {error: ""}, editing_account: false, new_account: {error: ""}, edit_config: {error: ""}};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -39,14 +39,29 @@ export default (state=INITIAL_STATE, action) => {
 
         case EDIT_NEW_ACCOUNT:{
             const {keys=[], value} = payload;
-            new_state.new_account.error = "";
+            new_state.new_account = {...new_state.new_account, error: ""};
             update_object(keys, value, new_state.new_account);
         }
         break;
 
+        case EDIT_CONFIG_VALUE:{
+            const {keys=[], value} = payload;
+            new_state.edit_config = {...new_state.edit_config, error: ""}
+            update_object(keys, value, new_state.edit_config);
+        }
+        break;
+
+        case EDIT_INIT_CONFIG:
+            new_state.edit_config = payload.config;
+        break;
+
+        case UPDATE_CONFIG:
+            new_state.edit_config = payload.config;
+        break;
+
         case EDIT_EXISTING_ACCOUNT:{
             const {keys=[], value} = payload;
-            new_state.edit_account.error = "";
+            new_state.edit_account = {...new_state.edit_account, error: ""};
             update_object(keys, value,new_state.edit_account);
         }
         break;

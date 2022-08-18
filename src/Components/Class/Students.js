@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import TableHead from '../Common/TableHead';
-
 import {RiCheckLine, RiCloseLine} from "react-icons/ri";
+import { TableHead } from '../Common';
 
 import "./Students.css";
 

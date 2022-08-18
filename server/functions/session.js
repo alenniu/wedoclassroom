@@ -37,7 +37,7 @@ async function get_class_sessions({class_id}, limit=20, offset=0, sort={}, filte
 
 async function create_session({_class, meeting_link=""}, user){
     try{
-        const new_session = await (new Session({_class: _class._id, students: _class.students.map((s) => s._id), teacher: user._id, active: true, meeting_link, start_time: new Date(), end_time: new Date(0)})).save();
+        const new_session = await (new Session({_class: _class._id, students: _class.students.map((s) => s._id), teacher: user._id, active: true, meeting_link, start_time: new Date(), end_time: null})).save();
 
         await new_session.populate({path: "students", select: "-password"})
 

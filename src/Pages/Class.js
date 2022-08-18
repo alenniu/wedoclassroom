@@ -1,16 +1,15 @@
-import { Modal } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { accept_join_request, decline_join_request, end_class, get_class_announcements, get_class_assignments, get_class_attendance, get_class_requests, get_current_class, remove_student_from_class, set_loading, set_meeting_link, start_class } from '../Actions';
+import { Modal } from '@mui/material';
 import Announcements from '../Components/Class/Announcements';
 import Attendance from '../Components/Class/Attendance';
 import ClassInfo from '../Components/Class/ClassInfo';
 import Students from '../Components/Class/Students';
-import Tabs from '../Components/Common/Tabs';
 import { HOUR } from '../Data';
 import { is_full_url } from '../Utils';
-
+import { Tabs } from '../Components/Common';
 
 import "./Class.css";
 

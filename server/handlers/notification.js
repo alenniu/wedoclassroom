@@ -29,7 +29,7 @@ export const create_notification_handler = async (req: Request, res: Response, n
         const new_notification = await create_notification({text, type, attachments, from: user._id, to, metadata, everyone}, user);
 
         if(everyone){
-            socket_io?.broadcast.emit(SOCKET_EVENT_NOTIFICATION, new_notification);
+            socket_io?.emit(SOCKET_EVENT_NOTIFICATION, new_notification);
         }else{
             socket_io?.to(to).emit(SOCKET_EVENT_NOTIFICATION, new_notification);
         }

@@ -26,4 +26,4 @@ const TableHead = ({headers=[], order="", orderBy="", onSort}) => {
     );
 }
  
-export default TableHead;
+export {TableHead};

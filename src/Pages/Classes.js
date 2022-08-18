@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Slide, Box } from '@mui/material';
-import {BsCurrencyDollar} from "react-icons/bs";
 import { connect } from 'react-redux';
-import { get_classes, get_popular_classes, get_my_requests, get_class_client_secret, set_loading, request_join_class, get_classes_by_subject } from '../Actions';
-import Class from '../Components/Classes/Class';
-import PopularClass from '../Components/Classes/PopularClass';
-import Tabs from '../Components/Common/Tabs';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import {BsCurrencyDollar} from "react-icons/bs";
+import { get_classes, get_popular_classes, get_my_requests, get_class_client_secret, set_loading, request_join_class, get_classes_by_subject } from '../Actions';
+import { Modal, Slide, Box } from '@mui/material';
+import Class from '../Components/Classes/Class';
+import PopularClass from '../Components/Classes/PopularClass';
 import config from "../Config";
+import { get_full_image_url } from '../Utils';
+import { Tabs } from '../Components/Common';
 
 import "./Classes.css";
-import { get_full_image_url } from '../Utils';
 
 const stripePromise = loadStripe(config.STRIPE_PUBLIC_KEY);
 

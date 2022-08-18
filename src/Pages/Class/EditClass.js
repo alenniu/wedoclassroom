@@ -1,28 +1,24 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { update_class, edit_class_value, get_class, get_teachers, set_loading, set_teachers, get_class_reschedules, request_class_reschedule, accept_class_reschedule, reject_class_reschedule } from '../../Actions';
-import TypeSelect from '../../Components/Common/TypeSelect';
-import { debounce, get_full_image_url, ordinal_suffix, throttle, unique_filter } from '../../Utils';
 import {RiImageAddLine, RiCloseCircleFill} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
 import {TextField} from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-
-import { ListInput } from '../../Components/Common/ListInput';
-import { DAYS, MONTHS } from '../../Data';
-import FileUploadDropArea from '../../Components/Common/FileUploadDropArea';
 import { DatePicker } from '@mui/x-date-pickers';
-import {formatDistance, formatDistanceToNow, intervalToDuration} from "date-fns"
-
-import "./Class.css";
-import "./EditClass.css";
-import { useNavigate, useParams } from 'react-router-dom';
+import {formatDistance, formatDistanceToNow, intervalToDuration} from "date-fns";
+import { DAYS, MONTHS } from '../../Data';
 import { INIT_EDIT_CLASS } from '../../Actions/types';
 import RescheduleModal from '../../Components/Class/RescheduleModal';
 import Reschedule from '../../Components/Class/Reschedule';
-import TableHead from '../../Components/Common/TableHead';
+import { debounce, get_full_image_url, ordinal_suffix, throttle, unique_filter } from '../../Utils';
+import { ListInput, TypeSelect, TableHead, FileUploadDropArea } from '../../Components/Common';
+
+import "./Class.css";
+import "./EditClass.css";
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (

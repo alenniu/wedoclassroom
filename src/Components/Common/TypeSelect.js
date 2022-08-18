@@ -142,4 +142,4 @@ const TypeSelect = ({options=[], value, textValue, placeholder="Select", disable
     );
 }
  
-export default TypeSelect;
+export {TypeSelect};

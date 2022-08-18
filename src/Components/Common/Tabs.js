@@ -47,4 +47,4 @@ const Tabs = ({tabs=[], index, current_id, horizontal=true, onPressTab}) => {
     );
 }
  
-export default Tabs;
+export {Tabs};
