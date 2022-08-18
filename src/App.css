@@ -14,6 +14,7 @@
   --notification-box-shadow: 1px 1px 5px grey;
   --notification-icon-size: 30px;
   --notification-height: 80px;
+  --notification-hover-tint: rgba(0,0,0,0.1);
   --link-color: #1B1BBA;
   --bg-color: white;
   --input-height: 56px;
@@ -58,6 +59,7 @@
     --class-box-shadow: 0 0 1px rgba(255,255,255, 0.5);
     --notification-border: 1px solid #666;
     --notification-box-shadow: 0px 0px 1px rgba(255,255,255, 0.5);
+    --notification-hover-tint: rgba(255,255,255,0.1);
     --link-color: #8BABFA;
     --input-bgcolor: #565656;
     --input-box-shadow: 0px 0px 3px rgba(255,255,255,0.3);

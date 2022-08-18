@@ -3,7 +3,7 @@ import { get_class } from "./ClassActions";
 import { Socket } from "socket.io-client";
 import { SOCKET_EVENT_NOTIFICATION } from "my-server/socket_events";
 
-const { SET_CLASS, SET_USER_CLASSES, SET_USER_REQUESTS, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE, SET_CLASSES_SCHEDULES, NEW_NOTIFICATION, REMOVE_INCOMING_NOTIFICATION, SET_OPEN_NOTIFICATIONS, SET_NOTIFICATIONS, SET_UNREAD_NOTIFICATIONS_COUNT, READ_NOTIFICATIONS, UNREAD_NOTIFICATIONS, HIDE_INCOMING_NOTIFICATION } = require("./types");
+const { SET_CLASS, SET_USER_CLASSES, SET_USER_REQUESTS, SET_USER_CLASS, SET_CLASS_REQUESTS, SET_USER_ASSIGNMENTS, SET_CLASS_ATTENDANCE, UPDATE_STUDENT_CLASS_ATTENDANCE, SET_CLASSES_SCHEDULES, NEW_NOTIFICATION, REMOVE_INCOMING_NOTIFICATION, SET_OPEN_NOTIFICATIONS, SET_NOTIFICATIONS, SET_UNREAD_NOTIFICATIONS_COUNT, READ_NOTIFICATIONS, UNREAD_NOTIFICATIONS, HIDE_INCOMING_NOTIFICATION, REMOVE_ALL_INCOMING_NOTIFICATION } = require("./types");
 
 export const add_new_notification = (notification) => {
     return {type: NEW_NOTIFICATION, payload: {notification}}
@@ -18,11 +18,7 @@ export const remove_incoming_notification = (notification) => {
 // }
 
 export const remove_all_incoming_notification = () => {
-    return {type: REMOVE_INCOMING_NOTIFICATION}
-}
-
-export const set_open_notifications = (open=true) => {
-    return {type: SET_OPEN_NOTIFICATIONS, payload: {open}};
+    return {type: REMOVE_ALL_INCOMING_NOTIFICATION}
 }
 
 export const set_notifications = (notifications=[], total) => {
@@ -334,7 +330,7 @@ export const add_socket_events = (socket:Socket) => async (dispatch) => {
             const {dispatchObj} = additional_data || {};
 
             dispatch(add_new_notification(notification));
-            
+
             dispatchObj && dispatch(dispatchObj);
         })
     }

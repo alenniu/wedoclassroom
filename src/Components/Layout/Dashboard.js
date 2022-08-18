@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line, RiTimeLine, RiArrowRightSLine, RiArrowLeftSLine, RiSettings3Line, RiLogoutBoxRLine} from "react-icons/ri";
+import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line, RiTimeLine, RiArrowRightSLine, RiArrowLeftSLine, RiSettings3Line, RiLogoutBoxLine} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
-import { add_socket_events, close_nav, get_notifications, get_unread_notifications_count, hide_incoming_notification, logout, open_nav, remove_all_incoming_notification, remove_incoming_notification, add_new_notification, remove_socket_events, set_loading, toggle_nav } from '../../Actions';
+import { add_socket_events, close_nav, get_notifications, get_unread_notifications_count, hide_incoming_notification, logout, open_nav, remove_all_incoming_notification, remove_incoming_notification, add_new_notification, remove_socket_events, set_loading, toggle_nav, toggle_notifications, open_notifications, close_notifications } from '../../Actions';
 import {CSSTransition, TransitionGroup} from "react-transition-group"
 
 import "./Dashboard.css";
@@ -11,8 +11,9 @@ import { get_full_image_url } from '../../Utils';
 import { useSocket } from '../../Context/SocketContext';
 import { SOCKET_EVENT_LOGIN, SOCKET_EVENT_LOGOUT } from 'my-server/socket_events';
 import Notification from '../Dashboard/Notification';
+import { NOTIFICATION_TYPE_INFO } from 'my-server/notification_types';
 
-const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], incoming_notifications=[], unread_notifications_count=0, nav_open, toggle_nav, open_nav, close_nav, is_student, is_sales, get_notifications, get_unread_notifications_count, remove_incoming_notification, remove_all_incoming_notification, add_socket_events, remove_socket_events, add_new_notification, logout, set_loading}) => {
+const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifications_open, incoming_notifications=[], unread_notifications_count=0, nav_open, toggle_nav, open_nav, close_nav, is_student, is_sales, get_notifications, get_unread_notifications_count, remove_incoming_notification, remove_all_incoming_notification, add_socket_events, remove_socket_events, add_new_notification, logout, toggle_notifications, open_notifications, close_notifications, set_loading}) => {
     
     const {name={first: "Ruth", last: "Langmore"}, phone, type, photo_url="/Assets/Images/AuthBackground.png"} = user;
 
@@ -24,13 +25,21 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], incoming
     
     const location = useLocation();
 
+    const notificationsRef = useRef(null);
+
     const is_on_new_class = location.pathname === "/dashboard/class/new";
 
     const onNotificationExit = (n) => {
         remove_incoming_notification(n)
     };
 
-    const onPressLogout = async () => {
+    const onClickNotifications = (e) => {
+        e.stopPropagation();
+        remove_all_incoming_notification();
+        toggle_notifications();
+    }
+
+    const onClickLogout = async () => {
         set_loading(true);
         if(await logout()){
             socket?.emit(SOCKET_EVENT_LOGOUT);
@@ -43,13 +52,27 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], incoming
         navigate("/dashboard/class/new");
     }
 
+    const onClickOutsiteNotifications = (e:MouseEvent) => {
+        if(!notificationsRef.current?.contains(e.target)){
+            close_notifications()
+        }
+    }
+
+    useEffect(() => {
+        notifications_open && window.addEventListener("click", onClickOutsiteNotifications);
+        
+        return () => {
+            window.removeEventListener("click", onClickOutsiteNotifications);
+        }
+    }, [notifications_open]);
+
     useEffect(() => {
         let timeout;
         if(user){
             socket?.emit(SOCKET_EVENT_LOGIN, user);
             // TESTING
             timeout = setTimeout(() => {
-                add_new_notification({_id: "12345", text: "Hello. This is a test notification\nShould be on new line.", type: "TEST_NOTIFICATION"});
+                add_new_notification({_id: "12345", text: "Hello. This is a test notification\nShould be on new line.", type: NOTIFICATION_TYPE_INFO});
                 // add_new_notification({_id: "123456", text: "Hello. This is a test notification\nShould be on new line.", type: "TEST_NOTIFICATION"});
             }, 500);
             // TESTING
@@ -68,10 +91,6 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], incoming
         setTimeout(() => {
             remove_incoming_notification(n);
         }, [5000]);
-    }
-
-    const onOpenNotifications = () => {
-        remove_all_incoming_notification();
     }
 
     return (
@@ -159,11 +178,18 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], incoming
 
                             <div className='user-actions icons'>
                                 <span title='Notifications' className='action-icon-container notifications'>
-                                    <span className='badge notification-count'>{unread_notifications_count>99?"99+":unread_notifications_count}</span>
-                                    <RiNotification3Line size={25} className="clickable" />
+                                    <span onClick={onClickNotifications} className='badge notification-count clickable'>{unread_notifications_count>99?"99+":unread_notifications_count}</span>
+
+                                    <RiNotification3Line onClick={onClickNotifications} size={25} className="clickable" />
+
+                                    {notifications_open && (
+                                        <ul ref={notificationsRef} className={`notifications-container ${notifications_open?"open":"closed"}`}>
+                                            {notifications.map((n) => <li key={n._id}><Notification notification={n} key={n._id} onClick={() => {toggle_notifications()}} /></li>)}
+                                        </ul>
+                                    )}
                                 </span>
 
-                                <span title='Logout' className='action-icon-container logout' onClick={onPressLogout}><RiLogoutBoxRLine size={25} className="clickable" /></span>
+                                <span title='Logout' className='action-icon-container logout'><RiLogoutBoxLine onClick={onClickLogout} size={25} className="clickable" /></span>
                             </div>
                         </div>
                     </div>
@@ -190,7 +216,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], incoming
 }
 
 function map_state_to_props({App, User, Auth}){
-    return {user: App.user, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student, is_sales: Auth.is_sales, nav_open: App.nav_open, notifications: User.notifications, incoming_notifications: User.incoming_notifications, unread_notifications_count: User.unread_notifications_count}
+    return {user: App.user, is_admin: Auth.is_admin, is_teacher: Auth.is_teacher, is_student: Auth.is_student, is_sales: Auth.is_sales, nav_open: App.nav_open, notifications: User.notifications, incoming_notifications: User.incoming_notifications, unread_notifications_count: User.unread_notifications_count, notifications_open: App.open_notifications}
 }
 
-export default connect(map_state_to_props, {logout, toggle_nav, open_nav, close_nav, get_notifications, get_unread_notifications_count, remove_incoming_notification, remove_all_incoming_notification, add_socket_events, remove_socket_events, add_new_notification, set_loading})(DashboardLayout);
+export default connect(map_state_to_props, {logout, toggle_nav, open_nav, close_nav, get_notifications, get_unread_notifications_count, remove_incoming_notification, remove_all_incoming_notification, add_socket_events, remove_socket_events, add_new_notification, toggle_notifications, open_notifications, close_notifications, set_loading})(DashboardLayout);

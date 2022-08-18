@@ -4,13 +4,12 @@
     align-items: center;
     text-overflow: ellipsis;
     padding: 10px 20px;
-    border-radius: 8px;
-    background-color: var(--bg-color, white);
-    color: var(--text-color, black);
-    box-shadow: var(--notification-box-shadow, (0px, 0px, 3px grey));
-    border: var(--notification-border, 1px solid #ECECEC);
     width: min(75vw, 350px);
     overflow: hidden;
+}
+
+.notification-container:hover{
+    background-color: var(--notification-hover-tint, rgba(0,0,0,0.1));
 }
 
 .notification-container .notification-icon{

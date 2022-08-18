@@ -267,8 +267,6 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
         }
     }, [teacherSearch, is_admin]);
 
-    console.log(total_session_time);
-
     return (
         <div className='page edit-class'>
             <form onSubmit={(e) => {e.preventDefault()}} enctype="multipart/form-data" className='main-col'>

@@ -344,12 +344,30 @@ nav.admin-nav.closed .nav-wrapper .nav-image-container{
 .admin-nav .support-container .support-text p{
 }
 
+.dashboard .notifications-container{
+    position: absolute;
+    top: calc(100% + 20px);
+    right: -50px;
+    background-color: var(--bg-color, white);
+    max-height: 500px;
+    overflow-y: auto;
+    border: var(--notification-border, 1px solid #ECECEC);
+    box-shadow: var(--notification-box-shadow, (0px, 0px, 3px grey));
+    z-index: 9999999999;
+}
+
 .dashboard .incoming-notification{
     --notification-height: 100px;
     position: fixed;
     z-index: 999999999;
     top: calc((var(--dashboard-header-height, 90px) + 20px) + (var(--index, 0) * ((var(--notification-height, 60px) + 20px))));
     right: 20px;
+    border-radius: 8px;
+    background-color: var(--bg-color, white);
+    color: var(--text-color, black);
+    box-shadow: var(--notification-box-shadow, (0px, 0px, 3px grey));
+    border: var(--notification-border, 1px solid #ECECEC);
+    overflow: hidden;
 }
 
 .dashboard .incoming-notification-enter {

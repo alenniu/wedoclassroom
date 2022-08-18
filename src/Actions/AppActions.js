@@ -1,6 +1,6 @@
 import { api } from "../Utils/api";
 import { get_class } from "./ClassActions";
-import { SET_CLASS, SET_CONFIG, SET_CURRENT_CLASS, SET_LOADING, SET_NAV_OPEN, SET_USER, TOGGLE_NAV } from "./types";
+import { SET_CLASS, SET_CONFIG, SET_CURRENT_CLASS, SET_LOADING, SET_NAV_OPEN, SET_OPEN_NOTIFICATIONS, SET_USER, TOGGLE_NAV, TOGGLE_NOTIFICATIONS } from "./types";
 
 export const set_user = (user) => {
     return {type: SET_USER, payload: {user}};
@@ -39,6 +39,22 @@ export const open_nav = () => {
 
 export const close_nav = () => {
     return set_nav_open(false);
+}
+
+export const set_open_notifications = (open=true) => {
+    return {type: SET_OPEN_NOTIFICATIONS, payload: {open}};
+}
+
+export const open_notifications = () => {
+    return {type: SET_OPEN_NOTIFICATIONS, payload: {open: true}};
+}
+
+export const close_notifications = () => {
+    return {type: SET_OPEN_NOTIFICATIONS, payload: {open: false}};
+}
+
+export const toggle_notifications = () => {
+    return {type: TOGGLE_NOTIFICATIONS};
 }
 
 export const get_current_class = (class_id) => async (dispatch) => {

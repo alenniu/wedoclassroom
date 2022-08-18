@@ -66,13 +66,13 @@ const NOTIFICATION_ICONS = {
     [NOTIFICATION_TYPE_INFO]: (p:IconBaseProps) => <BsInfoCircle color={green} {...p} />
 }
 
-const Notification = ({notification={}, onMount}) => {
+const Notification = ({notification={}, onClick, onMount}) => {
     const {_id, type, text, from, metadata={}} = notification;
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        typeof(onMount) && onMount(notification);
+        typeof(onMount) === "function" && onMount(notification);
     }, []);
 
     const onClickNotification = () => {
@@ -154,8 +154,10 @@ const Notification = ({notification={}, onMount}) => {
             break;
     
             default:
-                return
+                
         }
+
+        (typeof(onClick) === "function") && (type !== NOTIFICATION_TYPE_INFO) && onClick(notification);
     }
 
     const Icon:IconType = NOTIFICATION_ICONS[type] || NOTIFICATION_ICONS[NOTIFICATION_TYPE_INFO];
