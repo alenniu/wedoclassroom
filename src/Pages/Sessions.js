@@ -4,6 +4,7 @@ import { get_sessions, get_teachers, set_loading } from '../Actions';
 import TableHead from '../Components/Common/TableHead';
 import TypeSelect from '../Components/Common/TypeSelect';
 import { debounce, get_full_image_url, toMoneyString } from '../Utils';
+import { formatDistance, formatDuration, intervalToDuration } from 'date-fns';
 
 import "./Sessions.css";
 
@@ -63,7 +64,7 @@ const Sessions = ({sessions=[], total_sessions=0, teachers=[], total_teachers=0,
 
     return (
         <div className='page sessions'>
-            <div className='main-col'>
+            <div className='main-col fullwidth'>
                 <h3>Sessions</h3>
 
                 <div className='input-container select teacher'>
@@ -71,28 +72,30 @@ const Sessions = ({sessions=[], total_sessions=0, teachers=[], total_teachers=0,
                 </div>
 
                 <table>
-                    <TableHead headers={[{label: "Teacher", id: "teacher", sortable: false}, {label: "Class", id: "_class", sortable: false}, {label: "Price", id: "price", sortable: false}, {label: "No. of Students", id: "students", sortable: false}, {label: "Total", id: "total", sortable: false}]} />
+                    <TableHead headers={[{label: "Teacher", id: "teacher", sortable: false}, {label: "Class", id: "_class", sortable: false}, {label: "Date", id: "start_time", sortable: true}, {label: "Duration", id: "d", sortable: false}, {label: "Price", id: "price", sortable: false}, {label: "No. of Students", id: "students", sortable: false}, {label: "Total", id: "total", sortable: false}]} />
 
                     <tbody>
                         {sessions.map((s, i) => {
                             const {_id, _class, teacher, students, start_time, end_time, active, meeting_link} = s;
+                            const startTime = new Date(start_time);
+                            const endTime = new Date(end_time);
+
+                            const duration = endTime && intervalToDuration({start: startTime, end: endTime});
 
                             return (
                                 <tr key={_id}>
                                     <td>{teacher.name.first} {teacher.name.last}</td>
                                     <td>{_class.title}</td>
+                                    <td>{startTime.toLocaleString(undefined, {dateStyle: "medium", timeStyle: "short"})}</td>
+                                    <td>{duration?formatDuration(duration, {}).replace(/hours?/, "h").replace(/minutes?/, "m").replace(/seconds?/, "s"):"Ongoing"}</td>
                                     <td>{toMoneyString(_class.price)}</td>
-                                    <td>{students.length}</td>
+                                    <td><center>{students.length}</center></td>
                                     <td>{toMoneyString(_class.price * students.length)}</td>
                                 </tr>
                             )
                         })}
                     </tbody>
                 </table>
-            </div>
-
-            <div className='misc-col'>
-                <h3>MISC</h3>
             </div>
         </div>
     );

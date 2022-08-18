@@ -17,7 +17,7 @@ async function get_class(class_id, user){
     try{
         const {_id, type} = user;
 
-        return await Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: (type === "admin") || (type === "sales")}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"}).populate({path: "current_session", populate: {path: "students", select: "-password"}}).populate({path: "sessions"});
+        return await Classes.findOne({_id: class_id, $or: [{teacher: _id}, {students: _id}, {created_by: _id}, {_id: {$exists: (type === "admin") || (type === "sales")}}]}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"}).populate({path: "current_session", populate: {path: "students", select: "-password"}}).populate({path: "sessions", sort: {createdAt: "desc"}});
     }catch(e){
         console.error(e);
         throw e;
@@ -65,12 +65,12 @@ async function get_classes(limit=20, offset=0, search="", sort={}, filters={}, u
             total = await Classes.count({...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]});
 
             if(total){
-                classes = await Classes.find({...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}).sort(sort).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find({...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}, {sessions: 0}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }else{
             total = await Classes.count(filters);
             if(total){
-                classes = await Classes.find(filters).sort(sort).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find(filters, {sessions: 0}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }
 
@@ -94,13 +94,13 @@ async function get_user_classes(user, limit=20, offset=0, search=""){
             total = await Classes.count({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}]}]});
 
             if(total){
-                classes = await Classes.find({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}]}).limit(limit).skip(offset).populate("sessions").lean(true);
+                classes = await Classes.find({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}]}, {sessions: 0}).limit(limit).skip(offset).populate("sessions").lean(true);
             }
         }else{
             total = await Classes.count({$or: [{teacher: _id}, {students: _id}, {created_by: _id}]});
 
             if(total){
-                classes = await Classes.find({$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}).limit(limit).skip(offset).populate("sessions").lean(true);
+                classes = await Classes.find({$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {sessions: 0}).limit(limit).skip(offset).populate("sessions").lean(true);
             }
         }
 
@@ -131,7 +131,7 @@ async function start_class({_class, meeting_link=""}, user){
         if(!_class.current_session){
             const new_session = await create_session({_class: _class, meeting_link}, user);
 
-            const updated_class = await Classes.findOneAndUpdate({_id: _class._id}, {$set: {current_session: new_session._id, meeting_link}, $push: {sessions: new_session._id}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
+            const updated_class = await Classes.findOneAndUpdate({_id: _class._id}, {$set: {current_session: new_session._id, meeting_link}, $push: {sessions: {$each: [new_session._id], $position: 0}}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
 
             return {new_session, updated_class}
         }

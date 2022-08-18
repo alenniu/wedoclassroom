@@ -14,7 +14,7 @@ import { ListInput } from '../../Components/Common/ListInput';
 import { DAYS, MONTHS } from '../../Data';
 import FileUploadDropArea from '../../Components/Common/FileUploadDropArea';
 import { DatePicker } from '@mui/x-date-pickers';
-import {formatDistance, formatDistanceToNow} from "date-fns"
+import {formatDistance, formatDistanceToNow, intervalToDuration} from "date-fns"
 
 import "./Class.css";
 import "./EditClass.css";
@@ -22,6 +22,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { INIT_EDIT_CLASS } from '../../Actions/types';
 import RescheduleModal from '../../Components/Class/RescheduleModal';
 import Reschedule from '../../Components/Class/Reschedule';
+import TableHead from '../../Components/Common/TableHead';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -476,9 +477,33 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
             </form>
 
             <div className='misc-col'>
+                <h3 style={{marginBottom: "20px"}}>Session Info</h3>
+
                 <p>Total Sessions: {sessions.length}</p>
                 <p>Total Session time: {total_session_time && formatDistance(total_session_time, 0, {includeSeconds: true, addSuffix: false})}</p>
                 <p>Average Session time: {total_session_time && formatDistance(avg_session_time, 0, {includeSeconds: true, addSuffix: false})}</p>
+
+                <table style={{marginBlock: "20px"}}>
+                    <TableHead headers={[{label: "Date", id: "start_time", sortable: true}, {label: "# Students", id: "students", sortable: false}, {label: "Total", id: "price", sortable: false}]} />
+
+                    <tbody>
+                        {sessions.slice(0, 10).map((s) => {
+                            const {_id, _class, teacher, students, start_time, end_time, active, meeting_link} = s;
+                            const startTime = new Date(start_time);
+                            const endTime = new Date(end_time);
+
+                            const duration = endTime && intervalToDuration({start: startTime, end: endTime});
+
+                            return (
+                                <tr>
+                                    <td>{startTime.toLocaleString(undefined, {dateStyle: "short", timeStyle: "short"})}</td>
+                                    <td><center>{students.length}</center></td>
+                                    <td>{price * students.length}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
 
                 <h3 style={{marginBlock: "20px"}}>Reschedules</h3>
 

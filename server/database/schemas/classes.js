@@ -24,6 +24,21 @@ const class_schema = new schema({
         type: schema.Types.ObjectId,
         ref: "user"
     }],
+    students_info: [{
+        student: {
+            type: schema.Types.ObjectId,
+            ref: "user"
+        },
+        date_requested: {
+            type: Date
+        },
+        date_joined: {
+            type: Date
+        },
+        price_paid: {
+            type: Number,
+        }
+    }],
     tags: [String],
     meeting_link: { //this maybe could've been an attachment
         type: String,
