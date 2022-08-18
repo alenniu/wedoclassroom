@@ -76,10 +76,21 @@ const Sessions = ({sessions=[], total_sessions=0, teachers=[], total_teachers=0,
                     <tbody>
                         {sessions.map((s, i) => {
                             const {_id, _class, teacher, students, start_time, end_time, active, meeting_link} = s;
+                            const {students_info=[]} = _class;
                             const startTime = new Date(start_time);
                             const endTime = end_time && new Date(end_time);
 
                             const duration = endTime && endTime.getTime() && intervalToDuration({start: startTime, end: endTime});
+                            
+                            const unknown_totals = students.length - students_info.length;
+                            const unknown_total = unknown_totals * _class.price;
+                            const known_total = students_info.reduce((prev, curr, i) => {
+                                const {price_paid=0} = curr;
+
+                                return prev + price_paid;
+                            }, 0);
+
+                            const total = unknown_total + known_total;
 
                             return (
                                 <tr key={_id}>
@@ -89,7 +100,7 @@ const Sessions = ({sessions=[], total_sessions=0, teachers=[], total_teachers=0,
                                     <td>{duration?formatDuration(duration, {}).replace(/hours?/, "h").replace(/minutes?/, "m").replace(/seconds?/, "s"):"Ongoing"}</td>
                                     <td>{toMoneyString(_class.price)}</td>
                                     <td><center>{students.length}</center></td>
-                                    <td>{toMoneyString(_class.price * students.length)}</td>
+                                    <td>{toMoneyString(total)}</td>
                                 </tr>
                             )
                         })}
