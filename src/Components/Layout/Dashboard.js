@@ -184,7 +184,11 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifica
 
                                     {notifications_open && (
                                         <ul ref={notificationsRef} className={`notifications-container ${notifications_open?"open":"closed"}`}>
-                                            {notifications.map((n) => <li key={n._id}><Notification notification={n} key={n._id} onClick={() => {toggle_notifications()}} /></li>)}
+                                            {notifications.length?notifications.map((n) => <li key={n._id}><Notification notification={n} key={n._id} onClick={() => {toggle_notifications()}} /></li>):(
+                                                <div style={{height: "var(--notification-height, 80px)", width: "var(--notification-width, 200px)", display: "flex", alignItems: "center", justifyContent: "center"}}>
+                                                    <p>No Notifications</p>
+                                                </div>
+                                            )}
                                         </ul>
                                     )}
                                 </span>

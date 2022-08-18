@@ -14,6 +14,7 @@
   --notification-box-shadow: 1px 1px 5px grey;
   --notification-icon-size: 30px;
   --notification-height: 80px;
+  --notification-width: min(75vw, 350px);
   --notification-hover-tint: rgba(0,0,0,0.1);
   --link-color: #1B1BBA;
   --bg-color: white;

@@ -4,7 +4,7 @@
     align-items: center;
     text-overflow: ellipsis;
     padding: 10px 20px;
-    width: min(75vw, 350px);
+    width: var(--notification-width, min(75vw, 350px));
     overflow: hidden;
 }
 
