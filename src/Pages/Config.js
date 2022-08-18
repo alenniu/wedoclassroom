@@ -8,7 +8,7 @@ import {Switch, TextField} from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { ListInput, Tabs, TypeSelect } from '../Components/Common';
+import { ListInput } from '../Components/Common';
 
 import "./Config.css";
 

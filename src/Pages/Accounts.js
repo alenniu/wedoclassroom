@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { cancel_account_edit, create_account, edit_new_account, get_accounts, init_edit_account, set_loading, update_account } from '../Actions';
 import { debounce, password_requirements, validate_email, validate_name, validate_password } from '../Utils';
-import { TableHead, Tabs } from '@mui/material';
+import { TableHead, Tabs } from '../Components/Common';
 
 import "./Dashboard.css";
 import "./Accounts.css";
