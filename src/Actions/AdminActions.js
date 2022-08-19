@@ -179,7 +179,7 @@ export const create_account = ({name, photo_url, email, phone, gender, school, g
                 dispatch(set_create_account_error(res.data.msg));
             }else{
                 console.log(res);
-                dispatch(set_create_account_error(res));
+                dispatch(set_create_account_error(res?.message || res));
             }
         }else{
             throw new Error("name (first and last), valid email, valid password and account type must be provided");
@@ -207,7 +207,7 @@ export const update_account = (account) => async (dispatch) => {
                 dispatch(set_edit_account_error(res.data.msg));
             }else{
                 console.log(res);
-                dispatch(set_edit_account_error(res));
+                dispatch(set_edit_account_error(res?.message || res));
             }
         }else{
             throw new Error("name (first and last), valid email, valid password and account type must be provided");
@@ -237,7 +237,7 @@ export const update_config = (formData) => async (dispatch) => {
             
             console.error(res.data);
         }else{
-            dispatch(edit_config_value(["error"], res));
+            dispatch(edit_config_value(["error"], res?.message || res));
             console.error(res);
         }
     }catch(e){

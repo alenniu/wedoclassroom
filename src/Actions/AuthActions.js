@@ -26,7 +26,7 @@ export const register = ({name, email, password, phone, type="admin", role="", a
                     dispatch(edit_auth_value(["error"], res.data.msg));
                 }
             }else{
-                dispatch(edit_auth_value(["error"], res));
+                dispatch(edit_auth_value(["error"], res?.message || res));
             }  
         }else{
             dispatch(edit_auth_value(["error"], "first name, last name, phone*, account type, valid email and valid password must be provided"));
@@ -53,7 +53,7 @@ export const login = ({email, password, is_sso}) => async (dispatch) => {
 
                 dispatch(edit_auth_value(["error"], res.data.msg));
             }else{
-                dispatch(edit_auth_value(["error"], res));
+                dispatch(edit_auth_value(["error"], res?.message || res));
             }
         }else{
             dispatch(edit_auth_value(["error"], "Valid email and password/SSO code must be provided"));

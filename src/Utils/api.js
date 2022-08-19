@@ -29,7 +29,7 @@ export async function api(method, path){
         const res = await axios[method](`${backend_url}${path}`, ...additional_args).catch((e) => {
             console.error(e);
 
-            return e.response || e.message
+            return {data: e.response.data, message: e.message}
         });
 
         return res;

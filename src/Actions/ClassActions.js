@@ -236,7 +236,7 @@ export const create_new_class = (_class_formdata) => async (dispatch) => {
 
             dispatch(set_create_class_error(res.data.msg));
         }else{
-            dispatch(set_create_class_error(res));
+            dispatch(set_create_class_error(res?.message || res));
         }
     }catch(e){
         dispatch(set_create_class_error(e.message));
@@ -257,7 +257,7 @@ export const update_class = (_class_formdata) => async (dispatch) => {
 
             dispatch(set_update_class_error(res.data.msg));
         }else{
-            dispatch(set_update_class_error(res));
+            dispatch(set_update_class_error(res?.message || res));
         }
     }catch(e){
         dispatch(set_update_class_error(e.message));
@@ -342,7 +342,7 @@ export const create_assignment = (assignment_formData) => async (dispatch) => {
             dispatch(set_class_assignment_error(res.data.msg));
         }else{
             console.error(res);
-            dispatch(set_class_assignment_error(res));
+            dispatch(set_class_assignment_error(res?.message || res));
         }
     }catch(e){
         console.error(e);
@@ -367,7 +367,7 @@ export const create_announcement = ({_class, title, message, assignment=null}) =
             dispatch(set_class_announcement_error(res.data.msg));
         }else{
             console.error(res);
-            dispatch(set_class_announcement_error(res));
+            dispatch(set_class_announcement_error(res?.message || res));
         }
     }catch(e){
         console.error(e);
