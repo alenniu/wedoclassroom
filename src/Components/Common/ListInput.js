@@ -3,7 +3,7 @@ import "./ListInput.css";
 
 const KEY_ENTER = 13;
 
-const ListInput = ({items=[], renderItem, search_array=[], search_property="", render_property, always_show_matches=false, localSearch=true, allowOnlySearchResults=false, className, match_button_container_classname, match_button_classname, item_container_className="", item_button_className="", remove_button_className="", add_button_container_className="", add_button_className="", save_button_container_className="", save_button_className="", cancel_button_container_className="", cancel_button_className="", input_container_className="", input_className="", add_input_type="text", disabled=false, onAddItem, onRemoveItem, disableAdding=false}) => {
+const ListInput = ({items=[], search_array=[], search_property="", render_property, always_show_matches=false, localSearch=true, allowOnlySearchResults=false, className, match_button_container_classname, match_button_classname, item_container_className="", item_button_className="", remove_button_className="", add_button_container_className="", add_button_className="", save_button_container_className="", save_button_className="", cancel_button_container_className="", cancel_button_className="", input_container_className="", input_className="", add_input_type="text", disabled=false, onAddItem, onRemoveItem, disableAdding=false, RenderItem, RenderSuggestion, onChangeText}) => {
     const search_prop = search_property;
     const render_prop = render_property;
 
@@ -16,24 +16,26 @@ const ListInput = ({items=[], renderItem, search_array=[], search_property="", r
     const addInputRef = useRef(null);
 
     const type_search = () => {
-        const regex = new RegExp(`^${addInputValue}`, "i");
-        // console.log(search_array);
-        const matches = search_array.filter((item,i)=>{
-            const regex_matches = search_prop?item[search_prop].match(regex):item.match(regex);
-            
-            if(regex_matches){
-                return true;
+        if(localSearch){
+            const regex = new RegExp(`^${addInputValue}`, "i");
+            // console.log(search_array);
+            const matches = search_array.filter((item,i)=>{
+                const regex_matches = search_prop?item[search_prop].match(regex):item.match(regex);
+                
+                if(regex_matches){
+                    return true;
+                }else{
+                    return false;
+                }
+            });
+    
+            if(matches){
+                setMatches(matches)
             }else{
-                return false;
+                setMatches([]);
             }
-        });
-
-        if(matches){
-            setMatches(matches)
-            setTyping(true);
-        }else{
-            setMatches([]);
         }
+        setTyping(true);
     }
 
     useEffect(() => {
@@ -43,9 +45,11 @@ const ListInput = ({items=[], renderItem, search_array=[], search_property="", r
         }
     }, [addInputValue, typing]);
 
-    const onChange_add_input_text = ({target: {value:new_value}}) => {
+    const onChange_add_input_text = (e) => {
+        const {value} = e.target;
         setMatchSelected(false);
-        setAddInputValue(new_value);
+        setAddInputValue(value);
+        typeof(onChangeText) === "function" && onChangeText(e);
     }
 
     const onPress_item = (i) => {
@@ -112,13 +116,17 @@ const ListInput = ({items=[], renderItem, search_array=[], search_property="", r
                 return (
                     <div className={`item-container ${item_container_className} selected`} key={render_prop?item[render_prop]:item}>
                         <div className={`item-button-container ${item_button_className}`}>
-                        <button className={`item-button ${item_button_className}`} onClick={()=>{onPress_item(-1)}}>
-                            <span className={`item-button-text `}>{render_prop?item[render_prop].toString():item.toString()}</span>
-                        </button>
+                            <button className={`item-button ${item_button_className}`} onClick={()=>{onPress_item(-1)}}>
+                                {typeof(RenderItem) === "function"?(
+                                    <RenderItem item={item} />
+                                ):(
+                                    <span className={`item-button-text `}>{render_prop?item[render_prop].toString():item.toString()}</span>
+                                )}
+                            </button>
                         
-                        <button className={`remove-button ${remove_button_className}`} type="button" onClick={disabled === true?(e)=>{e.preventDefault()}:onPress_remove}>
-                            <span className={`remove-button-text`}>X</span>
-                        </button>
+                            <button className={`remove-button ${remove_button_className}`} type="button" onClick={disabled === true?(e)=>{e.preventDefault()}:onPress_remove}>
+                                <span className={`remove-button-text`}>X</span>
+                            </button>
                         </div>
                     </div>
                 );
@@ -127,7 +135,11 @@ const ListInput = ({items=[], renderItem, search_array=[], search_property="", r
             return (
                 <div className={`item-container item-button-container ${item_container_className}`} key={render_prop?item[render_prop]:item}>
                     <button className={`item-button ${item_button_className}`} onClick={()=>{onPress_item(i)}}>
-                        <span className={`item-button-text `}>{render_prop?item[render_prop].toString():item.toString()}</span>
+                        {typeof(RenderItem) === "function"?(
+                            <RenderItem item={item} />
+                        ):(
+                            <span className={`item-button-text `}>{render_prop?item[render_prop].toString():item.toString()}</span>
+                        )}
                     </button>
                 </div>
             )
@@ -172,12 +184,16 @@ const ListInput = ({items=[], renderItem, search_array=[], search_property="", r
                 {render_items()}
                 {(!disabled && !disableAdding) && render_add()}
             </div>
-            {((matches.length > 0 && typing)&&!matchSelected)?<div className="search-matches-container">
-                {matches.map((match, i) => {
+            {((((localSearch && matches.length) || search_array.length) > 0 && typing)&&!matchSelected)?<div className="search-matches-container">
+                {(localSearch?matches:search_array).map((match, i) => {
                     return (
                         <div key={search_array?match[search_prop]:match} className={`match-item-container ${match_button_container_classname}`}>
                             <button className={`match-item-button ${match_button_classname}`} onClick={() => onPress_match(match)}>
+                            {typeof(RenderSuggestion) === "function"?(
+                                <RenderSuggestion item={match} />
+                            ):(
                                 <span className={"match-item-text"}>{search_prop?match[search_prop]:match}</span>
+                            )}
                             </button>
                         </div>
                     )

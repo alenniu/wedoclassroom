@@ -19,6 +19,7 @@ import { ListInput, TypeSelect, TableHead, FileUploadDropArea } from '../../Comp
 
 import "./Class.css";
 import "./EditClass.css";
+import { api } from '../../Utils/api';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -28,6 +29,18 @@ const RenderTeacherOption = ({label, value, teacher}) => {
             </div>
 
             <span>{label}</span>
+        </div>
+    )
+}
+
+const RenderStudentItem = ({item:student}) => {
+    return (
+        <div style={{display: "flex", alignItems: "center"}}>
+            <div className='teacher-image-container' style={{height: "20px", width: "20px", overflow: 'hidden', backgroundColor: "black", borderRadius: "50%", marginRight: "10px"}}>
+                <img src={get_full_image_url(student.photo_url || '/Assets/Images/AuthBackground.png')} style={{height: "100%", width: "100%", objectFit: "cover"}} />
+            </div>
+
+            <span>{student.name.first} {student.name.last}</span>
         </div>
     )
 }
@@ -51,7 +64,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
     const [coverPreview, setCoverPreview] = useState({file: null, url: ""});
     const [errors, setErrors] = useState({});
 
-    const {subjects=[], tags:configTags=["AP, K12"], levels=[]} = app_config || {};
+    const {subjects=[], tags:configTags=["AP", "K12"], levels=[]} = app_config || {};
 
     const {_id, title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], students=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", sessions=[], reschedules=[], error} = edit_class;
 
@@ -85,6 +98,20 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
 
     // console.log(teachers);
     // console.log(new_class);
+
+    const [studentResults, setStudentResults] = useState([]);
+
+    const getStudents = useCallback(debounce(async (search) => {
+        const res = await api("get", "/api/admin/accounts", {params: {search, limit: 20, offset: 0, filters: JSON.stringify({type: "student"})}});
+    
+        setStudentResults(res?.data?.accounts || []);
+    }, 300), []);
+
+    const onChangeStudentListText = (e) => {
+        const {name, value, checked, type} = e.target;
+
+        getStudents(value);
+    }
 
     const onClickReschedule = (e) => {
         setShowReschedule(s => !s);
@@ -184,6 +211,13 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
         setErrors(err => ({...err, tags: ""}));
     }
 
+    const onAddStudent = (student) => {
+        students.push(student);
+
+        edit_class_value(["students"], students);
+        setErrors(err => ({...err, students: ""}));
+    }
+
     const onRemoveStudent = (index, student) => {
         students.splice(index, 1);
 
@@ -241,7 +275,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
     const updateClass = async () => {
         set_loading(true);
         const formData = new FormData();
-        formData.append("_class", JSON.stringify({_id, title, subject, cover_image, description, level, class_type, teacher: teacher?._id || teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_schedule, students: students.map((s) => s?._id || s)}));
+        formData.append("_class", JSON.stringify({_id, title, subject, cover_image, description, level, class_type, teacher: teacher?._id || teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_schedule, students: students.map((s) => s?._id || s).filter(unique_filter)}));
         if(coverPreview.file){
             formData.append("cover", coverPreview.file);
         }
@@ -417,7 +451,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                     <label>Students</label>
                     
                     {/* <input disabled={!is_admin || !is_class_teacher} type="text" placeholder='math, english, beginner, advance etc...' /> */}
-                    <ListInput items={students} render_property="_id" onRemoveItem={onRemoveStudent} disableAdding />
+                    <ListInput items={students} RenderItem={RenderStudentItem} RenderSuggestion={RenderStudentItem} render_property="_id" onAddItem={onAddStudent} onRemoveItem={onRemoveStudent} disableAdding={!is_admin || (max_students <= (students?.length || 0))} onChangeText={onChangeStudentListText} search_array={studentResults} localSearch={false} />
                 </div>
 
                 <h3>Weekly Schedule</h3>

@@ -10,12 +10,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from '@mui/x-date-pickers';
 import { DAYS } from '../../Data';
-import { debounce, get_full_image_url, throttle } from '../../Utils';
+import { debounce, get_full_image_url, throttle, unique_filter } from '../../Utils';
 import { TypeSelect, FileUploadDropArea, ListInput } from '../../Components/Common';
 
 
 import "./Class.css";
 import "./NewClass.css";
+import { api } from '../../Utils/api';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -25,6 +26,18 @@ const RenderTeacherOption = ({label, value, teacher}) => {
             </div>
 
             <span>{label}</span>
+        </div>
+    )
+}
+
+const RenderStudentItem = ({item:student}) => {
+    return (
+        <div style={{display: "flex", alignItems: "center"}}>
+            <div className='teacher-image-container' style={{height: "20px", width: "20px", overflow: 'hidden', backgroundColor: "black", borderRadius: "50%", marginRight: "10px"}}>
+                <img src={get_full_image_url(student.photo_url || '/Assets/Images/AuthBackground.png')} style={{height: "100%", width: "100%", objectFit: "cover"}} />
+            </div>
+
+            <span>{student.name.first} {student.name.last}</span>
         </div>
     )
 }
@@ -42,7 +55,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
 
     const {subjects=[], tags:configTags=["AP, K12"], levels=[]} = app_config || {};
 
-    const {title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error} = new_class;
+    const {title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error, students=[]} = new_class;
 
     const navigate = useNavigate();
 
@@ -52,6 +65,20 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
 
     // console.log(teachers);
     // console.log(new_class);
+
+    const [studentResults, setStudentResults] = useState([]);
+
+    const getStudents = useCallback(debounce(async (search) => {
+        const res = await api("get", "/api/admin/accounts", {params: {search, limit: 20, offset: 0, filters: JSON.stringify({type: "student"})}});
+    
+        setStudentResults(res?.data?.accounts || []);
+    }, 300), []);
+
+    const onChangeStudentListText = (e) => {
+        const {name, value, checked, type} = e.target;
+
+        getStudents(value);
+    }
 
     const onChangeValueEvent = (keys=[], numeric=false) => (e, val) => {
         const value = val || e.target.value;
@@ -81,6 +108,20 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
 
         edit_new_class_value(["tags"], tags);
         setErrors(err => ({...err, tags: ""}));
+    }
+
+    const onAddStudent = (student) => {
+        students.push(student);
+
+        edit_new_class_value(["students"], students);
+        setErrors(err => ({...err, students: ""}));
+    }
+
+    const onRemoveStudent = (index, student) => {
+        students.splice(index, 1);
+
+        edit_new_class_value(["students"], students);
+        setErrors(err => ({...err, students: ""}));
     }
     
     const AddNewSchedule = () => {
@@ -134,7 +175,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     const createClass = async () => {
         set_loading(true);
         const formData = new FormData();
-        formData.append("_class", JSON.stringify({title, subject, cover_image, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_schedule}));
+        formData.append("_class", JSON.stringify({title, subject, cover_image, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_schedule, students: students.map((s) => s?._id || s).filter(unique_filter)}));
         if(coverPreview.file){
             formData.append("cover", coverPreview.file);
         }
@@ -305,6 +346,13 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
                     />
                     </LocalizationProvider>
                 </div>
+
+                {is_admin && <div className='input-container fullwidth'>
+                    <label>Students</label>
+                    
+                    {/* <input disabled={!is_admin || !is_class_teacher} type="text" placeholder='math, english, beginner, advance etc...' /> */}
+                    <ListInput items={students} RenderItem={RenderStudentItem} RenderSuggestion={RenderStudentItem} render_property="_id" onAddItem={onAddStudent} onRemoveItem={onRemoveStudent} disableAdding={!is_admin || (max_students <= (students?.length || 0))} onChangeText={onChangeStudentListText} search_array={studentResults} localSearch={false} />
+                </div>}
 
                 <h3>Weekly Schedule</h3>
                 <ul className='schedules'>

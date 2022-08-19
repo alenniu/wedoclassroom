@@ -23,7 +23,7 @@ export const create_class_handler = async (req: Request, res: Response, next: Ne
         _class = JSON.parse(_class)
         
         if((user.type === "admin") || (user.type === "teacher")){
-            let {title, subject, description, cover_image="", teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_period, meeting_link} = _class;
+            let {title, subject, description, cover_image="", teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_period, meeting_link, students=[]} = _class;
 
             cover_image = file?`${file.destination}/${file.filename}`:cover_image;
         
@@ -31,7 +31,7 @@ export const create_class_handler = async (req: Request, res: Response, next: Ne
                 teacher = user._id;
             }
         
-            const new_class = await create_class({title, subject, cover_image, description, teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, start_date, end_date, billing_period, meeting_link}, user);
+            const new_class = await create_class({title, subject, cover_image, description, teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, start_date, end_date, billing_period, meeting_link, students}, user);
 
             return res.json({success: true, _class: new_class});
         }else{
