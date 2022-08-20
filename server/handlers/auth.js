@@ -1,6 +1,5 @@
 import {Request, Response, NextFunction} from "express";
-import { create_stripe_customer } from "../functions/stripe";
-
+import { create_stripe_customer } from "../integrations/stripe";
 const { login, signup } = require("../functions/auth");
 const { get_user_token, update_user } = require("../functions/user");
 

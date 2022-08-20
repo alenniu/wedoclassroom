@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import { STRIPE_GROUP_CLASS_PRICE_ID, STRIPE_PRIVATE_CLASS_PRICE_ID } from "../config";
-import { create_stripe_customer, create_stripe_payment_intent, create_stripe_session } from "../functions/stripe";
+import { create_stripe_customer, create_stripe_payment_intent, create_stripe_session } from "../integrations/stripe";
 import { update_user } from "../functions/user";
 
 async function add_stripe_customer_id(user){

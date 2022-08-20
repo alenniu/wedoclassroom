@@ -1,7 +1,7 @@
 const session = require("express-session");
 const mongoose = require("mongoose");
 const { create_session, end_session, update_session } = require("./session");
-const { create_stripe_payment_intent, create_stripe_customer } = require("./stripe");
+const { create_stripe_payment_intent, create_stripe_customer } = require("../integrations/stripe");
 const { escape_regex } = require("./utils");
 
 const Classes = mongoose.model("class");
