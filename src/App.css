@@ -47,6 +47,7 @@
   --table-box-shadow: 1px 1px 5px #bfbfbf;
   --scollbar-track-color: #efefef;
   --scollbar-thumb-color: #bfbfbf;
+  --schedule-event-hover-box-shadow: 0px 0px 20px grey;
   background-color: var(--bg-color, white);
 }
 
@@ -72,6 +73,7 @@
     --table-border: 2px solid #3f3f43;
     --table-box-shadow: none;
     --table-row-border: 2px solid #3f3f43;
+    --schedule-event-hover-box-shadow: 0px 0px 20px white;
     background-color: var(--bg-color, black);
   }
   

@@ -53,11 +53,24 @@
     position: absolute;
     border-radius: 2px;
     padding: 4px;
-    box-shadow: 0 0 2px rgba(247, 247, 247, 0.4);
+    box-shadow: 0 0 3px rgba(247, 247, 247, 0.4);
     /* white-space: nowrap; */
     overflow: hidden;
     min-width: 50px;
     background-color: gold;
+    max-width: 50px;
+    transition: max-width 0.3s, padding 0.3s;
+}
+
+.new-schedule-calender .schedule-event:hover{
+    transition: max-width 2.5s, padding 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 9999999999!important;
+    max-width: 1000px;
+    padding: 20px;
+    box-shadow: var(--schedule-event-hover-box-shadow, (0px 0px 30px grey));
 }
 
 .new-schedule-calender .schedule-event.rescheduled{
