@@ -183,7 +183,7 @@ const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDa
                         // console.log("overlapping_items_before", overlapping_items_before);
 
                         const top = HOUR_SECTION_HEIGHT * startDayTime;
-                        const leftOffset = overlapping_items_before.length * 50;
+                        let leftOffset = (overlapping_items_before.length * 50) + (5 * overlapping_items_before.length);
 
                         const height = HOUR_SECTION_HEIGHT * (endDayTime - startDayTime);
 
