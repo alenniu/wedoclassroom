@@ -95,7 +95,7 @@ app.use(express_session({
     cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000,
     },
-    store: mongoStore.create({client: mongoClient, collectionName: "sessions"}), /// should use mongostore in future
+    store: mongoStore.create({client: mongoClient, collectionName: "req_sessions"}), /// should use mongostore in future
     resave: false,
     saveUninitialized: false,
     secret: config.SECRET, 
