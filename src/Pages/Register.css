@@ -1,0 +1,12 @@
+.page.register{
+    max-width: unset;
+}
+
+.page.register .input-container.city, .page.register .input-container.zipcode, .page.register .input-container.country, .page.register .input-container.state, .page.register .input-container.line1, .page.register .input-container.line2{
+    display: inline-flex;
+    width: 48%;
+}
+
+.page.register .input-container.zipcode, .page.register .input-container.state, .page.register .input-container.line2{
+    margin-left: 4%;
+}
