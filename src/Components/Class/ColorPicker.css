@@ -1,0 +1,35 @@
+.colors-container{
+    width: 100%;
+    height: var(--input-height, 56px);
+    position: relative;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--input-bgcolor, #F6F6F6);
+    box-shadow: var(--input-box-shadow, 0px 0px 3px -1px rgba(0,0,0,0.3));
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.colors-container .color{
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    margin-right: 12px;
+    display: inline-block;
+    position: relative;
+}
+
+.colors-container .color.selected{
+    border: 2px solid green;
+}
+
+.color .checkmark{
+    color: green;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translateX(100%) translateY(-50%);
+    border-radius: 50%;
+    background-color: white;
+}

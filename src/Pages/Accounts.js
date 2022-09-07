@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { cancel_account_edit, create_account, edit_new_account, get_accounts, init_edit_account, set_loading, update_account } from '../Actions';
 import { debounce, password_requirements, validate_email, validate_name, validate_password } from '../Utils';
-import { TableHead, Tabs } from '../Components/Common';
+import { TableHead, Tabs, TypeSelect } from '../Components/Common';
 
 import "./Dashboard.css";
 import "./Accounts.css";
@@ -12,6 +12,7 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
     const [pageLimit, setPageLimit] = useState(20);
     const [page, setPage] = useState(0);
     const [search, setSearch] = useState("");
+    const [filters, setFilters] = useState({});
 
     const [order, setOrder] = useState("");
     const [orderBy, setOrderBy] = useState("");
@@ -23,18 +24,18 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
     const account_type_tabs = is_admin?[{label: "All", id: ""}, {label: "Teachers", id: "teacher"}, {label: "Students", id: "student"}, {label: "Sales", id: "sales"}, {label: "Admins", id: "admin"}]:[{label: "Students", id: "student"}];
 
     const debouncedSearch = useCallback(debounce(async (search) => {
-        await get_accounts(pageLimit, 0, search, sort, accountType?JSON.stringify({type: accountType}):undefined)
-    }, 300), [pageLimit, sort, accountType]);
+        await get_accounts(pageLimit, 0, search, sort, JSON.stringify({...filters, type: accountType || undefined}))
+    }, 300), [pageLimit, sort, accountType, filters]);
 
     useEffect(() => {
         const init = async () => {
             set_loading(true);
-            await get_accounts(pageLimit, page * pageLimit, search, sort, accountType?JSON.stringify({type: accountType}):undefined)
+            await get_accounts(pageLimit, page * pageLimit, search, sort, JSON.stringify({...filters, type: accountType || undefined}))
             set_loading(false);
         }
         
         init();
-    }, [accountType, sort]);
+    }, [accountType, filters, sort]);
 
     useEffect(() => {
         debouncedSearch(search);
@@ -58,7 +59,10 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
             setSort(JSON.stringify({[id]: new_order}))
         }
     }
-    
+
+    const setFilter = (name) => (value) => {
+        setFilters((f) => ({...f, [name]: value || undefined}));
+    }
 
     return (
         <div className='page accounts'>
@@ -68,21 +72,32 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
                 <div style={{marginTop: 20}}>
                     <button className='button primary' onClick={() => navigate("/dashboard/accounts/new")}>New Account</button>
                 </div>
+
+                <div className='filters-search-container'>
+                    <div className='filters-container'>
+                        <div className='input-container select' key={"archived"}>
+                            <TypeSelect options={[{label: "All", value: ""}, {label: "Active", value: false}, {label: "Archived", value: true}]} placeholder="Archive Filter" value={filters["archived"] || ""} localSearch={true} onChange={setFilter("archived")} name="archived" />
+                        </div>
+                    </div>
+
+                    <div className='search-container'>
+                        <div className='input-container search'>
+                            <input value={search} placeholder="Search Accounts" onChange={(e) => {setSearch(e.target.value)}} />
+                        </div>
+                    </div>
+                </div>
+
                 <div className='table-utils'>
                     <span>Total: {total}</span>
-
-                    <div className='input-container search'>
-                        <input value={search} placeholder="Search Accounts" onChange={(e) => {setSearch(e.target.value)}} />
-                    </div>
                 </div>
                 
                 <div className='table-container'>
                     <table>
-                        <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Type", id: "type"}, {label: "$", id: "credits"}, {label: "Created", id: "createdAt"}]} order={order} orderBy={orderBy} onSort={onSortTable} />
+                        <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Type", id: "type"}, {label: "Archived", id: "archived"}, {label: "$", id: "credits"}, {label: "Created", id: "createdAt"}]} order={order} orderBy={orderBy} onSort={onSortTable} />
 
                         <tbody>
                             {accounts.map((a) => {
-                                const {_id, name={}, email, phone, type, credits=0, createdAt} = a;
+                                const {_id, name={}, email, phone, type, credits=0, archived=false, createdAt} = a;
 
                                 return (
                                     <tr key={_id}>
@@ -90,6 +105,7 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
                                         <td>{email}</td>
                                         <td>{phone || <span style={{opacity: 0.5}}>No Phone</span>}</td>
                                         <td>{type}</td>
+                                        <td>{archived?"Yes":"No"}</td>
                                         <td>{type==="student"?`$${credits}`:"N/A"}</td>
                                         <td>{(new Date(createdAt)).toLocaleDateString(undefined, {hour: "numeric", minute: "2-digit"})}</td>
                                     </tr>

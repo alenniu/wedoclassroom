@@ -31,15 +31,19 @@ async function signup({email, name, phone, password, birth, type, role}){
 async function login({email, password}){
     if(validate_email(email) && password){ // not validating password here
         try{
-            let requested_user = await user_exists("email", email, {_id: 1, password: 1});
+            let requested_user = await user_exists("email", email, {_id: 1, password: 1, archived: 1});
 
             if(requested_user){
-                const hashed_password = hash_password(password);
-
-                if(hashed_password === requested_user.password){
-                    return await user_exists("_id", requested_user._id);
+                if(!requested_user.archived){
+                    const hashed_password = hash_password(password);
+    
+                    if(hashed_password === requested_user.password){
+                        return await user_exists("_id", requested_user._id);
+                    }else{
+                        throw new Error("Incorrect email or password used.")
+                    }
                 }else{
-                    throw new Error("Incorrect email or password used.")
+                    throw new Error("Account has been archived");
                 }
             }else{
                 throw new Error(`User with email "${email}" not found.`);

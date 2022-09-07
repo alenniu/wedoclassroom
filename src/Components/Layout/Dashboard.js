@@ -56,6 +56,9 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifica
     }
 
     const toggleSearch = () => {
+        if(!showSearch){
+            searchRef.current?.focus();
+        }
         setShowSearch(s => !s);
     }
 
@@ -207,7 +210,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifica
                             <div>
                                 {(is_admin || is_sales) && <span style={{color: "var(--text-color, black)", position: "relative", marginRight: 20}}>
                                     <BiSearchAlt onClick={(e) => {e.stopPropagation(); toggleSearch();}} className='clickable' size={"25px"} />
-                                    <div onClick={(e) => {e.stopPropagation()}} style={{position: "absolute", width: "250px", top: "20px", right: 0}} className={`input-container ${showSearch?"show":"hide"}`}>
+                                    <div onClick={(e) => {e.stopPropagation()}} style={{position: "absolute", width: "300px", top: "20px", right: 0, marginBottom: 20}} className={`input-container ${showSearch?"show":"hide"}`}>
                                         <input ref={searchRef} style={{boxShadow: "0 0 0 100vw rgba(125,125,125,0.3)"}} placeholder='search' onChange={(e) => setSearch(e.target.value)} value={search}  />
 
                                         {!!students.length && <ul style={{backgroundColor: "var(--bgcolor, white)", width: "100%", marginTop: 20}}>

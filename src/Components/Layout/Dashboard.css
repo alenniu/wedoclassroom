@@ -398,3 +398,23 @@ nav.admin-nav.closed .nav-wrapper .nav-image-container{
     position: relative;
     /* overflow-x: hidden; */
 }
+
+.page .filters-search-container{
+    display: flex;
+}
+
+.filters-search-container .filters-container{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex: 1;
+}
+
+.filters-container .input-container.select{
+    width: 150px;
+}
+
+.filters-search-container .search-container{
+    width: 200px;
+    margin-left: 20px;
+}

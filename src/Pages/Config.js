@@ -15,7 +15,7 @@ import "./Config.css";
 const Dashboard = ({app_config, edit_config, user, is_admin, edit_init_config, edit_config_value, get_config, update_config, set_loading}) => {
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
-    const {_id, subjects=[], levels=[], tags=[], day_start_time=new Date(), day_end_time=new Date(), semester_active=false, error=""} = edit_config;
+    const {_id, subjects=[], levels=[], tags=[], day_start_time=new Date(), day_end_time=new Date(), semester_active=false, class_colors=[], error=""} = edit_config;
 
     useEffect(() => {
         const init = async () => {
@@ -103,6 +103,19 @@ const Dashboard = ({app_config, edit_config, user, is_admin, edit_init_config, e
         setErrors(err => ({...err, tags: ""}));
     }
 
+    const onAddColor = (color) => {
+        class_colors.push(color);
+        edit_config_value(["class_colors"], class_colors);
+        setErrors(err => ({...err, class_colors: ""}));
+    }
+
+    const onRemoveColor = (index, color) => {
+        class_colors.splice(index, 1);
+
+        edit_config_value(["class_colors"], class_colors);
+        setErrors(err => ({...err, class_colors: ""}));
+    }
+
     return (
         <div className='page config'>
             <div className='main-col'>
@@ -121,6 +134,11 @@ const Dashboard = ({app_config, edit_config, user, is_admin, edit_init_config, e
                 <div className='input-container'>
                     <label>Suggested Tags</label>
                     <ListInput always_show_matches={false} items={tags} onAddItem={onAddTag} onRemoveItem={onRemoveTag} />
+                </div>
+
+                <div className='input-container'>
+                    <label>Class Colors</label>
+                    <ListInput always_show_matches={false} items={class_colors} onAddItem={onAddColor} onRemoveItem={onRemoveColor} RenderItem={({item}) => <span style={{display: "inline-flex", alignItems: "center"}}><span style={{backgroundColor: item, display: "inline-block", width: 20, height: 20, borderRadius: 20, marginRight: 10}} /> {item}</span>} />
                 </div>
 
                 <div className='input-container'>

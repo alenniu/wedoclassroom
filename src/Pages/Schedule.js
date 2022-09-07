@@ -202,7 +202,7 @@ const SchedulePage = ({app_config, classes_schedules=[], reschedules=[], get_cla
     return (
         <div className='page schedule'>
             <div className='main-col fullwidth'>
-            <div className='filters-search-container'>
+                <div className='filters-search-container'>
                     <div className='filters-container'>
                         {CALENDAR_FILTERS.map((f) => {
                             const options = getSelectOptions(f);

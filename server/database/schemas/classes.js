@@ -117,6 +117,10 @@ const class_schema = new schema({
         type: schema.Types.ObjectId,
         ref: "class_session",
         default: null
+    },
+    archived: {
+        type: Boolean,
+        default: false
     }
 }, {timestamps: true});
 

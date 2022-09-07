@@ -96,11 +96,11 @@ const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldD
                         </span>
 
                         <div className='input-container'>
-                            <textarea style={{backgroundColor: "white", color: "black", boxShadow: "0 0 2px grey", resize: "vertical", maxHeight: "200px"}} value={reason} onChange={onChangeReason} placeholder="Reason (optional)" />
+                            <textarea style={{backgroundColor: "white", color: "black", boxShadow: "0 0 2px grey", resize: "vertical", maxHeight: "200px"}} value={reason} onChange={onChangeReason} placeholder="Reason (required) 10 character minimum" />
                         </div>
                         
                         <div style={{textAlign: "end"}}>
-                            <button className="button primary" disabled={selectNewDate && !newDate} onClick={onRequestReschedule}>Request Reschedule</button>
+                            <button className="button primary" disabled={(selectNewDate && !newDate) ||(!newTimeOnly && (!reason || reason.length < 10))} onClick={onRequestReschedule}>Request Reschedule</button>
                         </div>
                     </div>}
                 </div>

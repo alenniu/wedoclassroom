@@ -109,6 +109,10 @@ const user_schema = new schema({
     created_by: {
         type: schema.Types.ObjectId,
         ref: "user"
+    },
+    archived: {
+        type: Boolean,
+        default: false
     }
 }, {timestamps: true});
 

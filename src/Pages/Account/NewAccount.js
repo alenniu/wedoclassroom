@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField } from '@mui/material';
+import { Switch, TextField } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { BsCurrencyDollar, BsEye, BsEyeSlash } from 'react-icons/bs';
@@ -19,7 +19,7 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
 
     const navigate = useNavigate();
 
-    const {name={}, email="", phone="", type="", credits="", gender, school, grade, date_enrolled=new Date(), emergency_contact={}, error} = new_account
+    const {name={}, email="", phone="", type="", credits="", gender, school, grade, date_enrolled=new Date(), emergency_contact={}, archived=false, error} = new_account
     const {name:emergency_name="", email:emergency_email="", phone:emergency_phone="", relation=""} = emergency_contact;
     const {first="", last=""} = name;
     const is_admin_account = type === "admin";
@@ -70,7 +70,7 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
     const onPressCreateAccount = async () => {
         set_loading(true);
         if(validate_fields()){
-            if(await create_account({name, email, phone, type, password, gender, school, grade, date_enrolled, credits: credits || 0, emergency_contact: {name: emergency_name, email: emergency_email, phone: emergency_phone, relation}})){
+            if(await create_account({name, email, phone, type, password, gender, school, grade, date_enrolled, credits: credits || 0, archived, emergency_contact: {name: emergency_name, email: emergency_email, phone: emergency_phone, relation}})){
                 setPassword("");
             }
         }
@@ -182,6 +182,15 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
                         <BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} />
                     </div>
                 </div>}
+
+                <div style={{"--mr": 0}} className='input-container'>
+                    <label>Archived</label>
+                    {is_admin?<Switch
+                        // label="Start Time"
+                        checked={archived}
+                        onChange={onChangeValueEvent(["archived"])}
+                    />:<input type="text" value={archived?"Yes":"No"} readOnly style={{color: archived?"red":"green"}} />}
+                </div>
 
                 <button style={{marginBottom: 20}} className='button error fullwidth' onClick={() => {navigate("/dashboard/accounts")}}>Back</button>
                 <button className='button primary fullwidth' onClick={onPressCreateAccount}>Create Account</button>

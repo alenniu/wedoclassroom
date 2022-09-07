@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { create_new_class, edit_new_class_value, get_teachers, set_loading, set_teachers } from '../../Actions';
 import {RiImageAddLine, RiCloseCircleFill} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
-import {TextField} from '@mui/material';
+import {Switch, TextField} from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -17,6 +17,7 @@ import { TypeSelect, FileUploadDropArea, ListInput } from '../../Components/Comm
 import "./Class.css";
 import "./NewClass.css";
 import { api } from '../../Utils/api';
+import ColorPicker from '../../Components/Class/ColorPicker';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -53,9 +54,9 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     const [coverPreview, setCoverPreview] = useState({file: null, url: ""});
     const [errors, setErrors] = useState({});
 
-    const {subjects=[], tags:configTags=["AP, K12"], levels=[]} = app_config || {};
+    const {subjects=[], tags:configTags=["AP, K12"], levels=[], class_colors=["gold", "red", "grey", "orange", "blue", "green"]} = app_config || {};
 
-    const {title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error, students=[]} = new_class;
+    const {title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="white", tags=[], schedules=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error, archived=false, students=[]} = new_class;
 
     const navigate = useNavigate();
 
@@ -81,11 +82,11 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     }
 
     const onChangeValueEvent = (keys=[], numeric=false) => (e, val) => {
-        const value = val || e.target.value;
+        const {name, value, checked, type} = e.target;
+        const is_checkbox = type === "checkbox";
+        const is_number = (type === "number") || numeric;
 
-        // console.log(value, keys);
-
-        edit_new_class_value(keys, numeric?(Number(value) || value):value);
+        edit_new_class_value(keys, is_checkbox?checked:is_number?(Number(value)||""):value);
         setErrors(err => ({...err, [keys.join(".")]: ""}));
     }
 
@@ -175,14 +176,17 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     const createClass = async () => {
         set_loading(true);
         const formData = new FormData();
-        formData.append("_class", JSON.stringify({title, subject, cover_image, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_schedule, students: students.map((s) => s?._id || s).filter(unique_filter)}));
+        formData.append("_class", JSON.stringify({title, subject, cover_image, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_schedule, archived, students: students.map((s) => s?._id || s).filter(unique_filter)}));
         if(coverPreview.file){
             formData.append("cover", coverPreview.file);
         }
         
-
-        if(await create_new_class(formData)){
-            navigate("/dashboard");
+        const res = await create_new_class(formData);
+        if(res){
+            const {_class} = res;
+            if(_class){
+                navigate(`/dashboard/class/edit/${_class._id}`);
+            }
         }
 
         set_loading(false);
@@ -202,6 +206,12 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
         <div className='page edit-class new'>
             <form onSubmit={(e) => {e.preventDefault()}} enctype="multipart/form-data" className='main-col'>
                 <h3>Create New Class</h3>
+
+                <div style={{"--mr": 0}} className='input-container fullwidth'>
+                    <label>Color</label>
+                    
+                    <ColorPicker onChange={onChangeValue(["bg_color"])} value={bg_color} colors={class_colors} />
+                </div>
 
                 <div style={{"--mr": 1}} className='input-container'>
                     <label>Title</label>
@@ -289,6 +299,15 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
                         renderInput={(params) => <TextField {...params} />}
                     />
                     </LocalizationProvider>
+                </div>
+
+                <div style={{"--mr": 0}} className='input-container'>
+                    <label>Archived</label>
+                    {is_admin?<Switch
+                        // label="Start Time"
+                        checked={archived}
+                        onChange={onChangeValueEvent(["archived"])}
+                    />:<input type="text" value={archived?"Yes":"No"} readOnly style={{color: archived?"red":"green"}} />}
                 </div>
 
                 {is_admin && <div className='input-container fullwidth'>

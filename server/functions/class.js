@@ -34,10 +34,10 @@ async function get_available_classes(limit=20, offset=0, search="", sort={}, fil
 
             const search_regex = new RegExp(`${escaped_search}`, "i");
 
-            total = await Classes.count({is_full: false, ...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]});
+            total = await Classes.count({is_full: false, $or: [{archived: false}, {archived: {$exists: false}}], ...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]});
 
             if(total){
-                classes = await Classes.find({is_full: false, ...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}).sort(sort).limit(limit).skip(offset).lean(true);
+                classes = await Classes.find({is_full: false, $or: [{archived: false}, {archived: {$exists: false}}], ...filters, $or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}).sort(sort).limit(limit).skip(offset).lean(true);
             }
         }else{
             total = await Classes.count({is_full: false, ...filters});
@@ -91,16 +91,16 @@ async function get_user_classes(user, limit=20, offset=0, search=""){
 
             const search_regex = new RegExp(`${escaped_search}`, "i");
 
-            total = await Classes.count({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}]}]});
+            total = await Classes.count({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{archived: false}, {archived: {$exists: false}}]}, {$or: [{subject: search_regex}, {tags: search_regex}]}]});
 
             if(total){
-                classes = await Classes.find({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}]}, {sessions: 0}).limit(limit).skip(offset).populate("sessions").lean(true);
+                classes = await Classes.find({archived: false, $and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{archived: false}, {archived: {$exists: false}}]}, {$or: [{subject: search_regex}, {tags: search_regex}, {title: search_regex}, {description: search}]}]}, {sessions: 0}).limit(limit).skip(offset).populate("sessions").lean(true);
             }
         }else{
-            total = await Classes.count({$or: [{teacher: _id}, {students: _id}, {created_by: _id}]});
+            total = await Classes.count({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{archived: false}, {archived: {$exists: false}}]}]});
 
             if(total){
-                classes = await Classes.find({$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {sessions: 0}).limit(limit).skip(offset).populate("sessions").lean(true);
+                classes = await Classes.find({$and: [{$or: [{teacher: _id}, {students: _id}, {created_by: _id}]}, {$or: [{archived: false}, {archived: {$exists: false}}]}]}, {sessions: 0}).limit(limit).skip(offset).populate("sessions").lean(true);
             }
         }
 
@@ -158,10 +158,10 @@ async function end_class({_class}, user){
     }
 }
 
-async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_schedule, meeting_link, students=[]}, creator){
+async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_schedule, archived=false, meeting_link, students=[]}, creator){
     try{
         if(title && subject && class_type){
-            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, students, schedules: schedules.map((s) => ({...s, daily_start_time: (new Date(s.daily_start_time).getTime()), daily_end_time: (new Date(s.daily_end_time).getTime())})), start_date: new Date(start_date), end_date: new Date(end_date), billing_schedule, meeting_link, is_full: students.length >= max_students, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
+            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, students, schedules: schedules.map((s) => ({...s, daily_start_time: (new Date(s.daily_start_time).getTime()), daily_end_time: (new Date(s.daily_end_time).getTime())})), start_date: new Date(start_date), end_date: new Date(end_date), billing_schedule, meeting_link, archived, is_full: students.length >= max_students, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
 
             return new_class;
         }else{
@@ -172,10 +172,10 @@ async function create_class({title, subject, cover_image="", description, teache
     }
 }
 
-async function update_class({_id, title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_schedule, meeting_link, students=[]}){
+async function update_class({_id, title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_schedule, archived=false, meeting_link, students=[]}){
     try{
         if(title && subject && class_type){
-            const updated_class = await Classes.findOneAndUpdate({_id}, {$set: {title, subject, cover_image, description, teacher: teacher?._id || teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, start_date, end_date, billing_schedule, meeting_link, students, is_full: students.length >= max_students}}, {new: true, upsert: false});
+            const updated_class = await Classes.findOneAndUpdate({_id}, {$set: {title, subject, cover_image, description, teacher: teacher?._id || teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, start_date, end_date, billing_schedule, meeting_link, students, archived, is_full: students.length >= max_students}}, {new: true, upsert: false});
 
             return updated_class;
         }else{
@@ -399,7 +399,7 @@ async function get_classes_schedules({startPeriod, endPeriod}, filters={}, searc
             };
         });
     
-        const match = {$and: [{end_date: {$gte: new Date(startPeriod)}, start_date: {$lte: new Date(endPeriod)}}, {...filters}]};
+        const match = {$and: [{end_date: {$gte: new Date(startPeriod)}, start_date: {$lte: new Date(endPeriod)}}, {$or: [{archived: false}, {archived: {$exists: false}}]}, {...filters}]};
     
         if(!is_admin_or_sales){
             match.$or = match.$or || [];

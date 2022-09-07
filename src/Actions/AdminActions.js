@@ -123,7 +123,7 @@ export const get_students = (limit=20, offset=0, search="", sort="{}", filters="
 
 export const get_accounts = (limit=20, offset=0, search="", sort="{}", filters="{}") => async (dispatch) => {
     try{
-        const res = await api("get", `/api/admin/accounts?limit=${limit}&offset=${offset}&search=${search}&sort=${sort}&filters=${filters}`);
+        const res = await api("get", "/api/admin/accounts", {params: {limit, offset, search, sort, filters}});
 
         if(res.data){
             if(res.data.success){

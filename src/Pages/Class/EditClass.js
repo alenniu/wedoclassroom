@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { update_class, edit_class_value, get_class, get_teachers, set_loading, set_teachers, get_class_reschedules, request_class_reschedule, accept_class_reschedule, reject_class_reschedule } from '../../Actions';
 import {RiImageAddLine, RiCloseCircleFill} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
-import {TextField} from '@mui/material';
+import {Switch, TextField} from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -20,6 +20,7 @@ import { ListInput, TypeSelect, TableHead, FileUploadDropArea } from '../../Comp
 import "./Class.css";
 import "./EditClass.css";
 import { api } from '../../Utils/api';
+import ColorPicker from '../../Components/Class/ColorPicker';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -50,7 +51,7 @@ const pricing_type_options = [{label: "Hourly", value: "hourly"}, {label: "Per S
 
 const schedules = [{days: [], start_time: "", end_time: ""}];
 
-const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_config={}, is_admin, is_teacher, get_teachers, edit_class_value, update_class, set_teachers, get_class_reschedules, get_class, request_class_reschedule , accept_class_reschedule, reject_class_reschedule, set_loading}) => {
+const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_config={}, is_admin, is_teacher, get_teachers, edit_class_value, update_class, set_teachers, get_class_reschedules, get_class, request_class_reschedule, accept_class_reschedule, reject_class_reschedule, set_loading}) => {
 
     const [currentReschedule, setCurrentReschedule] = useState(null);
     const [showReschedule, setShowReschedule] = useState(false);
@@ -64,9 +65,9 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
     const [coverPreview, setCoverPreview] = useState({file: null, url: ""});
     const [errors, setErrors] = useState({});
 
-    const {subjects=[], tags:configTags=["AP", "K12"], levels=[]} = app_config || {};
+    const {subjects=[], tags:configTags=["AP", "K12"], levels=[], class_colors=["gold", "red", "grey", "orange", "blue", "green"]} = app_config || {};
 
-    const {_id, title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="#3F3F44", tags=[], schedules=[], students=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", sessions=[], reschedules=[], error} = edit_class;
+    const {_id, title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="white", tags=[], schedules=[], students=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", archived=false, sessions=[], reschedules=[], error} = edit_class;
 
     const is_class_teacher = user._id === (teacher?._id || teacher)
 
@@ -182,11 +183,11 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
     }
 
     const onChangeValueEvent = (keys=[], numeric=false) => (e, val) => {
-        const value = val || e.target.value;
+        const {name, value, checked, type} = e.target;
+        const is_checkbox = type === "checkbox";
+        const is_number = (type === "number") || numeric;
 
-        // console.log(value, keys);
-
-        edit_class_value(keys, numeric?(Number(value) || value):value);
+        edit_class_value(keys, is_checkbox?checked:is_number?(Number(value)||""):value);
         setErrors(err => ({...err, [keys.join(".")]: ""}));
     }
 
@@ -275,14 +276,14 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
     const updateClass = async () => {
         set_loading(true);
         const formData = new FormData();
-        formData.append("_class", JSON.stringify({_id, title, subject, cover_image, description, level, class_type, teacher: teacher?._id || teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_schedule, students: students.map((s) => s?._id || s).filter(unique_filter)}));
+        formData.append("_class", JSON.stringify({_id, title, subject, cover_image, description, level, class_type, teacher: teacher?._id || teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_schedule, archived, students: students.map((s) => s?._id || s).filter(unique_filter)}));
         if(coverPreview.file){
             formData.append("cover", coverPreview.file);
         }
         
 
         if(await update_class(formData)){
-            navigate("/dashboard");
+            // navigate("/dashboard");
         }
 
         set_loading(false);
@@ -303,23 +304,29 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
             <form onSubmit={(e) => {e.preventDefault()}} enctype="multipart/form-data" className='main-col'>
                 <h3>Edit Class</h3>
 
+                <div style={{"--mr": 0}} className='input-container fullwidth'>
+                    <label>Color</label>
+                    
+                    <ColorPicker onChange={onChangeValue(["bg_color"])} value={bg_color} colors={class_colors} />
+                </div>
+
                 <div style={{"--mr": 1}} className='input-container'>
                     <label>Title</label>
                     
-                    <input disabled={!is_admin && !is_class_teacher} placeholder='Class Name' value={title} onChange={onChangeValueEvent(["title"])} />
+                    <input disabled={!is_admin && !is_class_teacher && !is_class_teacher} placeholder='Class Name' value={title} onChange={onChangeValueEvent(["title"])} />
                 </div>
 
                 {/* <div className='input-container cover-file-input'>
                     <label>Cover Image</label>
                     
-                    <input disabled={!is_admin && !is_class_teacher} type="file" multiple={false} onChange={onSelectImage} />
+                    <input disabled={!is_admin && !is_class_teacher && !is_class_teacher} type="file" multiple={false} onChange={onSelectImage} />
                     <FileUploadDropArea title='Upload Cover Image' />
                 </div> */}
 
                 <div style={{"--mr": 0}} className='input-container'>
                     <label>Description</label>
                     
-                    <textarea disabled={!is_admin && !is_class_teacher} placeholder='Class Description' value={description} onChange={onChangeValueEvent(["description"])} />
+                    <textarea disabled={!is_admin && !is_class_teacher && !is_class_teacher} placeholder='Class Description' value={description} onChange={onChangeValueEvent(["description"])} />
                 </div>
 
                 <div style={{"--mr": 1}} className='input-container select subject'>
@@ -355,7 +362,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                 <div style={{"--mr": 1}} className='input-container price'>
                     <label>Price</label>
                     
-                    <input disabled={!is_admin && !is_class_teacher} placeholder='00000' style={{paddingLeft: "50px"}} value={price} onChange={onChangeValueEvent(["price"])} />
+                    <input disabled={!is_admin && !is_class_teacher && !is_class_teacher} placeholder='00000' style={{paddingLeft: "50px"}} value={price} onChange={onChangeValueEvent(["price"])} />
                     
                     <div className='input-adornment start' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}>
                         <BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} />
@@ -377,13 +384,13 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                 {/* <div className='input-container background color'>
                     <label>Background Color</label>
                     
-                    <input disabled={!is_admin && !is_class_teacher} type="color" value={bg_color} onChange={onChangeValueEvent(["bg_color"])} />
+                    <input disabled={!is_admin && !is_class_teacher && !is_class_teacher} type="color" value={bg_color} onChange={onChangeValueEvent(["bg_color"])} />
                 </div>
 
                 <div className='input-container color'>
                     <label>Text Color</label>
                     
-                    <input disabled={!is_admin && !is_class_teacher} type="color" value={text_color} onChange={onChangeValueEvent(["text_color"])} />
+                    <input disabled={!is_admin && !is_class_teacher && !is_class_teacher} type="color" value={text_color} onChange={onChangeValueEvent(["text_color"])} />
                 </div>
 
                 <div className='input-container color-preview'>
@@ -395,7 +402,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                 <div style={{"--mr": 1}} className='input-container meeting-link'>
                     <label>Meeting Link</label>
                     
-                    <input disabled={!is_admin && !is_class_teacher} placeholder='Meeting Link' value={meeting_link} onChange={onChangeValueEvent(["meeting_link"])} />
+                    <input disabled={!is_admin && !is_class_teacher && !is_class_teacher} placeholder='Meeting Link' value={meeting_link} onChange={onChangeValueEvent(["meeting_link"])} />
                 </div>
 
                 <div style={{"--mr": 0}} className='input-container'>
@@ -422,10 +429,19 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                     </LocalizationProvider>
                 </div>
 
+                <div style={{"--mr": 0}} className='input-container'>
+                    <label>Archived</label>
+                    {is_admin?<Switch
+                        // label="Start Time"
+                        checked={archived}
+                        onChange={onChangeValueEvent(["archived"])}
+                    />:<input type="text" value={archived?"Yes":"No"} readOnly style={{color: archived?"red":"green"}} />}
+                </div>
+
                 <div className='input-container fullwidth'>
                     <label>Students</label>
                     
-                    {/* <input disabled={!is_admin && !is_class_teacher} type="text" placeholder='math, english, beginner, advance etc...' /> */}
+                    {/* <input disabled={!is_admin && !is_class_teacher && !is_class_teacher} type="text" placeholder='math, english, beginner, advance etc...' /> */}
                     <ListInput items={students} RenderItem={RenderStudentItem} RenderSuggestion={RenderStudentItem} render_property="_id" onAddItem={onAddStudent} onRemoveItem={onRemoveStudent} disableAdding={!is_admin || (max_students <= (students?.length || 0))} onChangeText={onChangeStudentListText} search_array={studentResults} localSearch={false} />
                 </div>
 
@@ -472,10 +488,10 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                     })}
                 </ul>
 
-                <button className='button primary' disabled={!is_admin && !is_class_teacher} onClick={AddNewSchedule}>New Schedule</button>
+                <button className='button primary' disabled={!is_admin && !is_class_teacher && !is_class_teacher} onClick={AddNewSchedule}>New Schedule</button>
                 
                 <div style={{display: "flex", justifyContent: "flex-end", marginTop: 50}}>
-                    <button onClick={updateClass} disabled={!is_admin && !is_class_teacher} className='button primary'>Update Class</button>
+                    <button onClick={updateClass} disabled={!is_admin && !is_class_teacher && !is_class_teacher} className='button primary'>Update Class</button>
                 </div>
 
                 {error && <p className='error' style={{textAlign: "end"}}>{error}</p>}
