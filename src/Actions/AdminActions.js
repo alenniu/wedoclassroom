@@ -1,7 +1,7 @@
 import { validate_email, validate_password } from "../Utils";
 import { api } from "../Utils/api";
 import { set_config } from "./AppActions";
-import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_INIT_CONFIG, UPDATE_CONFIG, SET_EDIT_ACCOUNT_ERROR } from "./types";
+import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_INIT_CONFIG, UPDATE_CONFIG, SET_EDIT_ACCOUNT_ERROR, ADMIN_SEARCH } from "./types";
 
 export const set_admins = (admins=[], total=0) => {
     return {type: SET_ADMINS, payload: {admins, total: total || admins.length}};
@@ -303,5 +303,26 @@ export const reject_class_reschedule = (reschedule_id) => async (dispatch) => {
         }
     }catch(e){
         console.log(e);
+    }
+}
+
+export const admin_search = (search) => async (dispatch) => {
+    try{
+        const res = await api("get", "/api/admin/search", {params: {search}});
+
+        if(res && res.data){
+            const {success, msg, students=[], teachers=[], classes=[]} = res.data;
+            if(success){
+                dispatch({type: ADMIN_SEARCH, payload: {students, teachers, classes}});
+    
+                return res.data;
+            }
+
+            console.error(msg);
+        }else{
+            console.error(res?.message || res);
+        }
+    }catch(e){
+        console.error(e);
     }
 }

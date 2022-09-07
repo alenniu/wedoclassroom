@@ -5,7 +5,7 @@
   --nav-border: 1px solid rgb(63, 63, 68, 0.1);
   --dashboard-header-height: 90px;
   --dashboard-opened-nav-width: 280px;
-  --dashboard-closed-nav-width: 50px;
+  --dashboard-closed-nav-width: 60px;
   --dashboard-nav-icon-size: 30px;
   --class-bg-color: white;
   --class-border: none;
@@ -172,6 +172,11 @@ input:focus-visible, textarea:focus-visible{
 
 .clickable{
   cursor: pointer;
+}
+
+.clickable.disabled{
+  cursor: not-allowed;
+  opacity: 0.3;
 }
 
 .page{
@@ -458,13 +463,39 @@ input:focus-visible, textarea:focus-visible{
   cursor: default;
 }
 
-table{
+.table-container{
   border-radius: 5px 5px 5px 5px;
   width: 100%;
   box-shadow: var(--table-box-shadow, 1px 1px 5px #bfbfbf);
   /* padding: 0 20px; */
-  border-spacing: 0px;
   border: var(--table-border, none);
+  overflow: auto;
+  position: relative;
+}
+
+.table-container.has-pagination{
+  border-radius: 5px 5px 0 0;
+  box-shadow: none;
+  border: none;
+  border-bottom: var(--table-row-border, 2px solid #efefef);
+}
+
+.table-container.pagination{
+  border-radius: 0 0 5px 5px;
+  border: none;
+  box-shadow: none;
+  /* border-top: none; */
+}
+
+table{
+  width: 100%;
+  border-spacing: 0px;
+}
+
+thead.sticky{
+  background-color: var(--bg-color, white);
+  position: sticky;
+  top: 0;
 }
 
 table th{

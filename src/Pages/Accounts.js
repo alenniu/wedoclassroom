@@ -75,26 +75,29 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
                         <input value={search} placeholder="Search Accounts" onChange={(e) => {setSearch(e.target.value)}} />
                     </div>
                 </div>
-                <table>
-                    <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Type", id: "type"}, {label: "$", id: "credits"}, {label: "Created", id: "createdAt"}]} order={order} orderBy={orderBy} onSort={onSortTable} />
+                
+                <div className='table-container'>
+                    <table>
+                        <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Type", id: "type"}, {label: "$", id: "credits"}, {label: "Created", id: "createdAt"}]} order={order} orderBy={orderBy} onSort={onSortTable} />
 
-                    <tbody>
-                        {accounts.map((a) => {
-                            const {_id, name={}, email, phone, type, credits=0, createdAt} = a;
+                        <tbody>
+                            {accounts.map((a) => {
+                                const {_id, name={}, email, phone, type, credits=0, createdAt} = a;
 
-                            return (
-                                <tr key={_id}>
-                                    <td><Link className='link' to={`/dashboard/accounts/edit/${_id}`}>{name.first} {name.last}</Link></td>
-                                    <td>{email}</td>
-                                    <td>{phone || <span style={{opacity: 0.5}}>No Phone</span>}</td>
-                                    <td>{type}</td>
-                                    <td>{type==="student"?`$${credits}`:"N/A"}</td>
-                                    <td>{(new Date(createdAt)).toLocaleDateString(undefined, {hour: "numeric", minute: "2-digit"})}</td>
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
+                                return (
+                                    <tr key={_id}>
+                                        <td><Link className='link' to={`/dashboard/accounts/edit/${_id}`}>{name.first} {name.last}</Link></td>
+                                        <td>{email}</td>
+                                        <td>{phone || <span style={{opacity: 0.5}}>No Phone</span>}</td>
+                                        <td>{type}</td>
+                                        <td>{type==="student"?`$${credits}`:"N/A"}</td>
+                                        <td>{(new Date(createdAt)).toLocaleDateString(undefined, {hour: "numeric", minute: "2-digit"})}</td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* <div className='misc-col'>

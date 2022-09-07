@@ -1,0 +1,29 @@
+.pagination-container{
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    position: static;
+    left: 0;
+    padding-inline: 8px;
+}
+
+.pagination-container .per-page-text{
+    margin-left: 20px;
+    margin-right: 10px;
+}
+
+.pagination-container .next, .pagination-container .prev{
+    margin-right: 10px;
+}
+
+.pagination-container .input-container.per-page{
+    flex-shrink: 0;
+    max-width: 80px;
+    display: inline-flex;
+}
+
+.pagination-container .input-container input, .pagination-container .input-container select{
+    height: 30px;
+}

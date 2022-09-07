@@ -51,7 +51,7 @@ nav.admin-nav{
 
 .dashboard .nav-toggle.closed{
     top: calc(var(--dashboard-header-height, 90px) - 50px);
-    left: var(--dashboard-closed-nav-width, 280px);
+    left: var(--dashboard-closed-nav-width, 60px);
     transform: translateX(-50%) rotateZ(180deg);
 }
 
@@ -91,7 +91,7 @@ nav.admin-nav{
     font-size: 20px;
     width: 30px;
     min-width: 30px;
-    /* height: 30px; */
+    height: 30px;
     margin-right: 10px;
 }
 
@@ -156,6 +156,8 @@ nav.admin-nav.closed .nav-wrapper .nav-image-container{
 .admin-page-container header.admin-header{
     height: var(--dashboard-header-height, 90px);
     display: flex;
+    z-index: 2;
+    position: relative;
     /* position: sticky;
     top: 0;
     background-color: var(--bg-color, white);
@@ -211,6 +213,8 @@ nav.admin-nav.closed .nav-wrapper .nav-image-container{
 }
 
 .admin-page-container .page{
+    position: relative;
+    z-index: 1;
     max-width: unset;
     width: 100%;
 }

@@ -39,9 +39,9 @@ const Login = ({email, error, logged_in, is_admin, user, login, check_login, get
             // socket?.emit(SOCKET_EVENT_LOGIN, user);
             get_user_assignments()
             // if(is_admin){
-                navigate(from || "/dashboard/");
+                navigate(from || "/dashboard/schedule");
             // }else{
-            //     navigate(`/dashboard`);
+            //     navigate(`/dashboard/schedule`);
             // }
         }
     }, [logged_in, is_admin, user]);

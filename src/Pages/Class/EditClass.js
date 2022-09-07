@@ -303,50 +303,32 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
             <form onSubmit={(e) => {e.preventDefault()}} enctype="multipart/form-data" className='main-col'>
                 <h3>Edit Class</h3>
 
-                <div className='input-container'>
+                <div style={{"--mr": 1}} className='input-container'>
                     <label>Title</label>
                     
-                    <input disabled={!is_admin || !is_class_teacher} placeholder='Class Name' value={title} onChange={onChangeValueEvent(["title"])} />
+                    <input disabled={!is_admin && !is_class_teacher} placeholder='Class Name' value={title} onChange={onChangeValueEvent(["title"])} />
                 </div>
 
-                <div className='input-container cover-file-input'>
+                {/* <div className='input-container cover-file-input'>
                     <label>Cover Image</label>
                     
-                    <input disabled={!is_admin || !is_class_teacher} type="file" multiple={false} onChange={onSelectImage} />
+                    <input disabled={!is_admin && !is_class_teacher} type="file" multiple={false} onChange={onSelectImage} />
                     <FileUploadDropArea title='Upload Cover Image' />
-                    {/* <div className='upload-content-container'>
-                        <span className='add-icon-container'><RiImageAddLine size={"24px"} /></span>
+                </div> */}
 
-                        <div>
-                            <p className='upload-cover-text'>Upload Cover Image</p>
-                            <p className='upload-drop-text'>Drop your file here or browse</p>
-                        </div>
-                    </div> */}
-                    {(cover_image || coverPreview.url) && <div className='cover-preview'>
-                        <img src={coverPreview.url || (cover_image && get_full_image_url(cover_image))} />
-                        <RiCloseCircleFill color='red' size={20} className='clickable remove' onClick={onClickRemoveCover} />
-                    </div>}
-                </div>
-
-                <div className='input-container'>
+                <div style={{"--mr": 0}} className='input-container'>
                     <label>Description</label>
                     
-                    <textarea placeholder='Class Description' value={description} onChange={onChangeValueEvent(["description"])} />
+                    <textarea disabled={!is_admin && !is_class_teacher} placeholder='Class Description' value={description} onChange={onChangeValueEvent(["description"])} />
                 </div>
 
-                <div className='input-container select subject'>
+                <div style={{"--mr": 1}} className='input-container select subject'>
                     <label>Subject</label>
                     
                     <TypeSelect options={subjects.map((s) => ({label: s, value: s}))} placeholder="Subject" value={subject} onChange={onChangeValue(["subject"])} />
-                    {/* <select placeholder='Class Subject' value={subject} onChange={onChangeValueEvent(["subject"])}>
-                        <option value={""}>Select</option>
-                        {subjects.map((s) => {
-                            return <option value={s} key={s}>{s}</option>
-                        })}
-                    </select> */}
                 </div>
 
-                <div className='input-container select level'>
+                <div style={{"--mr": 0}} className='input-container select level'>
                     <label>Level</label>
                     
                     <TypeSelect options={levels.map((l) => ({label: l, value: l}))} placeholder="Level" value={level} onChange={onChangeValue(["level"])} />
@@ -358,72 +340,65 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                     </select> */}
                 </div>
 
-                <div className='input-container select'>
+                <div style={{"--mr": 1}} className='input-container select'>
                     <label>Type</label>
                     
                     <TypeSelect options={class_type_options} placeholder="Class Type" value={class_type} onChange={onChangeValue(["class_type"])} />
                 </div>
 
-                <div className='input-container select'>
+                <div style={{"--mr": 0}} className='input-container select'>
                     <label>Teacher</label>
                     
                     <TypeSelect disabled={is_teacher} options={(is_teacher?[user]:teachers).map((t) => ({label: `${t.name.first} ${t.name.last}${is_teacher?" (You)":""}`, value: t._id, teacher: t}))} placeholder="Select Teacher" onChangeText={onTypeTeacherSelect} textValue={teacherSearch} renderOption={RenderTeacherOption} renderSelected={RenderTeacherOption} onChange={onChangeValue(["teacher"])} value={teacher?._id || teacher} localSearch={false} />
                 </div>
 
-                <div className='input-container price'>
+                <div style={{"--mr": 1}} className='input-container price'>
                     <label>Price</label>
                     
-                    <input disabled={!is_admin || !is_class_teacher} placeholder='00000' style={{paddingLeft: "50px"}} value={price} onChange={onChangeValueEvent(["price"])} />
+                    <input disabled={!is_admin && !is_class_teacher} placeholder='00000' style={{paddingLeft: "50px"}} value={price} onChange={onChangeValueEvent(["price"])} />
                     
                     <div className='input-adornment start' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}>
                         <BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} />
                     </div>
                 </div>
 
-                <div className='input-container max-students'>
+                <div style={{"--mr": 1}} className='input-container max-students'>
                     <label>Max Students</label>
                     
-                    <input disabled={!is_admin || !is_class_teacher || class_type === "private"} placeholder='1' min={1} type="number" value={max_students} onChange={onChangeValueEvent(["max_students"])}  />
+                    <input disabled={!is_admin && !is_class_teacher || class_type === "private"} placeholder='1' min={1} type="number" value={max_students} onChange={onChangeValueEvent(["max_students"])}  />
                 </div>
 
-                <div className='input-container select pricing-type'>
+                <div style={{"--mr": 0}} className='input-container select pricing-type'>
                     <label>Pricing Type</label>
                     
                     <TypeSelect placeholder='Select' options={pricing_type_options} value={billing_schedule} onChange={onChangeValue(["billing_schedule"])}  />
                 </div>
 
-                <div className='input-container background color'>
+                {/* <div className='input-container background color'>
                     <label>Background Color</label>
                     
-                    <input disabled={!is_admin || !is_class_teacher} type="color" value={bg_color} onChange={onChangeValueEvent(["bg_color"])} />
+                    <input disabled={!is_admin && !is_class_teacher} type="color" value={bg_color} onChange={onChangeValueEvent(["bg_color"])} />
                 </div>
 
                 <div className='input-container color'>
                     <label>Text Color</label>
                     
-                    <input disabled={!is_admin || !is_class_teacher} type="color" value={text_color} onChange={onChangeValueEvent(["text_color"])} />
+                    <input disabled={!is_admin && !is_class_teacher} type="color" value={text_color} onChange={onChangeValueEvent(["text_color"])} />
                 </div>
 
                 <div className='input-container color-preview'>
                     <label>Color Preview</label>
                     
                     <input style={{backgroundColor: bg_color, color: text_color, fontWeight: "700"}} value={"Look On Schedule Calendar"} disabled />
-                </div>
+                </div> */}
 
-                <div className='input-container'>
-                    <label>Tags</label>
-                    
-                    {/* <input disabled={!is_admin || !is_class_teacher} type="text" placeholder='math, english, beginner, advance etc...' /> */}
-                    <ListInput always_show_matches items={tags} search_array={configTags} onAddItem={onAddTag} onRemoveItem={onRemoveTag} />
-                </div>
-
-                <div className='input-container meeting-link'>
+                <div style={{"--mr": 1}} className='input-container meeting-link'>
                     <label>Meeting Link</label>
                     
-                    <input disabled={!is_admin || !is_class_teacher} placeholder='Meeting Link' value={meeting_link} onChange={onChangeValueEvent(["meeting_link"])} />
+                    <input disabled={!is_admin && !is_class_teacher} placeholder='Meeting Link' value={meeting_link} onChange={onChangeValueEvent(["meeting_link"])} />
                 </div>
 
-                <div className='input-container'>
+                <div style={{"--mr": 0}} className='input-container'>
                     <label>Start Date</label>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
@@ -435,7 +410,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                     </LocalizationProvider>
                 </div>
 
-                <div className='input-container'>
+                <div style={{"--mr": 1}} className='input-container'>
                     <label>End Date</label>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
@@ -450,7 +425,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                 <div className='input-container fullwidth'>
                     <label>Students</label>
                     
-                    {/* <input disabled={!is_admin || !is_class_teacher} type="text" placeholder='math, english, beginner, advance etc...' /> */}
+                    {/* <input disabled={!is_admin && !is_class_teacher} type="text" placeholder='math, english, beginner, advance etc...' /> */}
                     <ListInput items={students} RenderItem={RenderStudentItem} RenderSuggestion={RenderStudentItem} render_property="_id" onAddItem={onAddStudent} onRemoveItem={onRemoveStudent} disableAdding={!is_admin || (max_students <= (students?.length || 0))} onChangeText={onChangeStudentListText} search_array={studentResults} localSearch={false} />
                 </div>
 
@@ -460,12 +435,12 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                         const {days=[], daily_start_time, daily_end_time} = s;
                         return (
                             <li key={i.toString()}>
-                                <div className='input-container'>
+                                <div style={{"--mr": 1}} className='input-container'>
                                     <label>Days</label>
                                     <ListInput allowOnlySearchResults always_show_matches search_array={DAYS.slice(1)} search_property={"long"} items={days.map(d => DAYS[d].long)} onAddItem={(day) => onAddScheduleDay(i, day)} onRemoveItem={(index, day) => onRemoveScheduleDay(i, index, day)} />
                                 </div>
 
-                                <div className='input-container'>
+                                <div style={{"--mr": 0}} className='input-container'>
                                     <label>Start Time</label>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                     <TimePicker
@@ -477,7 +452,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                                     </LocalizationProvider>
                                 </div>
 
-                                <div className='input-container'>
+                                <div style={{"--mr": 1}} className='input-container'>
                                     <label>End Time</label>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                     <TimePicker
@@ -497,10 +472,10 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                     })}
                 </ul>
 
-                <button className='button primary' onClick={AddNewSchedule}>New Schedule</button>
+                <button className='button primary' disabled={!is_admin && !is_class_teacher} onClick={AddNewSchedule}>New Schedule</button>
                 
                 <div style={{display: "flex", justifyContent: "flex-end", marginTop: 50}}>
-                    <button onClick={updateClass} className='button primary'>Update Class</button>
+                    <button onClick={updateClass} disabled={!is_admin && !is_class_teacher} className='button primary'>Update Class</button>
                 </div>
 
                 {error && <p className='error' style={{textAlign: "end"}}>{error}</p>}
@@ -512,28 +487,30 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                 <p>Total Sessions: {sessions.length}</p>
                 <p>Total Session time: {total_session_time && formatDistance(total_session_time, 0, {includeSeconds: true, addSuffix: false})}</p>
                 <p>Average Session time: {total_session_time && formatDistance(avg_session_time, 0, {includeSeconds: true, addSuffix: false})}</p>
+                
+                <div style={{marginBlock: "20px"}} className='table-container'>
+                    <table>
+                        <TableHead headers={[{label: "Date", id: "start_time", sortable: true}, {label: "# Students", id: "students", sortable: false}, {label: "Total", id: "price", sortable: false}]} />
 
-                <table style={{marginBlock: "20px"}}>
-                    <TableHead headers={[{label: "Date", id: "start_time", sortable: true}, {label: "# Students", id: "students", sortable: false}, {label: "Total", id: "price", sortable: false}]} />
+                        <tbody>
+                            {sessions.slice(0, 10).map((s) => {
+                                const {_id, _class, teacher, students, start_time, end_time, active, meeting_link} = s;
+                                const startTime = new Date(start_time);
+                                const endTime = new Date(end_time);
 
-                    <tbody>
-                        {sessions.slice(0, 10).map((s) => {
-                            const {_id, _class, teacher, students, start_time, end_time, active, meeting_link} = s;
-                            const startTime = new Date(start_time);
-                            const endTime = new Date(end_time);
+                                const duration = endTime && intervalToDuration({start: startTime, end: endTime});
 
-                            const duration = endTime && intervalToDuration({start: startTime, end: endTime});
-
-                            return (
-                                <tr>
-                                    <td>{startTime.toLocaleString(undefined, {dateStyle: "short", timeStyle: "short"})}</td>
-                                    <td><center>{students.length}</center></td>
-                                    <td>{price * students.length}</td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+                                return (
+                                    <tr>
+                                        <td>{startTime.toLocaleString(undefined, {dateStyle: "short", timeStyle: "short"})}</td>
+                                        <td><center>{students.length}</center></td>
+                                        <td>{price * students.length}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
 
                 <h3 style={{marginBlock: "20px"}}>Reschedules</h3>
 

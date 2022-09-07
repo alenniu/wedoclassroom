@@ -167,3 +167,25 @@ export const admin_get_classes = async (req: Request, res: Response, next: NextF
         res.status(400).json({success: false, msg: e.message});
     }
 }
+
+export const admin_search_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        let {search="", limit=20, offset=0} = req.query;
+        
+        limit = Number(limit) || 20;
+        offset = Number(offset) || 0;
+
+        if((user.type === "admin") || (user.type === "sales")){
+            const {students} = await get_students(limit, offset, search);
+            const {teachers} = await get_teachers(limit, offset, search);
+            const {classes} = await get_classes(limit, offset, search);
+    
+            res.json({classes, teachers, students, success: true});
+        }else{
+            return res.status(401).json({success: false, msg: "Only admins or sales can search"});
+        }
+    }catch(e){
+        res.status(400).json({success: false, msg: e.message});
+    }
+}

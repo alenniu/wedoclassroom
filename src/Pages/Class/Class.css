@@ -4,58 +4,13 @@
 
 .edit-class .input-container{
     width: 48%;
-}
-
-.edit-class .input-container:nth-of-type(odd){
-    margin-right: 4%;
-}
-
-.edit-class .input-container.subject, .edit-class .input-container.level{
-    width: 23%;
-    margin-right: 0;
-}
-
-.edit-class .input-container.pricing-type{
-    margin-right: 0!important;
-    margin-left: 2%;
-}
-
-.edit-class .input-container.subject{
-    margin-right: 2%;
+    margin-right: calc(4% * var(--mr, 0));
 }
 
 .edit-class .input-container.cover-file-input input, .edit-class .input-container textarea{
-    height: 120px;
     resize: none;
+    height: 80px;
 }
-
-.edit-class .main-col > .input-container:nth-of-type(n+3){
-    vertical-align: bottom;
-    top: -64px;
-}
-
-.edit-class .input-container:nth-of-type(n+6):nth-of-type(even){
-    margin-right: 4%;
-}
-
-
-.edit-class .input-container:nth-of-type(n+6):nth-of-type(odd){
-    margin-right: 0;
-}
-
-.edit-class .input-container.payment-type{
-    margin-left: 2%;
-    margin-right: 0;
-}
-
-/* .edit-class .input-container:nth-of-type(n+10):nth-of-type(even){
-    margin-right: 4%;
-}
-
-
-.edit-class .input-container:nth-of-type(n+10):nth-of-type(odd){
-    margin-right: 0;
-} */
 
 .edit-class .cover-file-input input[type=file]::file-selector-button{
     display: none;
@@ -139,7 +94,6 @@
 
 .edit-class .input-container.price, .edit-class .input-container.max-students, .edit-class .input-container.color{
     width: 23%;
-    margin-right: 0!important;
 }
 
 .edit-class .input-container.color-preview{
@@ -150,16 +104,8 @@
     vertical-align: top!important;
 }
 
-.edit-class .input-container.price, .edit-class .input-container.max-students{
+.edit-class .input-container.price{
     margin-right: 2%!important;
-}
-
-.edit-class .input-container.color{
-    margin-left: 2%!important;
-}
-
-.edit-class .input-container.background.color{
-    margin-left: 0%!important;
 }
 
 .edit-class .schedules li{

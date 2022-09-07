@@ -41,45 +41,50 @@ const Students = ({_class={}, requests=[], onAcceptRequest, onDeclineRequest, on
     return (
         <div className='students'>
             <h3>Students</h3>
-            <table>
-                <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Actions", id: "actions", sortable: false}]} order={order} orderBy={orderBy} onSort={onSortTable} />
+            <div className='table-container'>
+                <table>
+                    <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Actions", id: "actions", sortable: false}]} order={order} orderBy={orderBy} onSort={onSortTable} />
 
-                <tbody>
-                    {students.map((s) => {
-                        const {_id, name={}, email, phone, type, createdAt} = s;
+                    <tbody>
+                        {students.map((s) => {
+                            const {_id, name={}, email, phone, type, createdAt} = s;
 
-                        return (
-                            <tr key={_id}>
-                                <td>{name.first} {name.last}</td>
-                                <td>{email}</td>
-                                <td>{phone || <span style={{opacity: 0.5}}>No Phone</span>}</td>
-                                <td><button className='button error' onClick={() => onRemove(s)} title='Remove'><RiCloseLine /></button></td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
+                            return (
+                                <tr key={_id}>
+                                    <td>{name.first} {name.last}</td>
+                                    <td>{email}</td>
+                                    <td>{phone || <span style={{opacity: 0.5}}>No Phone</span>}</td>
+                                    <td><button className='button error' onClick={() => onRemove(s)} title='Remove'><RiCloseLine /></button></td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+            </div>
 
             <h3>Requests</h3>
-            <table>
-                <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Actions", id: "actions", sortable: false}]} order={order} orderBy={orderBy} onSort={onSortTable} />
 
-                <tbody>
-                    {requests.map((r) => {
-                        const {student={}, accepted, declined} = r;
-                        const {_id, name={}, email, phone, type, createdAt} = student;
+            <div className='table-container'>
+                <table>
+                    <TableHead headers={[{label: "Name", id: "name"}, {label: "Email", id: "email"}, {label: "Phone", id: "phone"}, {label: "Actions", id: "actions", sortable: false}]} order={order} orderBy={orderBy} onSort={onSortTable} />
 
-                        return (
-                            <tr key={_id}>
-                                <td>{name.first} {name.last}</td>
-                                <td>{email}</td>
-                                <td>{phone || <span style={{opacity: 0.5}}>No Phone</span>}</td>
-                                <td><button className='button primary' onClick={() => onAccept(r)} title='Accept'><RiCheckLine /></button> <button className='button error' onClick={() => onDecline(r)} title='Decline'><RiCloseLine /></button></td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
+                    <tbody>
+                        {requests.map((r) => {
+                            const {student={}, accepted, declined} = r;
+                            const {_id, name={}, email, phone, type, createdAt} = student;
+
+                            return (
+                                <tr key={_id}>
+                                    <td>{name.first} {name.last}</td>
+                                    <td>{email}</td>
+                                    <td>{phone || <span style={{opacity: 0.5}}>No Phone</span>}</td>
+                                    <td><button className='button primary' onClick={() => onAccept(r)} title='Accept'><RiCheckLine /></button> <button className='button error' onClick={() => onDecline(r)} title='Decline'><RiCloseLine /></button></td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

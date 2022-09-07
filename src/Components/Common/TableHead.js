@@ -3,7 +3,7 @@ import {BsArrowUp} from "react-icons/bs"
 
 import "./TableHead.css";
 
-const TableHead = ({headers=[], order="", orderBy="", onSort}) => {
+const TableHead = ({headers=[], sticky=false, order="", orderBy="", onSort}) => {
 
     
     const onSortTable = (e, {label, id, sortable}, index) => {
@@ -11,7 +11,7 @@ const TableHead = ({headers=[], order="", orderBy="", onSort}) => {
     }
     
     return (
-        <thead>
+        <thead className={sticky?"sticky":""}>
             <tr>
                 {headers.map(({label, id, sortable}, i) => {
                     const is_sorted = id === orderBy;
