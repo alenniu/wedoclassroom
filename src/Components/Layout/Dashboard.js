@@ -213,7 +213,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifica
                                     <div onClick={(e) => {e.stopPropagation()}} style={{position: "absolute", width: "300px", top: "20px", right: 0, marginBottom: 20}} className={`input-container ${showSearch?"show":"hide"}`}>
                                         <input ref={searchRef} style={{boxShadow: "0 0 0 100vw rgba(125,125,125,0.3)"}} placeholder='search' onChange={(e) => setSearch(e.target.value)} value={search}  />
 
-                                        {!!students.length && <ul style={{backgroundColor: "var(--bgcolor, white)", width: "100%", marginTop: 20}}>
+                                        {!!students.length && <ul style={{backgroundColor: "var(--bg-color, white)", width: "100%", marginTop: 20, borderRadius: 8}}>
                                             <li style={{textAlign: "center", borderBottom: "2px solid #ECECEC", padding: 10}}>Students</li>
                                             {students.map((s) => {
                                                 const {_id, name, email, photo_url, phone} = s;
@@ -224,7 +224,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifica
                                             })}    
                                         </ul>}
 
-                                        {!!teachers.length && <ul style={{backgroundColor: "var(--bgcolor, white)", width: "100%", marginTop: 20}}>
+                                        {!!teachers.length && <ul style={{backgroundColor: "var(--bg-color, white)", width: "100%", marginTop: 20, borderRadius: 8}}>
                                             <li style={{textAlign: "center", borderBottom: "2px solid #ECECEC", padding: 10}}>Teachers</li>
                                             {teachers.map((t) => {
                                                 const {_id, name, email, photo_url, phone} = t;
@@ -235,7 +235,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifica
                                             })}    
                                         </ul>}
 
-                                        {!!classes.length && <ul style={{backgroundColor: "var(--bgcolor, white)", width: "100%", marginTop: 20}}>
+                                        {!!classes.length && <ul style={{backgroundColor: "var(--bg-color, white)", width: "100%", marginTop: 20, borderRadius: 8}}>
                                             <li style={{textAlign: "center", borderBottom: "2px solid #ECECEC", padding: 10}}>Classes</li>
                                             {classes.map((c) => {
                                                 const {_id, title, description, bg_color} = c;
