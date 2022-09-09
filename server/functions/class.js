@@ -158,10 +158,10 @@ async function end_class({_class}, user){
     }
 }
 
-async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_schedule, archived=false, meeting_link, students=[]}, creator){
+async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], custom_dates=[], start_date, end_date, billing_schedule, archived=false, meeting_link, students=[]}, creator){
     try{
         if(title && subject && class_type){
-            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, students, schedules: schedules.map((s) => ({...s, daily_start_time: (new Date(s.daily_start_time).getTime()), daily_end_time: (new Date(s.daily_end_time).getTime())})), start_date: new Date(start_date), end_date: new Date(end_date), billing_schedule, meeting_link, archived, is_full: students.length >= max_students, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
+            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, students, schedules: schedules.map((s) => ({...s, daily_start_time: (new Date(s.daily_start_time).getTime()), daily_end_time: (new Date(s.daily_end_time).getTime())})), custom_dates, start_date: new Date(start_date), end_date: new Date(end_date), billing_schedule, meeting_link, archived, is_full: students.length >= max_students, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
 
             return new_class;
         }else{
@@ -172,10 +172,10 @@ async function create_class({title, subject, cover_image="", description, teache
     }
 }
 
-async function update_class({_id, title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], start_date, end_date, billing_schedule, archived=false, meeting_link, students=[]}){
+async function update_class({_id, title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], custom_dates=[], start_date, end_date, billing_schedule, archived=false, meeting_link, students=[]}){
     try{
         if(title && subject && class_type){
-            const updated_class = await Classes.findOneAndUpdate({_id}, {$set: {title, subject, cover_image, description, teacher: teacher?._id || teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, start_date, end_date, billing_schedule, meeting_link, students, archived, is_full: students.length >= max_students}}, {new: true, upsert: false});
+            const updated_class = await Classes.findOneAndUpdate({_id}, {$set: {title, subject, cover_image, description, teacher: teacher?._id || teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, custom_dates, start_date, end_date, billing_schedule, meeting_link, students, archived, is_full: students.length >= max_students}}, {new: true, upsert: false});
 
             return updated_class;
         }else{

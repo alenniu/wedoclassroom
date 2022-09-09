@@ -64,6 +64,17 @@ const class_schema = new schema({
         daily_start_time: Number,
         daily_end_time: Number
     }],
+    custom_dates: [{
+        date: {
+            type: Date
+        },
+        start_time: {
+            type: Date
+        },
+        end_time: {
+            type: Date
+        }
+    }],
     popularity: {
         type: Number,
         default: 0

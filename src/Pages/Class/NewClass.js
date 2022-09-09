@@ -1,23 +1,25 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { create_new_class, edit_new_class_value, get_teachers, set_loading, set_teachers } from '../../Actions';
-import {RiImageAddLine, RiCloseCircleFill} from "react-icons/ri";
+import {RiImageAddLine, RiCloseCircleFill, RiCalendar2Line} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
 import {Switch, TextField} from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from '@mui/x-date-pickers';
-import { DAYS } from '../../Data';
+import { DAY, DAYS } from '../../Data';
 import { debounce, get_full_image_url, throttle, unique_filter } from '../../Utils';
-import { TypeSelect, FileUploadDropArea, ListInput } from '../../Components/Common';
+import { TypeSelect, FileUploadDropArea, ListInput, TableHead } from '../../Components/Common';
 
 
 import "./Class.css";
 import "./NewClass.css";
 import { api } from '../../Utils/api';
 import ColorPicker from '../../Components/Class/ColorPicker';
+import DateRangeModal from '../../Components/Class/DateRangeModal';
+import EditLessonModal from '../../Components/Class/EditLessonModal';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -54,15 +56,32 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     const [coverPreview, setCoverPreview] = useState({file: null, url: ""});
     const [errors, setErrors] = useState({});
 
+    const current_date = new Date();
+
+    const [showDateRange, setShowDateRange] = useState(false);
+
+    const [showEditLesson, setShowEditLesson] = useState(false);
+    const [EditLessonIndex, setEditLessonIndex] = useState(-1);
+    const [editLesson, setEditLesson] = useState({date: null, start_time: new Date(), end_time: new Date()});
+
+    const [lessonsRangeStart, setLessonsRangeStart] = useState(new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate() - (current_date.getDay()), 0, 0, 0));
+    const [lessonsRangeEnd, setLessonsRangeEnd] = useState(new Date(lessonsRangeStart.getTime() + (DAY * 7)));
+
     const {subjects=[], tags:configTags=["AP, K12"], levels=[], class_colors=["gold", "red", "grey", "orange", "blue", "green"]} = app_config || {};
 
-    const {title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="white", tags=[], schedules=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error, archived=false, students=[]} = new_class;
+    const {title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="white", tags=[], schedules=[], custom_dates=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error, archived=false, students=[]} = new_class;
 
     const navigate = useNavigate();
 
     useEffect(() => {
         is_teacher && set_teachers([{...user}]);
     }, []);
+
+    useEffect(() => {
+        if(lessonsRangeStart.getTime() >= lessonsRangeEnd.getTime()){
+            setLessonsRangeEnd(new Date(lessonsRangeStart.getTime() + DAY));
+        }
+    }, [lessonsRangeStart]);
 
     // console.log(teachers);
     // console.log(new_class);
@@ -96,6 +115,45 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
 
         edit_new_class_value(keys, numeric?(Number(value) || value):value);
         setErrors(err => ({...err, [keys.join(".")]: ""}));
+    }
+
+    const onEditLessonValue = (key) => (value) => {
+        setEditLesson((el) => ({...el, [key]: value}));
+    }
+
+    const initEditLesson = (lesson, index) => {
+        setEditLesson({...lesson, index});
+    }
+
+    const onClickDoneEditLesson = () => {
+        if(EditLessonIndex !== -1){
+            custom_dates[EditLessonIndex] = {...editLesson, index: undefined}
+        }else{
+            custom_dates.push(editLesson);
+        }
+
+        edit_new_class_value(["custom_dates"], [...custom_dates]);
+
+        closeEditLesson();
+    }
+
+    const closeEditLesson = () => {
+        setShowEditLesson(false);
+
+        setEditLessonIndex(-1);
+        setEditLesson({date: null, start_time: new Date(), end_time: new Date()});
+    }
+
+    const openEditLesson = () => {
+        setShowEditLesson(true);
+    }
+
+    const closeDateRange = () => {
+        setShowDateRange(false);
+    }
+
+    const openDateRange = () => {
+        setShowDateRange(true);
     }
 
     const onAddTag = (tag) => {
@@ -176,7 +234,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     const createClass = async () => {
         set_loading(true);
         const formData = new FormData();
-        formData.append("_class", JSON.stringify({title, subject, cover_image, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, start_date, end_date, meeting_link, billing_schedule, archived, students: students.map((s) => s?._id || s).filter(unique_filter)}));
+        formData.append("_class", JSON.stringify({title, subject, cover_image, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, custom_dates, start_date, end_date, meeting_link, billing_schedule, archived, students: students.map((s) => s?._id || s).filter(unique_filter)}));
         if(coverPreview.file){
             formData.append("cover", coverPreview.file);
         }
@@ -201,6 +259,52 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
             searchTeachers(teacherSearch);
         }
     }, [teacherSearch, is_admin]);
+
+    const lessonsInRange = useMemo(() => {
+        const lessons = [];
+        lessonsRangeEnd.setHours(23, 59, 59);
+        const startDate = new Date(start_date);
+
+        if(lessonsRangeEnd.getTime() >= startDate.getTime()){
+            schedules.forEach((s) => {
+                const {days=[], daily_start_time, daily_end_time} = s;
+                // days.sort();
+
+                let current_lesson_date = new Date(lessonsRangeStart);
+                let current_lesson_day = current_lesson_date.getDay();
+
+                while(current_lesson_date.getTime() < lessonsRangeEnd.getTime()){
+                    current_lesson_day = current_lesson_date.getDay();
+
+                    if((startDate.getTime() <= current_lesson_date.getTime()) && days.includes(current_lesson_day)){
+                        lessons.push({date: new Date(current_lesson_date), start_time: new Date(daily_start_time), end_time: new Date(daily_end_time)});
+                    }
+
+                    const matching_custom_dates = custom_dates.filter((cd) => {
+                        let {date, start_time, end_time} = cd;
+                        date = new Date(date);
+                        const dateDay = date.getDay();
+
+                        if((dateDay === current_lesson_day) && (Math.abs(date.getTime() - current_lesson_date.getTime()) <= DAY)){
+                            return true;
+                        }
+
+                        return false;
+                    });
+
+                    lessons.push(...matching_custom_dates.map((cd) => ({date: new Date(cd.date), start_time: new Date(cd.start_time), end_time: new Date(cd.end_time), is_custom_date: true})))
+
+                    current_lesson_date.setDate(current_lesson_date.getDate() + 1);
+                }
+            });
+        }
+
+        lessons.sort((a, b) => {
+            return (a.date.getTime() + a.start_time.getTime()) - (b.date.getTime() + b.start_time.getTime());
+        });
+
+        return lessons;
+    }, [lessonsRangeStart, custom_dates, lessonsRangeEnd]);
 
     return (
         <div className='page edit-class new'>
@@ -362,6 +466,49 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
 
                 <button className='button primary' onClick={AddNewSchedule}>New Schedule</button>
                 
+                <div style={{display: "flex", justifyContent: "flex-end", marginTop: 50}}>
+                    <button onClick={createClass} className='button primary'>Create Class</button>
+                </div>
+
+                {error && <p className='error' style={{textAlign: "end"}}>{error}</p>}
+
+                <h3 style={{marginBlock: 20}}>Lessons</h3>
+
+                <div style={{marginBottom: 20}} className='filters-search-container'>
+                    <div className='filters-container'>
+                            <button className='button lesson-date-range' onClick={openDateRange}>
+                                {lessonsRangeStart.toLocaleDateString()} - {lessonsRangeEnd.toLocaleDateString()} <RiCalendar2Line style={{marginLeft: 10}} size={20} />
+                            </button>
+
+                            <button className='button primary lesson-date-range' onClick={openEditLesson}>
+                                Add Lesson
+                            </button>
+
+                            <EditLessonModal show={showEditLesson} onClose={closeEditLesson} newDate={editLesson.date} newStartTime={editLesson.start_time} newEndTime={editLesson.end_time} onClickDone={onClickDoneEditLesson} onPickNewDate={onEditLessonValue("date")} onPickNewStartTime={onEditLessonValue("start_time")} onPickNewEndTime={onEditLessonValue("end_time")} />
+
+                            <DateRangeModal show={showDateRange} onClose={closeDateRange} startDate={lessonsRangeStart} endDate={lessonsRangeEnd} onClickDone={closeDateRange} onPickStartDate={(v) => setLessonsRangeStart(v)} onPickEndDate={(v) => setLessonsRangeEnd(v)} />
+                    </div>
+                </div>
+                
+                <div className='table-container'>
+                    <table>
+                        <TableHead headers={[{label: "Date", id: "date", sortable: false}, {label: "Day", id: "day", sortable: false}, {label: "Start - End (Time)", id: "time", sortable: false}]} />
+
+                        <tbody>
+                            {lessonsInRange.map((l) => {
+                                const {date, start_time, end_time, is_custom_date=false} = l;
+                                return (
+                                    <tr style={{backgroundColor: is_custom_date?"rgba(255, 0, 100, 0.3)":"transparent"}}>
+                                        <td>{date.toLocaleDateString()}</td>
+                                        <td>{DAYS[date.getDay()].long}</td>
+                                        <td>{start_time.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {end_time.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+
                 <div style={{display: "flex", justifyContent: "flex-end", marginTop: 50}}>
                     <button onClick={createClass} className='button primary'>Create Class</button>
                 </div>

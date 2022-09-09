@@ -49,7 +49,7 @@ export const update_class_handler = async (req: Request, res: Response, next: Ne
 
         _class = JSON.parse(_class)
 
-        const current_class = get_class(_class._id, user);
+        const current_class = await get_class(_class._id, user);
         
         if((user.type === "admin") || (user.type === "teacher" && user._id.toString() === current_class.teacher._id.toString())){
             let {cover_image="", teacher=null} = _class;
@@ -67,6 +67,7 @@ export const update_class_handler = async (req: Request, res: Response, next: Ne
             throw new Error("Only admins or class' teachers can update classes");
         }
     }catch(e){
+        console.log(e);
         return res.status(400).json({success: false, msg: e.message});
     }
 }

@@ -110,7 +110,7 @@ export default (state=INITIAL_STATE, action) => {
         break;
 
         case UPDATE_CLASS:
-            new_state.edit = {...new_state.edit, ...payload._class};
+            new_state.edit = {...new_state.edit, ...payload._class, error: ""};
         break;
 
         case SET_CREATE_CLASS_ERROR:
