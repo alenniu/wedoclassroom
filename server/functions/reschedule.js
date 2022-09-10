@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
+const { populate_common_class_feilds } = require("./class");
 
 const Reschedules = mongoose.model("reschedule");
 const Reschedule = Reschedules;
+
+const Classes = mongoose.model("class");
+const Class = Classes;
 
 async function get_reschedule(reschedule_id, user){
     try{
@@ -74,9 +78,9 @@ async function get_class_reschedules(_class, limit=20, offset=0, filters={}, sor
     }
 }
 
-async function create_reschedule_request({_class, reason="", old_date, new_date=null, new_start_time=null, new_end_time=null}){
+async function create_reschedule_request({_class, reason="", old_date, old_start_time, old_end_time, new_date=null, new_start_time=null, new_end_time=null}){
     try{
-        const new_reschedule = await (new Reschedule({_class: _class._id, teacher: _class.teacher._id, reason, old_date: new Date(old_date), new_date: new_date && new Date(new_date), new_start_time: new_start_time && new Date(new_start_time), new_end_time: new_end_time && new Date(new_end_time), accepted: false, rejected: false})).save();
+        const new_reschedule = await (new Reschedule({_class: _class._id, teacher: _class.teacher._id, reason, old_date: new Date(old_date), old_start_time: new Date(old_start_time), old_end_time: new Date(old_end_time), new_date: new_date && new Date(new_date), new_start_time: new_start_time && new Date(new_start_time), new_end_time: new_end_time && new Date(new_end_time), accepted: false, rejected: false})).save();
 
         await new_reschedule.populate({path: "teacher", select: "-password"});
         await new_reschedule.populate({path: "_class"});
@@ -90,7 +94,20 @@ async function create_reschedule_request({_class, reason="", old_date, new_date=
 
 async function accept_reschedule_request(reschedule_id, {new_date, new_start_time, new_end_time}, user){
     try{
-        return await Reschedules.findOneAndUpdate({_id: reschedule_id/*, rejected: false*/}, {$set: {accepted: true, rejected: false, handled_by: user._id, new_date: new Date(new_date), new_start_time: new Date(new_start_time), new_end_time: new Date(new_end_time)}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"})/*.populate({path: "handled_by", select: "-password"})*/.populate({path: "_class"}).lean(true);
+
+        const updated_reschedule = await Reschedules.findOneAndUpdate({_id: reschedule_id/*, rejected: false*/}, {$set: {accepted: true, rejected: false, handled_by: user._id, new_date: new Date(new_date), new_start_time: new Date(new_start_time), new_end_time: new Date(new_end_time)}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"})/*.populate({path: "handled_by", select: "-password"})*/.populate({path: "_class"}).lean(true);
+        
+        if(updated_reschedule){
+            const {old_date, old_start_time=new Date(), old_end_time=new Date(), new_date, new_start_time, new_end_time} = updated_reschedule;
+    
+            const updated_class = await Classes.findOneAndUpdate({_id: updated_reschedule._class._id}, {$push: {cancelled_dates: {date: old_date, start_time: old_start_time, end_time: old_end_time}, custom_dates: {date: new_date, start_time: new_start_time, end_time: new_end_time}}}, {new: true, upsert: false});
+
+            await populate_common_class_feilds(updated_class);
+
+            return {updated_reschedule, updated_class};
+        }
+
+        throw new Error("Could not find reschedule");
     }catch(e){
         throw e;
     }

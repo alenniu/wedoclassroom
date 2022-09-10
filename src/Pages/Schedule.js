@@ -4,11 +4,12 @@ import { get_classes_schedules, get_my_classes, set_loading } from '../Actions';
 import { useNavigate } from 'react-router-dom';
 import NewSchedule from '../Components/Dashboard/NewSchedule';
 import { DAY, get_week_date_range, MONTHS } from '../Data';
-import { debounce, get_full_image_url } from '../Utils';
+import { debounce, get_full_image_url, get_week_end, get_week_start } from '../Utils';
 import { api } from '../Utils/api';
 import { TypeSelect } from '../Components/Common';
 
 import "./Schedule.css";
+import { is_same_lesson } from '../Utils/app';
 
 const RenderUserOption = ({label, value, user}) => {
     return (
@@ -61,20 +62,82 @@ const RenderClassValue = ({label, value, _class}) => {
 const CALENDAR_FILTERS = [{label: "Student", name: "students", renderOption: RenderUserOption, renderValue: RenderUserValue}, {label: "Teacher", name: "teacher", renderOption: RenderUserOption, renderValue: RenderUserValue}, {label: "Class", name: "_id", renderOption: RenderClassOption, renderValue: RenderClassValue}, {label: "Subject", name: "subject", renderOption: null}, {label: "Level", name: "level", renderOption: null}, {label: "Class Type", name: "class_type", renderOption: null}];
 
 const SchedulePage = ({app_config, classes_schedules=[], reschedules=[], get_classes_schedules, is_admin, is_sales, is_teacher, is_student, set_loading}) => {
+
+    
+    const current_date = new Date();
+    
+    const [calendarSearch, setCalendarSearch] = useState("");
+    const [calendarFilters, setCalendarFilters] = useState({});
+    const [timeSpan, setTimeSpan] = useState(7 * DAY);
+    const [dateRange, setDateRange] = useState({min: get_week_start(current_date), max: get_week_end(current_date)});
+    
+    const [selectTeachers, setSelectTeachers] = useState([]);
+    const [SelectStudents, setSelectStudents] = useState([]);
+    const [selectClasses, setSelectClasses] = useState([]);
+    
     const {subjects=[], levels=[]} = app_config || {};
 
     const schedules = useMemo(() => classes_schedules.flatMap(({schedules, ...c}) => {
         return  schedules.map((s) => ({...s, ...c}));
     }), [classes_schedules]);
-    
-    const [calendarSearch, setCalendarSearch] = useState("");
-    const [calendarFilters, setCalendarFilters] = useState({});
-    const [timeSpan, setTimeSpan] = useState(7 * DAY);
-    const [dateRange, setDateRange] = useState(null);
 
-    const [selectTeachers, setSelectTeachers] = useState([]);
-    const [SelectStudents, setSelectStudents] = useState([]);
-    const [selectClasses, setSelectClasses] = useState([]);
+    const lessonsInRange = useMemo(() => {
+        const lessons = [];
+        // dateRange.max.setHours(23, 59, 59);
+        
+        schedules.forEach((s) => {
+            const {days=[], daily_start_time, daily_end_time, timzone, ..._class} = s;
+            const {start_date, end_date, custom_dates=[], cancelled_dates=[]} = _class;
+
+            const startDate = new Date(start_date);
+            const endDate = new Date(end_date);
+
+            if(dateRange.max.getTime() >= startDate.getTime()){
+                endDate.setHours(23, 59, 59);
+
+                let current_lesson_date = new Date(dateRange.min);
+                let current_lesson_day = current_lesson_date.getDay();
+
+                while((current_lesson_date.getTime() < dateRange.max.getTime() && (current_lesson_date.getTime() < endDate.getTime()))){
+                    current_lesson_day = current_lesson_date.getDay();
+
+                    if((startDate.getTime() <= current_lesson_date.getTime()) && days.includes(current_lesson_day)){
+                        const lesson = {date: new Date(current_lesson_date), start_time: new Date(daily_start_time), end_time: new Date(daily_end_time), ..._class};
+
+                        lessons.push({...lesson, is_custom_date: false, is_cancelled: cancelled_dates.some((cad) => is_same_lesson(lesson, cad))});
+                    }
+
+                    const matching_custom_dates = custom_dates.filter((cd) => {
+                        let {date, start_time, end_time} = cd;
+                        date = new Date(date);
+                        const dateDay = date.getDay();
+
+                        if((dateDay === current_lesson_day) && (Math.abs(date.getTime() - current_lesson_date.getTime()) <= DAY)){
+                            return true;
+                        }
+
+                        return false;
+                    });
+
+                    lessons.push(...matching_custom_dates.map((cd) => ({date: new Date(cd.date), start_time: new Date(cd.start_time), end_time: new Date(cd.end_time), is_custom_date: true, is_cancelled: cancelled_dates.some((cad) => is_same_lesson(cd, cad)), ..._class})))
+
+                    current_lesson_date.setDate(current_lesson_date.getDate() + 1);
+                }
+            }
+        });
+
+        lessons.sort((a, b) => {
+            const aDate = new Date(a.date); aDate.setHours(0, 0, 0);
+            const bDate = new Date(b.date); bDate.setHours(0, 0, 0);
+
+            const aHours = a.start_time.getHours() + (a.start_time.getMinutes()/60);
+            const bHours = b.start_time.getHours() + (b.start_time.getMinutes()/60);
+
+            return (aDate.getTime() + aHours) - (bDate.getTime() + bHours);
+        });
+
+        return lessons;
+    }, [schedules]);
 
     const getStudents = useCallback(debounce(async (search) => {
         const res = await api("get", "/api/admin/accounts", {params: {search, limit: 20, offset: 0, filters: JSON.stringify({type: "student"})}});
@@ -184,18 +247,6 @@ const SchedulePage = ({app_config, classes_schedules=[], reschedules=[], get_cla
     const navigate = useNavigate();
 
     useEffect(() => {
-        const current_date = new Date();
-        const current_day = current_date.getDay();
-        const min = new Date(current_date.getTime() - (current_day * DAY));
-        const max = new Date(current_date.getTime() + ((7-current_day) * DAY));
-
-        min.setHours(0, 0, 0);
-        max.setHours(23, 59, 59);
-
-        setDateRange({min, max});
-    }, []);
-
-    useEffect(() => {
         get_schedules(dateRange, calendarFilters, calendarSearch);
     }, [dateRange, calendarFilters, calendarSearch]);
 
@@ -220,7 +271,7 @@ const SchedulePage = ({app_config, classes_schedules=[], reschedules=[], get_cla
                         </div>
                     </div>
                 </div>
-                <NewSchedule schedules={schedules} reschedules={reschedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_teacher={is_teacher} is_sales={is_sales} />
+                <NewSchedule lessons={lessonsInRange} reschedules={reschedules} date_range={dateRange} onClickNextDateRange={getNextDateRange} onClickPrevDateRange={getPrevDateRange} is_admin={is_admin} is_teacher={is_teacher} is_sales={is_sales} />
             </div>
         </div>
     );

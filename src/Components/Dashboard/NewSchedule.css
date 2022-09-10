@@ -77,6 +77,10 @@
     opacity: 0.3;
 }
 
+.new-schedule-calender .schedule-event.custom{
+    border: 3px dotted #ECECEC;
+}
+
 .new-schedule-calender .schedule-event p{
     overflow: hidden;
     text-overflow: ellipsis;

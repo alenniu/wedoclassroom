@@ -24,6 +24,15 @@ async function get_class(class_id, user){
     }
 }
 
+async function populate_common_class_feilds(_class){
+    await _class.populate({path: "sessions"});
+    await _class.populate({path: "teacher", select: "-password" });
+    await _class.populate({path: "students", select: "-password"});
+    await _class.populate({path: "current_session", populate: {path: "students", select: "-password"}});
+
+    return _class;
+}
+
 async function get_available_classes(limit=20, offset=0, search="", sort={}, filters={}){
     try{
         let classes = [];
@@ -158,11 +167,13 @@ async function end_class({_class}, user){
     }
 }
 
-async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], custom_dates=[], start_date, end_date, billing_schedule, archived=false, meeting_link, students=[]}, creator){
+async function create_class({title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, discount=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], custom_dates=[], cancelled_dates=[], start_date, end_date, billing_schedule, archived=false, meeting_link, students=[], students_info=[]}, creator){
     try{
         if(title && subject && class_type){
-            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, bg_color, text_color, students, schedules: schedules.map((s) => ({...s, daily_start_time: (new Date(s.daily_start_time).getTime()), daily_end_time: (new Date(s.daily_end_time).getTime())})), custom_dates, start_date: new Date(start_date), end_date: new Date(end_date), billing_schedule, meeting_link, archived, is_full: students.length >= max_students, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
+            const new_class = await ((new Class({title, subject, cover_image, description, max_students, level, price, discount, bg_color, text_color, students, students_info, schedules: schedules.map((s) => ({...s, daily_start_time: (new Date(s.daily_start_time).getTime()), daily_end_time: (new Date(s.daily_end_time).getTime())})), custom_dates, cancelled_dates, start_date: new Date(start_date), end_date: new Date(end_date), billing_schedule, meeting_link, archived, is_full: students.length >= max_students, teacher: teacher || null, tags, created_by: creator._id, class_type, popularity: 0})).save());
 
+            await fake_class_requests({student_ids: students, _class: new_class}, creator);
+            
             return new_class;
         }else{
             throw new Error("subject, title and class type must be provided")
@@ -172,11 +183,13 @@ async function create_class({title, subject, cover_image="", description, teache
     }
 }
 
-async function update_class({_id, title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], custom_dates=[], start_date, end_date, billing_schedule, archived=false, meeting_link, students=[]}){
+async function update_class({_id, title, subject, cover_image="", description, teacher=null, class_type, max_students=1, level, price=0, discount=0, tags=[], bg_color="#000000", text_color="#FFFFFF", schedules=[], custom_dates=[], cancelled_dates=[], start_date, end_date, billing_schedule, archived=false, meeting_link, students=[], students_info=[]}, user){
     try{
         if(title && subject && class_type){
-            const updated_class = await Classes.findOneAndUpdate({_id}, {$set: {title, subject, cover_image, description, teacher: teacher?._id || teacher, class_type, max_students, level, price, tags, bg_color, text_color, schedules, custom_dates, start_date, end_date, billing_schedule, meeting_link, students, archived, is_full: students.length >= max_students}}, {new: true, upsert: false});
-
+            const updated_class = await Classes.findOneAndUpdate({_id}, {$set: {title, subject, cover_image, description, teacher: teacher?._id || teacher, class_type, max_students, level, price, discount, tags, bg_color, text_color, schedules, custom_dates, cancelled_dates, start_date, end_date, billing_schedule, meeting_link, students, students_info, archived, is_full: students.length >= max_students}}, {new: true, upsert: false});
+            
+            await fake_class_requests({student_ids: students, _class: updated_class}, user);
+            
             return updated_class;
         }else{
             throw new Error("subject, title and class type must be provided")
@@ -189,7 +202,7 @@ async function update_class({_id, title, subject, cover_image="", description, t
 async function add_student_to_class({student_id, class_id, request}){
     try{
         if(student_id && class_id){
-            const students_info = {student: student_id, date_requested: new Date(request.createdAt), date_joined: new Date(), price_paid: request._class.price};
+            const students_info = {student: student_id, date_requested: new Date(request.createdAt), date_joined: new Date(), price_paid: request.class_price_at_time || request._class.price};
 
             const updated_class = await Classes.findOneAndUpdate({_id: class_id, students: {$ne: student_id}}, {$push: {students: student_id, students_info}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password"}).populate({path: "students", select: "-password"});
 
@@ -243,10 +256,31 @@ async function add_teacher_to_class({teacher_id, class_id}){
     }
 }
 
+async function create_and_accept_request({student_id, _class}, user){
+    let new_request = await request_class({_class, student: {_id: student_id}});
+    new_request = await accept_fake_request({request_id: new_request._id}, user);
+    return new_request;
+}
+
+async function fake_class_requests({student_ids=[], _class}, user){
+    for(const student_id of student_ids){
+        let existing_request = await Request.findOne({_class: _class._id, student: student_id, rejected: false});
+
+        if(existing_request){
+            if(!existing_request.accepted){ // is unhandled
+                existing_request = await accept_fake_request({request_id: existing_request._id}, user);
+                continue;
+            }
+        }
+
+        await create_and_accept_request({student_id, _class}, user);
+    }
+}
+
 async function request_class({_class, student}){
     try{
         if(_class && student){
-            const new_request = await ((new Request({_class: _class._id, student: student._id})).save());
+            const new_request = await ((new Request({_class: _class._id, class_price_at_time: _class.price, student: student._id})).save());
 
             await new_request.populate({path: "student", select: "-password"});
 
@@ -254,7 +288,21 @@ async function request_class({_class, student}){
 
             return new_request;
         }else{
-            throw new Error("_class and student must be provide")
+            throw new Error("_class and student must be provided")
+        }
+    }catch(e){
+        throw e;
+    }
+}
+
+async function accept_fake_request({request_id}, handler){ //handler is the user accepting/declining the request
+    try{
+        if(request_id){
+            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: true, declined: false, handled_by: handler._id}}, {new: true, upsert: false, }).populate({path: "student", select: "-password"}).populate("_class");
+
+            return request;
+        }else{
+            throw new Error("no request provided");
         }
     }catch(e){
         throw e;
@@ -398,8 +446,11 @@ async function get_classes_schedules({startPeriod, endPeriod}, filters={}, searc
                 filters[key] = new mongoose.Types.ObjectId(filters[key]);
             };
         });
+
+        startPeriod = new Date(startPeriod);
+        endPeriod = new Date(endPeriod);
     
-        const match = {$and: [{end_date: {$gte: new Date(startPeriod)}, start_date: {$lte: new Date(endPeriod)}}, {$or: [{archived: false}, {archived: {$exists: false}}]}, {...filters}]};
+        const match = {$and: [{$or: [{end_date: {$gte: startPeriod}, start_date: {$lte: endPeriod}}, {custom_dates: {$elemMatch: {date: {$gte: startPeriod, $lte: endPeriod}}}}]}, {$or: [{archived: false}, {archived: {$exists: false}}]}, {...filters}]};
     
         if(!is_admin_or_sales){
             match.$or = match.$or || [];
@@ -415,10 +466,7 @@ async function get_classes_schedules({startPeriod, endPeriod}, filters={}, searc
 
         // console.log(JSON.stringify(match));
     
-        const schedules = await Classes.aggregate([
-            {$match: match},
-            {$project: {_id: 1, title: 1, subject: 1, description: 1, tags: 1, bg_color: 1, text_color: 1, current_session: 1, cover_image: 1, students: 1, schedules: 1, start_date: 1, end_date: 1}}
-        ]);
+        const schedules = await Classes.find(match, {_id: 1, title: 1, subject: 1, description: 1, tags: 1, bg_color: 1, text_color: 1, current_session: 1, cover_image: 1, students: 1, schedules: 1, custom_dates: 1, cancelled_dates: 1, start_date: 1, end_date: 1});
     
         return schedules;
     }catch(e){
@@ -450,3 +498,4 @@ module.exports.get_available_classes = get_available_classes;
 module.exports.add_attachment_to_class = add_attachment_to_class;
 module.exports.get_class_payment_intent = get_class_payment_intent;
 module.exports.remove_student_from_class = remove_student_from_class;
+module.exports.populate_common_class_feilds = populate_common_class_feilds;

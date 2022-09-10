@@ -1,6 +1,6 @@
 import { ADD_NEW_CLASS_ANNOUNCEMENT, ADD_NEW_CLASS_ASSIGNMENT, CREATE_CLASS_ANNOUNCEMENT, CREATE_CLASS_ASSIGNMENT, LOGOUT, SET_CLASS, SET_CLASS_ANNOUNCEMENTS, SET_CLASS_ASSIGNMENTS, SET_CONFIG, SET_CURRENT_CLASS, SET_LOADING, SET_NAV_OPEN, SET_OPEN_NOTIFICATIONS, SET_USER, TOGGLE_NAV, TOGGLE_NOTIFICATIONS, UPDATE_CLASS_ANNOUNCEMENT, UPDATE_CLASS_ASSIGNMENT } from "../Actions/types";
 
-const INITIAL_STATE = {user: null, current_class: {}, class_assignments: [], total_class_assignments: 0, class_announcements: [], total_class_announcements: 0, loading: false, nav_open: true, open_notifications: false, config: null};
+const INITIAL_STATE = {user: null, current_class: {}, class_assignments: [], total_class_assignments: 0, class_announcements: [], total_class_announcements: 0, loading: false, nav_open: false, open_notifications: false, config: null};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;

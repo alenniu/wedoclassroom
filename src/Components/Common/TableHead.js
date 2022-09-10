@@ -3,16 +3,29 @@ import {BsArrowUp} from "react-icons/bs"
 
 import "./TableHead.css";
 
-const TableHead = ({headers=[], sticky=false, order="", orderBy="", onSort}) => {
+type Header = {
+    label: String,
+    id: String,
+    sortable?: Boolean
+};
 
-    
-    const onSortTable = (e, {label, id, sortable}, index) => {
-        sortable !== false && typeof(onSort) === "function" && onSort(e, {label, id}, index);
+type OnSort = (event: React.MouseEvent<HTMLTableCellElement>, header: Header, index: Number) => void;
+
+const TableHead = ({headers=[], selectable=false, allSelected=false, sticky=false, order="", orderBy="", onSort, onSelect}: {headers: [Header], selectable: Boolean, sticky: Boolean, order: String, orderBy: String, onSort: OnSort}) => {
+
+    const onSelectAll = (e) => {
+        typeof(onSelect) === "function" && onselect(e);
+    }
+
+    const onSortTable = (e, header, index) => {
+        header.sortable !== false && typeof(onSort) === "function" && onSort(e, header, index);
     }
     
     return (
         <thead className={sticky?"sticky":""}>
             <tr>
+                {selectable && <th><label className="checkbox-container"><input type="checkbox" onChange={onSelectAll} checked={allSelected}/><span className="checkmark"></span></label></th>}
+                
                 {headers.map(({label, id, sortable}, i) => {
                     const is_sorted = id === orderBy;
                     const isAsc = (orderBy === id) && (order === "asc");

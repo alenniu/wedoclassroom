@@ -6,6 +6,10 @@ const request_schema = new schema({
         type: schema.Types.ObjectId,
         ref: "class"
     },
+    class_price_at_time: {
+        type: Number,
+        default: 0
+    },
     student: {
         type: schema.Types.ObjectId,
         ref: "user"

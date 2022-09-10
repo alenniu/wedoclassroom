@@ -74,12 +74,12 @@ export const get_class_reschedules_handler = async (req: Request, res: Response,
 export const request_class_reschedule_handler = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {user, socket_io} = req;
-        const {_class, reason, old_date, new_date=null, new_start_time=null, new_end_time=null} = req.body;
+        const {_class, reason, old_date, old_start_time, old_end_time, new_date=null, new_start_time=null, new_end_time=null} = req.body;
 
         const current_class = await get_class(_class._id, user);
 
         if(current_class){
-            const reschedule = await create_reschedule_request({_class, reason, old_date, new_date, new_start_time, new_end_time}, user);
+            const reschedule = await create_reschedule_request({_class, reason, old_date, old_start_time, old_end_time, new_date, new_start_time, new_end_time}, user);
 
             if(reschedule){
                 const users = await Users.find({type: "admin"}, {email: 1});
@@ -125,17 +125,16 @@ export const accept_class_reschedule_handler = async (req: Request, res: Respons
         const {reschedule_id} = req.params;
         const {new_date=null, new_start_time=null, new_end_time=null} = req.body;
 
-        const reschedule = await accept_reschedule_request(reschedule_id, {new_date, new_start_time, new_end_time}, user);
+        const {updated_reschedule:reschedule, updated_class} = await accept_reschedule_request(reschedule_id, {new_date, new_start_time, new_end_time}, user);
 
         if(reschedule){
             try{
-                const current_class = await get_class(reschedule._class._id, user);
-                const users = await Users.find({_id: {$in: [...current_class.students.map((s) => s._id), current_class.teacher._id]}}, {_id: 1, email: 1});
+                const users = await Users.find({_id: {$in: [...updated_class.students.map((s) => s._id), updated_class.teacher._id]}}, {_id: 1, email: 1});
 
                 const user_emails = users.map((u) => u.email);
                 const user_ids = users.map((u) => u._id.toString());
 
-                let reschedule_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_RESCHEDULE, text: `${current_class.title} has been rescheduled.`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: current_class, reschedule}});
+                let reschedule_notification = await create_notification({type: NOTIFICATION_TYPE_CLASS_RESCHEDULE, text: `${updated_class.title} has been rescheduled.`, attachments: [], from: user._id, to: user_ids, everyone: false, everyone_of_type: [], excluded_users: [], metadata: {_class: updated_class, reschedule}});
 
                 reschedule_notification = reschedule_notification.toObject();
                 delete reschedule_notification.to;
@@ -143,7 +142,7 @@ export const accept_class_reschedule_handler = async (req: Request, res: Respons
                 delete reschedule_notification.excluded_users;
                 delete reschedule_notification.everyone_of_type;
                 
-                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, reschedule_notification, {dispatchObj: {type: UPDATE_CLASS_RESCHEDULE, payload: {reschedule}}});
+                socket_io?.to(user_ids).emit(SOCKET_EVENT_NOTIFICATION, reschedule_notification, {dispatchObj: {type: UPDATE_CLASS_RESCHEDULE, payload: {reschedule, _class: updated_class}}});
 
                 const mail = new Mail({subject: "Class Rescheduled", recipients: user_emails, sender: APP_EMAIL}, {html: "Class Rescheduled", text: "Class Rescheduled"});
     
@@ -154,7 +153,7 @@ export const accept_class_reschedule_handler = async (req: Request, res: Respons
                 console.log(e)
             }
 
-            return res.json({success: true, reschedule});
+            return res.json({success: true, reschedule, _class: updated_class});
         }else{
             throw new Error("Reschedule not found");
         }

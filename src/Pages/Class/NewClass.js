@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { create_new_class, edit_new_class_value, get_teachers, set_loading, set_teachers } from '../../Actions';
-import {RiImageAddLine, RiCloseCircleFill, RiCalendar2Line} from "react-icons/ri";
+import {RiImageAddLine, RiCloseCircleFill, RiCalendar2Line, RiCloseLine} from "react-icons/ri";
 import {BsCurrencyDollar} from "react-icons/bs";
-import {Switch, TextField} from '@mui/material';
+import {MenuItem, Select, Switch, TextField} from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -52,6 +52,9 @@ const schedules = [{days: [], start_time: "", end_time: ""}];
 
 const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config={}, is_admin, is_teacher, get_teachers, edit_new_class_value, create_new_class, set_teachers, set_loading}) => {
 
+    const [studentToAdd, setStudentToAdd] = useState("");
+    const [studentSearch, setStudentSearch] = useState("");
+    
     const [teacherSearch, setTeacherSearch] = useState("");
     const [coverPreview, setCoverPreview] = useState({file: null, url: ""});
     const [errors, setErrors] = useState({});
@@ -69,7 +72,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
 
     const {subjects=[], tags:configTags=["AP, K12"], levels=[], class_colors=["gold", "red", "grey", "orange", "blue", "green"]} = app_config || {};
 
-    const {title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="white", tags=[], schedules=[], custom_dates=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error, archived=false, students=[]} = new_class;
+    const {title="", subject="", cover_image="", description="", level="", class_type="", teacher=is_teacher?user._id:"", price=0, max_students=1, bg_color="#CCEABB", text_color="white", tags=[], schedules=[], custom_dates=[], cancelled_dates=[], start_date=(new Date()), end_date=(new Date()), meeting_link="", billing_schedule="", error, archived=false, students=[], students_info=[]} = new_class;
 
     const navigate = useNavigate();
 
@@ -94,10 +97,16 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
         setStudentResults(res?.data?.accounts || []);
     }, 300), []);
 
+    useEffect(() => {
+        if(studentSearch){
+            getStudents(studentSearch);
+        }
+    }, [studentSearch]);
+
     const onChangeStudentListText = (e) => {
         const {name, value, checked, type} = e.target;
 
-        getStudents(value);
+        setStudentSearch(value)
     }
 
     const onChangeValueEvent = (keys=[], numeric=false) => (e, val) => {
@@ -170,16 +179,29 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     }
 
     const onAddStudent = (student) => {
-        students.push(student);
-
+        if(student && !students.some((s) => s._id === student._id)){
+            students.push(student);
+            students_info.push({student: student._id, price_paid: price, date_requested: new Date(), date_joined: new Date(), form_type: "new"})
+        }
+        
+        setStudentToAdd("");
+        
         edit_new_class_value(["students"], students);
+        edit_new_class_value(["students_info"], students_info);
         setErrors(err => ({...err, students: ""}));
     }
 
     const onRemoveStudent = (index, student) => {
         students.splice(index, 1);
 
+        const student_info_index = students_info.findIndex((si) => si.student === student._id);
+        
+        if(student_info_index !== -1){
+            students_info.splice(student_info_index, 1);
+        }
+
         edit_new_class_value(["students"], students);
+        edit_new_class_value(["students_info"], students_info);
         setErrors(err => ({...err, students: ""}));
     }
     
@@ -234,7 +256,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
     const createClass = async () => {
         set_loading(true);
         const formData = new FormData();
-        formData.append("_class", JSON.stringify({title, subject, cover_image, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, custom_dates, start_date, end_date, meeting_link, billing_schedule, archived, students: students.map((s) => s?._id || s).filter(unique_filter)}));
+        formData.append("_class", JSON.stringify({title, subject, cover_image, description, level, class_type, teacher, price, max_students, bg_color, text_color, tags, schedules, custom_dates, cancelled_dates, start_date, end_date, meeting_link, billing_schedule, archived, students_info, students: students.map((s) => s?._id || s).filter(unique_filter)}));
         if(coverPreview.file){
             formData.append("cover", coverPreview.file);
         }
@@ -414,11 +436,64 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
                     />:<input type="text" value={archived?"Yes":"No"} readOnly style={{color: archived?"red":"green"}} />}
                 </div>
 
-                {is_admin && <div className='input-container fullwidth'>
-                    <label>Students</label>
+                {is_admin && <div className="students-container">
+                    <h2>Students</h2>
+                    
+                    <div style={{marginBottom: 20}} className='filters-search-container'>
+                        <div className='filters-container'>
+                            <div className='input-container select' style={{margin: 0}}>
+                                <TypeSelect options={studentResults.map((t) => ({label: `${t.name.first} ${t.name.last}`, value: t._id, teacher: t}))} placeholder="Select Student" onChangeText={onChangeStudentListText} renderOption={RenderTeacherOption} renderSelected={RenderTeacherOption} onChange={(value, index) => {setStudentToAdd(studentResults[index])}} value={studentToAdd?._id || ""} onOpen={() => {getStudents("")}} localSearch={false} />
+                            </div>
+
+                            <button className='button primary lesson-date-range' onClick={() => {onAddStudent(studentToAdd)}}>
+                                Add Student
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className='table-container' style={{marginBlock: 20}}>
+                        <table>
+                            <TableHead headers={[{label: "Student", id: "student", sortable: false}, {label: "Price Paid", id: "price_paid", sortable: false}, {label: "Date Joined", id: "date_joined", sortable: false}, {label: "Form Type", id: "form_type", sortable: false}]} />
+
+                            <tbody>
+                            {students.map((s, i) => {
+                                const {_id, name={}} = s;
+                                let student_info_index = students_info.findIndex((si) => si.student === _id);
+
+                                if(student_info_index === -1){
+                                    students_info.push({student: _id, price_paid: price, date_requested: new Date(), date_joined: new Date(), form_type: "new"});
+
+                                    edit_new_class_value(["students_info"], students_info);
+
+                                    return null
+                                }
+
+                                const student_info = students_info[student_info_index] || {};
+                                const {price_paid=0, date_joined=new Date(), form_type=""} = student_info;
+
+                                return (
+                                    <tr key={_id}>
+                                        <td><button className='button error' onClick={() => {onRemoveStudent(i, s)}}><RiCloseLine /></button> {name.first} {name.last}</td>
+
+                                        <td><div className='input-container' style={{margin: 0, width: "unset", "--input-height": "40px"}}><input type="number" min="" placeholder="Price Paid" style={{paddingLeft: 50}} onChange={onChangeValueEvent(["students_info", student_info_index, "price_paid"])} value={price_paid} /><div className='input-adornment start' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}><BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} /></div></div></td>
+                                        
+                                        <td>{(new Date(date_joined)).toLocaleDateString()}</td>
+                                        
+                                        <td><div className='input-container select' style={{margin: 0}}><Select options={[{label: "Trial", value: "trial"}, {label: "Addition", value: "addition"}, {label: "New", value: "new"}, {label: "Credits", value: "credits"}]} onChange={onChangeValueEvent(["students_info", student_info_index, "form_type"])} value={form_type} localSearch={false}>
+                                            <MenuItem value="trial" id="trial">Trial</MenuItem>
+                                            <MenuItem value="addition" id="addition">Addition</MenuItem>
+                                            <MenuItem value="new" id="new">New</MenuItem>
+                                            <MenuItem value="credits" id="credits">Credits</MenuItem>
+                                        </Select></div></td>
+                                    </tr>
+                                )
+                            })}
+                            </tbody>
+                        </table>
+                    </div>
                     
                     {/* <input disabled={!is_admin || !is_class_teacher} type="text" placeholder='math, english, beginner, advance etc...' /> */}
-                    <ListInput items={students} RenderItem={RenderStudentItem} RenderSuggestion={RenderStudentItem} render_property="_id" onAddItem={onAddStudent} onRemoveItem={onRemoveStudent} disableAdding={!is_admin || (max_students <= (students?.length || 0))} onChangeText={onChangeStudentListText} search_array={studentResults} localSearch={false} />
+                    {/* <ListInput items={students} RenderItem={RenderStudentItem} RenderSuggestion={RenderStudentItem} render_property="_id" onAddItem={onAddStudent} onRemoveItem={onRemoveStudent} disableAdding={!is_admin || (max_students <= (students?.length || 0))} onChangeText={onChangeStudentListText} search_array={studentResults} localSearch={false} /> */}
                 </div>}
 
                 <h3>Weekly Schedule</h3>
@@ -476,11 +551,11 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
 
                 <div style={{marginBottom: 20}} className='filters-search-container'>
                     <div className='filters-container'>
-                            <button className='button lesson-date-range' onClick={openDateRange}>
+                            <button className='button secondary lesson-date-range' onClick={openDateRange}>
                                 {lessonsRangeStart.toLocaleDateString()} - {lessonsRangeEnd.toLocaleDateString()} <RiCalendar2Line style={{marginLeft: 10}} size={20} />
                             </button>
 
-                            <button className='button primary lesson-date-range' onClick={openEditLesson}>
+                            <button className='button primary lesson-date-range' /* onClick={openEditLesson} */ disabled title="Add lessons on edit page after creating">
                                 Add Lesson
                             </button>
 
@@ -498,7 +573,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
                             {lessonsInRange.map((l) => {
                                 const {date, start_time, end_time, is_custom_date=false} = l;
                                 return (
-                                    <tr style={{backgroundColor: is_custom_date?"rgba(255, 0, 100, 0.3)":"transparent"}}>
+                                    <tr style={{backgroundColor: is_custom_date?"rgba(0, 100, 255, 0.3)":"transparent"}}>
                                         <td>{date.toLocaleDateString()}</td>
                                         <td>{DAYS[date.getDay()].long}</td>
                                         <td>{start_time.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {end_time.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</td>

@@ -11,12 +11,12 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: "600px",
     maxWidth: "80%",
-    bgcolor: 'background.paper',
+    backgroundColor: 'background.paper',
     boxShadow: 24,
     borderRadius: "8px"
 };
 
-const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldDate, onPickNewDate, onPickNewStartTime, onPickNewEndTime, newStartTime, newEndTime, onChangeReason, reason, end_date, onClose, onRequestReschedule, newTimeOnly=false, acceptRequest}) => {
+const RescheduleModal = ({show=false, validDays=[], newDate, onPickNewDate, onPickNewStartTime, onPickNewEndTime, newStartTime, newEndTime, onChangeReason, reason, end_date, onClose, onRequestReschedule, newTimeOnly=false, acceptRequest}) => {
     const [step, setStep] = useState(0);
     const [selectNewDate, setSelectNewDate] = useState(true);
 
@@ -43,22 +43,11 @@ const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldD
         <Modal open={show} onClose={onClose}>
             <Box sx={style}>
                 <Slide in={show} direction="up">
+                
                 <div style={{width: "100%", display: "flex", flexWrap: "nowrap", overflow: "hidden"}}>
-                    {!newTimeOnly && <div style={{transition: "transform .500s", width: "100%", flexShrink: 0, transform: `translateX(${-100 * step}%)`, padding: "20px", paddingTop: "50px"}}>
-                        <label>Select Old Date</label>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <StaticDatePicker displayStaticWrapperAs="desktop" shouldDisableDate={(day) => !validDays.includes(day.getDay())} disablePast maxDate={new Date(end_date)} value={oldDate} renderInput={(params) => <TextField {...params} />} onChange={onPickOldDate} label="Select Old Date"  />
-                        </LocalizationProvider>
-
-                        <div style={{textAlign: "end"}}>
-                            <button className="button primary" disabled={!oldDate} onClick={() => setStep(1)}>NEXT</button>
-                        </div>
-                    </div>}
-
                     <div style={{transition: "transform .500s", width: "100%", flexShrink: 0, transform: `translateX(${-100 * step}%)`, padding: "20px"}}>
                         <span style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                             <span style={{display: "flex", alignItems: "center"}}>
-                                <span className='clickable' onClick={() => setStep(0)}><RiArrowLeftSLine size={30} /></span>
                                 <label>Select New Date</label>
                             </span>
                             {!newTimeOnly && <span>
@@ -81,7 +70,7 @@ const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldD
                         </LocalizationProvider>
 
                         {!newTimeOnly && <div style={{textAlign: "end"}}>
-                            <button className="button primary" disabled={selectNewDate && (!newDate || !newStartTime || !newEndTime)} onClick={() => setStep(2)}>NEXT</button>
+                            <button className="button primary" disabled={selectNewDate && (!newDate || !newStartTime || !newEndTime)} onClick={() => setStep(1)}>NEXT</button>
                         </div>}
 
                         {newTimeOnly && <div style={{textAlign: "end"}}>
@@ -91,7 +80,7 @@ const RescheduleModal = ({show=false, validDays=[], oldDate, newDate, onPickOldD
 
                     {!newTimeOnly && <div style={{transition: "transform .500s", width: "100%", flexShrink: 0, transform: `translateX(${-100 * step}%)`, padding: "20px"}}>
                         <span style={{display: "flex", alignItems: "center"}}>
-                            <span className='clickable' onClick={() => setStep(1)}><RiArrowLeftSLine size={30} /></span>
+                            <span className='clickable' onClick={() => setStep(0)}><RiArrowLeftSLine size={30} /></span>
                             <label>Give A Reason (Optional)</label>
                         </span>
 

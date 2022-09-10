@@ -544,11 +544,11 @@ export const get_classes_schedules_handler = async (req: Request, res: Response,
         
         const classes_schedules = await get_classes_schedules({startPeriod, endPeriod}, filters, search, user);
 
-        const {reschedules, total} = await get_reschedules_for_period({startPeriod, endPeriod}, 0, 0, {accepted: true}, {}, user)
+        // const {reschedules, total} = await get_reschedules_for_period({startPeriod, endPeriod}, 0, 0, {accepted: true}, {}, user)
 
         // console.log("class_schedules", class_schedules);
 
-        return res.json({success: true, classes_schedules, reschedules, total_reschedules: total});
+        return res.json({success: true, classes_schedules, reschedules: [], total_reschedules: 0});
     }catch(e){
         console.log(e);
         return res.status(400).json({success: false, msg: e.message});

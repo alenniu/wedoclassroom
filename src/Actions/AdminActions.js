@@ -1,7 +1,7 @@
 import { validate_email, validate_password } from "../Utils";
 import { api } from "../Utils/api";
 import { set_config } from "./AppActions";
-import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_INIT_CONFIG, UPDATE_CONFIG, SET_EDIT_ACCOUNT_ERROR, ADMIN_SEARCH } from "./types";
+import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_INIT_CONFIG, UPDATE_CONFIG, SET_EDIT_ACCOUNT_ERROR, ADMIN_SEARCH, UPDATE_CLASS_RESCHEDULE } from "./types";
 
 export const set_admins = (admins=[], total=0) => {
     return {type: SET_ADMINS, payload: {admins, total: total || admins.length}};
@@ -273,9 +273,9 @@ export const accept_class_reschedule = (reschedule_id, {new_date, new_start_time
         const res = await api("post", `/api/reschedules/accept/${reschedule_id}`, {new_date, new_start_time, new_end_time});
         
         if(res.data){
-            const {success, msg, reshedule} = res.data
+            const {success, msg, reschedule, _class} = res.data
             if(success){
-                // dispatch({type: , payload: {reshedule}})
+                dispatch({type: UPDATE_CLASS_RESCHEDULE, payload: {reschedule, _class}});
                 return res.data;
             }
             console.log(msg);

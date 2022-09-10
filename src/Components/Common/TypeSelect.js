@@ -12,7 +12,14 @@ const KEY_ENTER = 13;
 const KEY_SHIFT = 16;
 const KEY_ESCAPE = 27;
 
-const TypeSelect = ({options=[], value, textValue, placeholder="Select", disabled=false, onChange, onChangeText, renderOption, renderSelected, placeholderAsOption=false, DrowDownIcon=RiArrowDownSLine, localSearch=true, name, onOpen, onClose}) => {
+type Option = {
+    label: String,
+    value: String|any
+}
+
+type OnChange = (value: Option.value, index: Number) => null
+
+const TypeSelect = ({options=[], value, textValue, placeholder="Select", disabled=false, onChange, onChangeText, renderOption, renderSelected, placeholderAsOption=false, DrowDownIcon=RiArrowDownSLine, localSearch=true, name, onOpen, onClose}: {options: [Option], onChange: OnChange}) => {
     const [open, setOpen] = useState(false);
     const [text, setText] = useState("");
     const [currentValue, setCurrentValue] = useState(undefined);
@@ -21,7 +28,7 @@ const TypeSelect = ({options=[], value, textValue, placeholder="Select", disable
     const inputRef = useRef(null);
     const containerRef = useRef(null);
 
-    const usedValue = value || currentValue;
+    const usedValue = typeof(value) !== undefined?value:currentValue;
     const usedText = textValue || text;
 
     const selected_option = options.find((o) => o.value === usedValue);

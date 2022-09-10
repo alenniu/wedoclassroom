@@ -2,7 +2,14 @@ import React, { useCallback, useRef, useState } from 'react';
 
 import "./Tabs.css";
 
-const Tabs = ({tabs=[], index, current_id, horizontal=true, onPressTab}) => {
+type Tab = {
+    label: String,
+    id: String
+};
+
+type OnPressTab = (event: React.MouseEvent<HTMLSpanElement, MouseEvent>, tab: Tab, index: Number) => void;
+
+const Tabs = ({tabs=[], index, current_id, horizontal=true, onPressTab}: {tabs: [Tab], index: Number, current_id: String, horizontal: Boolean, onPressTab: OnPressTab}) => {
     const [, updateState] = useState();
     const forceUpdate = useCallback(() => updateState({}), []);
     
@@ -21,7 +28,7 @@ const Tabs = ({tabs=[], index, current_id, horizontal=true, onPressTab}) => {
         forceUpdate();
     }
 
-    const _onPressTab = (e:React.MouseEvent<HTMLSpanElement, MouseEvent>, {label, id}, index) => {
+    const _onPressTab = (e:React.MouseEvent<HTMLSpanElement, MouseEvent>, tab:Tab, index:Number) => {
         const {width} = e.currentTarget.getBoundingClientRect();
         const x = e.currentTarget.offsetLeft;
         
@@ -29,7 +36,7 @@ const Tabs = ({tabs=[], index, current_id, horizontal=true, onPressTab}) => {
         tabX.current = x;
 
         setTabIndex(index);
-        typeof(onPressTab) === "function" && onPressTab(e, {label, id}, index);
+        typeof(onPressTab) === "function" && onPressTab(e, tab, index);
     } 
 
     return (

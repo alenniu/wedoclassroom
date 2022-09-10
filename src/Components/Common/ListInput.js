@@ -53,7 +53,7 @@ const ListInput = ({items=[], search_array=[], search_property="", render_proper
     }
 
     const onPress_item = (i) => {
-        setPressedIndex(i);
+        !disabled && setPressedIndex(i);
     }
 
     const onPress_add = () => {

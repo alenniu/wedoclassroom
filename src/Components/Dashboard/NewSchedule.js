@@ -3,7 +3,7 @@ import {RiArrowLeftSLine, RiArrowRightSLine, RiCalendarLine} from "react-icons/r
 import { useNavigate } from 'react-router-dom';
 
 import { DAY, DAYS, get_day, get_week_date_range, MONTHS } from '../../Data';
-import { isWebkit, ordinal_suffix, randomColor, ranges_overlaps } from '../../Utils';
+import { isWebkit, is_same_day, ordinal_suffix, randomColor, ranges_overlaps } from '../../Utils';
 
 import "./NewSchedule.css";
 
@@ -48,7 +48,7 @@ const HOUR_SECTION_HEIGHT = 100;
 
 const is_webkit = isWebkit();
 
-const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDateRange, onClickPrevDateRange, is_admin, is_teacher, is_sales}) => {
+const NewSchedule = ({lessons=[], reschedules=[], date_range={}, onClickNextDateRange, onClickPrevDateRange, is_admin, is_teacher, is_sales}) => {
 
     const calendarRef = useRef(null);
     const [calendarheight, setCalendarHeight] = useState(200);
@@ -77,12 +77,11 @@ const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDa
     }
 
     const scrollToEarliestTime = () => {
-        const earliestStartTime = schedules.map(({daily_start_time}) => new Date(daily_start_time)).sort()[0];
+        const earliestStartTime = lessons.map(({start_time}) => start_time.getHours() + (start_time.getMinutes()/60)).sort((a, b) => a - b)[0];
 
         if(earliestStartTime){
-            const earlieststartTimeHours = earliestStartTime.getHours() + (earliestStartTime.getMinutes()/60);
-
-            const earliestTop = HOUR_SECTION_HEIGHT * earlieststartTimeHours;
+            console.log({earliestStartTime});
+            const earliestTop = HOUR_SECTION_HEIGHT * earliestStartTime;
 
             calendarRef.current?.scrollTo(0, earliestTop - 20)
         }
@@ -99,7 +98,7 @@ const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDa
 
     useEffect(() => {
         scrollToEarliestTime()
-    }, [schedules]);
+    }, [lessons]);
 
     return (
         <div className='new-schedule-container' style={{"--calendar-height": calendarheight+"px"}}>
@@ -141,7 +140,10 @@ const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDa
                     })}
                 </ul>
 
-                {schedules.map(({_id, title, days=[], time, daily_start_time, daily_end_time, bg_color, text_color}, i, arr) => {
+                {lessons.map(({_id, title, days=[], time, date, start_time:startTime, end_time:endTime, bg_color, text_color, is_cancelled=false, is_custom_date=false}, i, arr) => {
+
+                    const day = date.getDay();
+                    const d = day;
                     // const ordered_days = days.sort((a, z) => a - z);
 
                     // console.log(bg_color);
@@ -161,47 +163,34 @@ const NewSchedule = ({schedules=[], reschedules=[], date_range={}, onClickNextDa
                     //     return prev;
                     // }, [[]]);
 
-                    const startTime = new Date(daily_start_time);
-                    const endTime = new Date(daily_end_time);
                     const startDayTime = startTime.getHours() + (startTime.getMinutes()/60);
                     const endDayTime = endTime.getHours() + (endTime.getMinutes()/60);
                     const time_range = `${startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - ${endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}`
 
-                    return days.map((d) => {
-                        const currentDate = new Date(min.getTime() + (d * DAY));
+                    const currentDate = new Date(min.getTime() + (d * DAY));
 
-                        const overlapping_items_before = arr.filter((s, si) => {
+                    const overlapping_items_before = arr.filter((s, si) => {
 
-                            const sStartTime = new Date(s.daily_start_time); 
-                            const sEndTime = new Date(s.daily_end_time); 
-                            const sStartDayTime = sStartTime.getHours() + (sStartTime.getMinutes()/60);
-                            const sEndDayTime = sEndTime.getHours() + (sEndTime.getMinutes()/60);
-                            
-                            return (si < i && s.days.includes(d) && ranges_overlaps({min: startDayTime, max: endDayTime}, {min: sStartDayTime, max: sEndDayTime}))
-                        });
+                        const sStartDayTime = s.start_time.getHours() + (s.start_time.getMinutes()/60);
+                        const sEndDayTime = s.end_time.getHours() + (s.end_time.getMinutes()/60);
+                        
+                        return (is_same_day(date, s.date) && ranges_overlaps({min: startDayTime, max: endDayTime}, {min: sStartDayTime, max: sEndDayTime}))
+                    });
 
-                        // console.log("overlapping_items_before", overlapping_items_before);
+                    // console.log("overlapping_items_before", overlapping_items_before);
 
-                        const top = HOUR_SECTION_HEIGHT * startDayTime;
-                        let leftOffset = (overlapping_items_before.length * 50) + (5 * overlapping_items_before.length);
+                    const top = HOUR_SECTION_HEIGHT * startDayTime;
+                    let leftOffset = (overlapping_items_before.length * 50) + (5 * overlapping_items_before.length);
 
-                        const height = HOUR_SECTION_HEIGHT * (endDayTime - startDayTime);
+                    const height = HOUR_SECTION_HEIGHT * (endDayTime - startDayTime);
 
-                        const is_rescheduled = reschedules.find((r) => {
-                            const {old_date, _class} = r;
-                            const oldDate = new Date(old_date);
-
-                            return _class === _id && (oldDate.getDay() === currentDate.getDay()) && ((currentDate.getTime() - oldDate.getTime()) < DAY);
-                        });
-
-                        return (
-                            <div key={_id+d+time_range} title={`${title} | ${time_range} ${is_rescheduled?"(rescheduled)":""}`} className={`schedule-event clickable ${is_rescheduled?"rescheduled":""}`} onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: Math.ceil(top)}}>
-                                <p>{title}</p>
-                                <p>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</p>
-                                <p>{DAYS[d].short}</p>
-                            </div>
-                        )
-                    })
+                    return (
+                        <div key={_id+d+time_range} title={`${title} | ${time_range} ${is_cancelled?"(rescheduled)":is_custom_date?"(New Date)":""}`} className={`schedule-event clickable ${is_cancelled?"rescheduled":is_custom_date?"custom":""}`} onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: Math.ceil(top)}}>
+                            <p>{title}</p>
+                            <p>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</p>
+                            <p>{DAYS[d].short}</p>
+                        </div>
+                    )
                 })}
             </div>
         </div>

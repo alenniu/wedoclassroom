@@ -37,6 +37,10 @@ const class_schema = new schema({
         },
         price_paid: {
             type: Number,
+        },
+        form_type: {
+            type: String,
+            enum: ["trial", "addition", "new", "credits"]
         }
     }],
     tags: [String],
@@ -75,6 +79,17 @@ const class_schema = new schema({
             type: Date
         }
     }],
+    cancelled_dates: [{
+        date: {
+            type: Date
+        },
+        start_time: {
+            type: Date
+        },
+        end_time: {
+            type: Date
+        }
+    }],
     popularity: {
         type: Number,
         default: 0
@@ -103,6 +118,10 @@ const class_schema = new schema({
         type: Number,
         default: 0,
         required: true
+    },
+    discount: {
+        type: Number,
+        default: 0,
     },
     billing_schedule: {
         type: String,

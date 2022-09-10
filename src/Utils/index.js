@@ -154,6 +154,39 @@ export const ranges_overlaps = (r1, r2) => {
     return r1.min <= r2.max && r2.min <= r1.max;
 }
 
+/* is_same_day tested with
+
+const date1 = new Date(2022, 2, 1, 0, 0);
+const date2 = new Date(2022, 2, 1, 23, 45, 0);
+const date3 = new Date(2022, 2, 1, 12, 15, 0);
+*/
+export function is_same_day(...dates){
+    return dates.reduce((prev, curr, i, arr) => {
+        if((arr.length - i) > 1){
+			const currDate = new Date(curr);
+           	const nextDate = new Date(arr[i+1]);
+          
+          	const same_day = (currDate.getDate() === nextDate.getDate()) && (Math.abs(currDate.getTime() - nextDate.getTime()) < (24 * 60 * 60 * 1000));
+        	return prev && same_day;
+        }
+      
+      	return prev && true;
+    }, true);
+}
+
+export const get_week_start = (date=new Date()) => {
+    date = new Date(date);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate() - (date.getDay()), 0, 0, 0);
+}
+
+export const get_week_end = (date=new Date()) => {
+    date = get_week_start(date);
+    date = new Date(date.getTime() + (7 * 24 * 60 * 60 * 1000));
+    date.setHours(23, 59, 59);
+
+    return date;
+}
+
 export const get_time_left = (til=0, from=Date.now()) => {
     from = (new Date(from)).getTime();
     til = (new Date(til)).getTime();

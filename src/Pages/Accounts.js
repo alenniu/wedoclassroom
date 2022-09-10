@@ -75,7 +75,7 @@ const Accounts = ({accounts=[], total=0, is_admin, new_account={}, edit_account=
 
                 <div className='filters-search-container'>
                     <div className='filters-container'>
-                        <div className='input-container select' key={"archived"}>
+                        <div className='input-container select'>
                             <TypeSelect options={[{label: "All", value: ""}, {label: "Active", value: false}, {label: "Archived", value: true}]} placeholder="Archive Filter" value={filters["archived"] || ""} localSearch={true} onChange={setFilter("archived")} name="archived" />
                         </div>
                     </div>

@@ -475,9 +475,9 @@ export const get_class_reschedules = (class_id, limit=20, offset=0, sort='{}', f
     }
 }
 
-export const request_class_reschedule = ({_class, old_date, new_date=null, new_start_time=null, new_end_time=null, reason=""}) => async (dispatch) => {
+export const request_class_reschedule = ({_class, old_date, old_start_time, old_end_time, new_date=null, new_start_time=null, new_end_time=null, reason=""}) => async (dispatch) => {
     try{
-        const res = await api("post", `/api/reschedules/`, {_class, old_date, new_date, new_start_time, new_end_time, reason});
+        const res = await api("post", `/api/reschedules/`, {_class, old_date, old_start_time, old_end_time, new_date, new_start_time, new_end_time, reason});
         
         if(res.data){
             const {success, msg, reshedule} = res.data

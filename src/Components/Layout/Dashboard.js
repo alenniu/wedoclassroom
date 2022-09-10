@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line, RiTimeLine, RiArrowRightSLine, RiArrowLeftSLine, RiSettings3Line, RiLogoutBoxLine} from "react-icons/ri";
-import {BsCurrencyDollar} from "react-icons/bs";
+import {RiDashboardLine, RiMessage3Line, RiCalendar2Line, RiBook2Line, RiStarLine, RiUserLine, RiVideoAddLine, RiNotification3Line, RiTimeLine, RiArrowRightSLine, RiArrowLeftSLine, RiSettings3Line, RiLogoutBoxLine, RiMoneyDollarCircleLine} from "react-icons/ri";
 import {BiSearchAlt} from "react-icons/bi";
 import { add_socket_events, close_nav, get_notifications, get_unread_notifications_count, hide_incoming_notification, logout, open_nav, remove_all_incoming_notification, remove_incoming_notification, add_new_notification, remove_socket_events, set_loading, toggle_nav, toggle_notifications, open_notifications, close_notifications, admin_search } from '../../Actions';
 import {CSSTransition, TransitionGroup} from "react-transition-group"
@@ -157,9 +156,9 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifica
                             <NavLink to="/dashboard/schedule" className="button"><RiCalendar2Line className='link-icon' size={"20px"} /><span className='link-label'>Schedule</span></NavLink>
                         </li>
 
-                        <li title='Discover Classes' className='nav-link'>
+                        {/* <li title='Discover Classes' className='nav-link'>
                             <NavLink to="/dashboard/classes" className="button"><RiBook2Line className='link-icon' size={"20px"} /><span className='link-label'>Classes</span></NavLink>
-                        </li>
+                        </li> */}
 
                         {/* <li className='nav-link'>
                             <NavLink to="/dashboard/messages" className="button"><RiMessage3Line className='link-icon' size={"20px"} /><span className='link-label'>Messages</span></NavLink>
@@ -169,19 +168,19 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifica
                             <NavLink to="/dashboard/reviews" className="button"><RiStarLine className='link-icon' size={"20px"} /><span className='link-label'>Reviews</span></NavLink>
                         </li> */}
 
-                        {is_teacher && <li title='Payments' className='nav-link'>
+                        {/* {is_teacher && <li title='Payments' className='nav-link'>
                             <NavLink to="/dashboard/payments" className="button"><BsCurrencyDollar className='link-icon' size={"20px"} /><span className='link-label'>Payments</span></NavLink>
-                        </li>}
+                        </li>} */}
 
                         {(is_admin || is_sales) && <li title='Accounts' className='nav-link'>
                             <NavLink to="/dashboard/accounts" className="button"><RiUserLine className='link-icon' size={"20px"} /><span className='link-label'>Accounts</span></NavLink>
                         </li>}
 
-                        {is_admin && <li title='Sessions' className='nav-link'>
-                            <NavLink to="/dashboard/sessions" className="button"><RiTimeLine className='link-icon' size={"20px"} /><span className='link-label'>Sessions</span></NavLink>
+                        {(is_admin || is_sales || is_teacher) && <li title='Payments' className='nav-link'>
+                            <NavLink to="/dashboard/payments" className="button"><RiMoneyDollarCircleLine className='link-icon' size={"20px"} /><span className='link-label'>Payments</span></NavLink>
                         </li>}
 
-                        {is_admin && <li title='Sessions' className='nav-link'>
+                        {is_admin && <li title='Config' className='nav-link'>
                             <NavLink to="/dashboard/config" className="button"><RiSettings3Line className='link-icon' size={"20px"} /><span className='link-label'>Config</span></NavLink>
                         </li>}
                     </ul>

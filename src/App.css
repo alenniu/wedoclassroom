@@ -366,7 +366,7 @@ input:focus-visible, textarea:focus-visible{
 
 .input-container .input-adornment{
   position: absolute;
-  top: calc(100% - 56px);
+  top: calc(100% - var(--input-height, 56px));
   height: 100%;
   max-height: 56px;
   width: 40px;

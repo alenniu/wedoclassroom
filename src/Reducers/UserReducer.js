@@ -79,8 +79,9 @@ export default (state=INITIAL_STATE, action) => {
         break;
 
         case UPDATE_CLASS_RESCHEDULE:{
-            const {reschedule} = payload;
+            const {reschedule, _class={}} = payload;
             new_state.reschedules = new_state.reschedules.map((r) => (r._id === reschedule._id)?reschedule:r);
+            new_state.classes = new_state.classes.map((c) => (c._id === _class._id)?_class:c);
         }
         break;
 

@@ -62,9 +62,9 @@ export default (state=INITIAL_STATE, action) => {
         break;
 
         case UPDATE_CLASS_RESCHEDULE:{
-            const {reschedule} = payload;
+            const {reschedule, _class={}} = payload;
             if(Array.isArray(new_state.edit.reschedules)){
-                new_state.edit = {...new_state.edit, reschedules: new_state.edit.reschedules.map((r) => r._id === reschedule._id?reschedule:r)}
+                new_state.edit = {...new_state.edit, ..._class, reschedules: new_state.edit.reschedules.map((r) => r._id === reschedule._id?reschedule:r), error: ""}
             }
         }
         break;

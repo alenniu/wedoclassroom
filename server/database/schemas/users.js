@@ -92,6 +92,14 @@ const user_schema = new schema({
     date_enrolled: {
         type: Date
     },
+    hourly_rate_1_3: {
+        type: Number,
+        default: 0
+    },
+    hourly_rate_4_8: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
         enum: ["active", "inactive"],
