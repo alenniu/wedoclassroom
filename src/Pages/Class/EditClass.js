@@ -433,7 +433,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                     if((startDate.getTime() <= current_lesson_date.getTime()) && days.includes(current_lesson_day)){
                         const lesson = {date: new Date(current_lesson_date), start_time: new Date(daily_start_time), end_time: new Date(daily_end_time)};
 
-                        lessons.push({...lesson, is_custom_date: false, is_cancelled: cancelled_dates.some((cad) => is_same_lesson(lesson, cad))});
+                        lessons.push({...lesson, is_custom_date: false, cancelled: cancelled_dates.some((cad) => is_same_lesson(lesson, cad))});
                     }
 
                     const matching_custom_dates = custom_dates.filter((cd) => {
@@ -448,7 +448,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                         return false;
                     });
 
-                    lessons.push(...matching_custom_dates.map((cd) => ({date: new Date(cd.date), start_time: new Date(cd.start_time), end_time: new Date(cd.end_time), is_custom_date: true, is_cancelled: cancelled_dates.some((cad) => is_same_lesson(cd, cad))})))
+                    lessons.push(...matching_custom_dates.map((cd) => ({date: new Date(cd.date), start_time: new Date(cd.start_time), end_time: new Date(cd.end_time), is_custom_date: true, cancelled: cd.cancelled || cancelled_dates.some((cad) => is_same_lesson(cd, cad))})))
 
                     current_lesson_date.setDate(current_lesson_date.getDate() + 1);
                 }
@@ -676,7 +676,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                             <li key={i.toString()}>
                                 <div style={{"--mr": 1}} className='input-container'>
                                     <label>Days</label>
-                                    <ListInput disabled disableAdding allowOnlySearchResults always_show_matches search_array={DAYS.slice(1)} search_property={"long"} items={days.map(d => DAYS[d].long)} /* onAddItem={(day) => onAddScheduleDay(i, day)} onRemoveItem={(index, day) => onRemoveScheduleDay(i, index, day)} */ />
+                                    <ListInput disabled disableAdding allowOnlySearchResults always_show_matches search_array={DAYS.slice(0, 7)} search_property={"long"} items={days.map(d => DAYS[d].long)} /* onAddItem={(day) => onAddScheduleDay(i, day)} onRemoveItem={(index, day) => onRemoveScheduleDay(i, index, day)} */ />
                                 </div>
 
                                 <div style={{"--mr": 0}} className='input-container'>
@@ -753,14 +753,14 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
 
                         <tbody>
                             {lessonsInRange.map((l) => {
-                                const {date, start_time, end_time, is_custom_date=false, is_cancelled=false} = l;
+                                const {date, start_time, end_time, is_custom_date=false, cancelled=false} = l;
                                 const id = `${(date.getTime())}-${(start_time.getTime())}`;
                                 
-                                const selectable = !is_cancelled;
+                                const selectable = !cancelled;
                                 const is_selected = selectedLessons.some((sl) => sl.id === id);
 
                                 return (
-                                    <tr style={{backgroundColor: is_cancelled?"rgba(255, 0, 100, 0.3)":is_custom_date?"rgba(0, 100, 255, 0.3)":"transparent"}}>
+                                    <tr style={{backgroundColor: cancelled?"rgba(255, 0, 100, 0.3)":is_custom_date?"rgba(0, 100, 255, 0.3)":"transparent"}}>
                                         <td>{selectable && <label style={{display: "unset"}} className="checkbox-container" htmlFor={id}><input type="checkbox" name={id} id={id} checked={is_selected} onChange={(e) => {onSelectLesson(e, {...l, id})}}/><span className="checkmark"></span></label>} {date.toLocaleDateString()}</td>
                                         <td>{DAYS[date.getDay()].long}</td>
                                         <td>{start_time.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {end_time.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</td>

@@ -3,6 +3,7 @@ import { LocalizationProvider, StaticDatePicker, StaticDateTimePicker, TimePicke
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import React, { useEffect, useState } from 'react';
 import { RiArrowLeftSLine } from 'react-icons/ri';
+import { HOUR } from '../../Data';
 
 const style = {
     position: 'absolute',
@@ -39,11 +40,21 @@ const EditLessonModal = ({show=false, newDate, onPickNewDate, onPickNewStartTime
 
                         <div style={{display: "flex", marginBlock: "20px", gap: "20px"}}>
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <TimePicker  value={newStartTime} renderInput={(params) => <TextField {...params} />} onChange={onPickNewStartTime} label="New Start Time"  />
+                                <TimePicker  value={newStartTime} renderInput={(params) => <TextField {...params} />} onChange={(v) => {
+                                    const date = new Date((v || (new Date())));
+                                    date.setFullYear(1970, 0, 1);
+
+                                    onPickNewStartTime(date);
+                                }} label="New Start Time"  />
                             </LocalizationProvider>
 
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <TimePicker value={newEndTime} renderInput={(params) => <TextField {...params} />} onChange={onPickNewEndTime} label="New End Time"  />
+                                <TimePicker value={newEndTime} renderInput={(params) => <TextField {...params} />} onChange={(v) => {
+                                    const date = new Date((v || (new Date())));
+                                    date.setFullYear(1970, 0, 1);
+
+                                    onPickNewEndTime(date);
+                                }} label="New End Time"  />
                             </LocalizationProvider>
                         </div>
                         

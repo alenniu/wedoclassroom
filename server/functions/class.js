@@ -298,7 +298,7 @@ async function request_class({_class, student}){
 async function accept_fake_request({request_id}, handler){ //handler is the user accepting/declining the request
     try{
         if(request_id){
-            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: true, declined: false, handled_by: handler._id}}, {new: true, upsert: false, }).populate({path: "student", select: "-password"}).populate("_class");
+            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: true, declined: false, date_handled: new Date(), handled_by: handler._id}}, {new: true, upsert: false, }).populate({path: "student", select: "-password"}).populate("_class");
 
             return request;
         }else{
@@ -312,7 +312,7 @@ async function accept_fake_request({request_id}, handler){ //handler is the user
 async function accept_request({request_id}, handler){ //handler is the user accepting/declining the request
     try{
         if(request_id){
-            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: true, declined: false, handled_by: handler._id}}, {new: true, upsert: false, }).populate({path: "student", select: "-password"}).populate("_class");
+            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: true, declined: false, date_handled: new Date(), handled_by: handler._id}}, {new: true, upsert: false, }).populate({path: "student", select: "-password"}).populate("_class");
 
             const updated_class = await add_student_to_class({student_id: request.student, class_id: request._class, request});
 
@@ -328,7 +328,7 @@ async function accept_request({request_id}, handler){ //handler is the user acce
 async function decline_request({request_id}, handler){ //handler is the user accepting/declining the request
     try{
         if(request_id){
-            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: false, declined: true, handled_by: handler._id}}, {new: true, upsert: false, }).populate({path: "student", select: "-password"});
+            const request = await Requests.findOneAndUpdate({_id: request_id}, {$set: {accepted: false, declined: true, date_handled: new Date(), handled_by: handler._id}}, {new: true, upsert: false, }).populate({path: "student", select: "-password"});
 
             return request;
         }else{
@@ -450,7 +450,7 @@ async function get_classes_schedules({startPeriod, endPeriod}, filters={}, searc
         startPeriod = new Date(startPeriod);
         endPeriod = new Date(endPeriod);
     
-        const match = {$and: [{$or: [{end_date: {$gte: startPeriod}, start_date: {$lte: endPeriod}}, {custom_dates: {$elemMatch: {date: {$gte: startPeriod, $lte: endPeriod}}}}]}, {$or: [{archived: false}, {archived: {$exists: false}}]}, {...filters}]};
+        const match = {$and: [{$or: [{end_date: {$gte: startPeriod}, start_date: {$lte: endPeriod}}, {custom_dates: {$elemMatch: {date: {$gte: startPeriod, $lte: endPeriod}}}}]}, {archived: {$ne: true}}, {...filters}]};
     
         if(!is_admin_or_sales){
             match.$or = match.$or || [];

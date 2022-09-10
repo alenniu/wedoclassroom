@@ -104,7 +104,7 @@ const SchedulePage = ({app_config, classes_schedules=[], reschedules=[], get_cla
                     if((startDate.getTime() <= current_lesson_date.getTime()) && days.includes(current_lesson_day)){
                         const lesson = {date: new Date(current_lesson_date), start_time: new Date(daily_start_time), end_time: new Date(daily_end_time), ..._class};
 
-                        lessons.push({...lesson, is_custom_date: false, is_cancelled: cancelled_dates.some((cad) => is_same_lesson(lesson, cad))});
+                        lessons.push({...lesson, is_custom_date: false, cancelled: cancelled_dates.some((cad) => is_same_lesson(lesson, cad))});
                     }
 
                     const matching_custom_dates = custom_dates.filter((cd) => {
@@ -119,7 +119,7 @@ const SchedulePage = ({app_config, classes_schedules=[], reschedules=[], get_cla
                         return false;
                     });
 
-                    lessons.push(...matching_custom_dates.map((cd) => ({date: new Date(cd.date), start_time: new Date(cd.start_time), end_time: new Date(cd.end_time), is_custom_date: true, is_cancelled: cancelled_dates.some((cad) => is_same_lesson(cd, cad)), ..._class})))
+                    lessons.push(...matching_custom_dates.map((cd) => ({date: new Date(cd.date), start_time: new Date(cd.start_time), end_time: new Date(cd.end_time), is_custom_date: true, cancelled: cd.cancelled || cancelled_dates.some((cad) => is_same_lesson(cd, cad)), ..._class})))
 
                     current_lesson_date.setDate(current_lesson_date.getDate() + 1);
                 }

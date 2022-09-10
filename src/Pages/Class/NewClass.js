@@ -20,6 +20,7 @@ import { api } from '../../Utils/api';
 import ColorPicker from '../../Components/Class/ColorPicker';
 import DateRangeModal from '../../Components/Class/DateRangeModal';
 import EditLessonModal from '../../Components/Class/EditLessonModal';
+import { HOUR } from 'my-server/values';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
@@ -504,7 +505,7 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
                             <li key={i.toString()}>
                                 <div style={{"--mr": 1}} className='input-container'>
                                     <label>Days</label>
-                                    <ListInput allowOnlySearchResults always_show_matches search_array={DAYS.slice(1)} search_property={"long"} items={days.map(d => DAYS[d].long)} onAddItem={(day) => onAddScheduleDay(i, day)} onRemoveItem={(index, day) => onRemoveScheduleDay(i, index, day)} />
+                                    <ListInput allowOnlySearchResults always_show_matches search_array={DAYS.slice(0, 7)} search_property={"long"} items={days.map(d => DAYS[d].long)} onAddItem={(day) => onAddScheduleDay(i, day)} onRemoveItem={(index, day) => onRemoveScheduleDay(i, index, day)} />
                                 </div>
 
                                 <div style={{"--mr": 0}} className='input-container'>
@@ -513,7 +514,12 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
                                     <TimePicker
                                         // label="Start Time"
                                         value={daily_start_time}
-                                        onChange={(v) => onChangeValue(["schedules", i, "daily_start_time"])((v || (new Date())).getTime())}
+                                        onChange={(v) => {
+                                            const date = new Date((v || (new Date())));
+                                            date.setFullYear(1970, 0, 1);
+
+                                            onChangeValue(["schedules", i, "daily_start_time"])(date.getTime())
+                                        }}
                                         renderInput={(params) => <TextField {...params} />}
                                     />
                                     </LocalizationProvider>
@@ -525,7 +531,12 @@ const NewClass = ({user, teachers=[], total_teachers=0, new_class={}, app_config
                                     <TimePicker
                                         // label="End Time"
                                         value={daily_end_time}
-                                        onChange={(v) => onChangeValue(["schedules", i, "daily_end_time"])((v || (new Date())).getTime())}
+                                        onChange={(v) => {
+                                            const date = new Date((v || (new Date())));
+                                            date.setFullYear(1970, 0, 1);
+
+                                            onChangeValue(["schedules", i, "daily_end_time"])(date.getTime())
+                                        }}
                                         renderInput={(params) => <TextField {...params} />}
                                     />
                                     </LocalizationProvider>

@@ -30,7 +30,9 @@ export default (state=INITIAL_STATE, action) => {
         break;
 
         case ADD_NEW_CLASS:
-            new_state.classes = [...new_state.classes, payload._class];
+            if(payload._class){
+                new_state.classes = [...new_state.classes, payload._class];
+            }
         break;
 
         case UPDATE_CLASS_REQUEST:{
@@ -120,11 +122,15 @@ export default (state=INITIAL_STATE, action) => {
         break;
 
         case CREATE_CLASS:
-            new_state.classes = [...new_state.classes, payload._class];
+            if(payload._class){
+                new_state.classes = [...new_state.classes, payload._class];
+            }
         break;
 
         case UPDATE_CLASS:
-            new_state.classes = new_state.classes.map((c) => (c._id === payload._class._id)?payload._class:c)
+            if(payload._class){
+                new_state.classes = new_state.classes.map((c) => (c._id === payload._class._id)?payload._class:c)
+            }
         break;
 
         case REQUEST_JOIN_CLASS:

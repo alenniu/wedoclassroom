@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { connect } from 'react-redux';
 import { edit_config_value, edit_init_config, set_loading, update_config, get_config } from '../Actions';
 import { useNavigate } from 'react-router-dom';
-import { DAY, get_week_date_range, MONTHS } from '../Data';
+import { DAY, get_week_date_range, HOUR, MONTHS } from '../Data';
 import { debounce, get_full_image_url } from '../Utils';
 import {Switch, TextField} from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -147,7 +147,12 @@ const Dashboard = ({app_config, edit_config, user, is_admin, edit_init_config, e
                     <TimePicker
                         // label="Start Time"
                         value={day_start_time}
-                        onChange={(v) => onChangeValue(["day_start_time"])(v || new Date())}
+                        onChange={(v) => {
+                            const date = new Date((v || (new Date())));
+                            date.setFullYear(1970, 0, 1);
+
+                            onChangeValue(["day_start_time"])(date);
+                        }}
                         renderInput={(params) => <TextField {...params} />}
                     />
                     </LocalizationProvider>
@@ -159,7 +164,12 @@ const Dashboard = ({app_config, edit_config, user, is_admin, edit_init_config, e
                     <TimePicker
                         // label="End Time"
                         value={day_end_time}
-                        onChange={(v) => onChangeValue(["day_end_time"])(v || new Date())}
+                        onChange={(v) => {
+                            const date = new Date((v || (new Date())));
+                            date.setFullYear(1970, 0, 1);
+
+                            onChangeValue(["day_end_time"])(date);
+                        }}
                         renderInput={(params) => <TextField {...params} />}
                     />
                     </LocalizationProvider>

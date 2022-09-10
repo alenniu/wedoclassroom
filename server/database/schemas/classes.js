@@ -77,6 +77,10 @@ const class_schema = new schema({
         },
         end_time: {
             type: Date
+        },
+        cancelled: {
+            type: Boolean,
+            default: false,
         }
     }],
     cancelled_dates: [{

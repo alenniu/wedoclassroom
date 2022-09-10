@@ -80,7 +80,6 @@ const NewSchedule = ({lessons=[], reschedules=[], date_range={}, onClickNextDate
         const earliestStartTime = lessons.map(({start_time}) => start_time.getHours() + (start_time.getMinutes()/60)).sort((a, b) => a - b)[0];
 
         if(earliestStartTime){
-            console.log({earliestStartTime});
             const earliestTop = HOUR_SECTION_HEIGHT * earliestStartTime;
 
             calendarRef.current?.scrollTo(0, earliestTop - 20)
@@ -140,7 +139,7 @@ const NewSchedule = ({lessons=[], reschedules=[], date_range={}, onClickNextDate
                     })}
                 </ul>
 
-                {lessons.map(({_id, title, days=[], time, date, start_time:startTime, end_time:endTime, bg_color, text_color, is_cancelled=false, is_custom_date=false}, i, arr) => {
+                {lessons.map(({_id, title, days=[], time, date, start_time:startTime, end_time:endTime, bg_color, text_color, cancelled=false, is_custom_date=false}, i, arr) => {
 
                     const day = date.getDay();
                     const d = day;
@@ -174,7 +173,7 @@ const NewSchedule = ({lessons=[], reschedules=[], date_range={}, onClickNextDate
                         const sStartDayTime = s.start_time.getHours() + (s.start_time.getMinutes()/60);
                         const sEndDayTime = s.end_time.getHours() + (s.end_time.getMinutes()/60);
                         
-                        return (is_same_day(date, s.date) && ranges_overlaps({min: startDayTime, max: endDayTime}, {min: sStartDayTime, max: sEndDayTime}))
+                        return si < i && (is_same_day(date, s.date) && ranges_overlaps({min: startDayTime, max: endDayTime}, {min: sStartDayTime, max: sEndDayTime}))
                     });
 
                     // console.log("overlapping_items_before", overlapping_items_before);
@@ -185,7 +184,7 @@ const NewSchedule = ({lessons=[], reschedules=[], date_range={}, onClickNextDate
                     const height = HOUR_SECTION_HEIGHT * (endDayTime - startDayTime);
 
                     return (
-                        <div key={_id+d+time_range} title={`${title} | ${time_range} ${is_cancelled?"(rescheduled)":is_custom_date?"(New Date)":""}`} className={`schedule-event clickable ${is_cancelled?"rescheduled":is_custom_date?"custom":""}`} onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: Math.ceil(top)}}>
+                        <div key={_id+d+time_range} title={`${title} | ${time_range} ${cancelled?"(rescheduled)":is_custom_date?"(New Date)":""}`} className={`schedule-event clickable ${cancelled?"rescheduled":is_custom_date?"custom":""}`} onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: Math.ceil(top)}}>
                             <p>{title}</p>
                             <p>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</p>
                             <p>{DAYS[d].short}</p>

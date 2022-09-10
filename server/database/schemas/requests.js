@@ -22,6 +22,9 @@ const request_schema = new schema({
         type: Boolean,
         default: false
     },
+    date_handled: {
+        type: Date
+    },
     handled_by: {
         type: schema.Types.ObjectId,
         ref: "user"
