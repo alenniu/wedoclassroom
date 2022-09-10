@@ -81,8 +81,6 @@ async function end_classes(app_config={}){
 
     const classes_to_not_end = await Classes.find({archived: {$ne: true}, $and: [{current_session: {$ne: null}}, {current_session: {$exists: true}}, {$or: [{end_date: {$gte: startPeriod}, start_date: {$lte: endPeriod}}, {custom_dates: {$elemMatch: {date: {$gte: startPeriod, $lte: endPeriod}}}}]}, {$or: [{schedules: {$elemMatch: {days: current_day, daily_start_time: {$lte: current_hours_time}, daily_end_time: {$gte: current_hours_time}}}}, {custom_dates: {$elemMatch: {date: {$gte: startPeriod, $lte: endPeriod}, start_time: {$lte: currentTime}, end_time: {$gte: currentTime}}}}]}]}).populate({path: "teacher", select: "-password"}).limit(0);
 
-
-
     console.log(classes_to_not_end.map(({title, schedules, custom_dates}) => ({title, schedules, custom_dates})), "Classes to not end!!!", classes_to_not_end.length);
 
     const classes_to_end = await Classes.find({archived: {$ne: true}, _id: {$nin: classes_to_not_end.map((cnd) => cnd._id)}, $and: [{current_session: {$ne: null}}, {current_session: {$exists: true}}]}).limit(0);

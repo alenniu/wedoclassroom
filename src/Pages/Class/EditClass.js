@@ -456,8 +456,8 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
         }
 
         lessons.sort((a, b) => {
-            const aDate = new Date(a.date); aDate.setHours(0, 0, 0);
-            const bDate = new Date(b.date); bDate.setHours(0, 0, 0);
+            const aDate = new Date(a.date); aDate.setHours(0, 0, 0, 0);
+            const bDate = new Date(b.date); bDate.setHours(0, 0, 0, 0);
 
             const aHours = a.start_time.getHours() + (a.start_time.getMinutes()/60);
             const bHours = b.start_time.getHours() + (b.start_time.getMinutes()/60);

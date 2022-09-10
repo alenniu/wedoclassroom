@@ -181,7 +181,7 @@ const Dashboard = ({classes=[], total=0, app_config={}, classes_schedules=[], re
         const min = new Date(current_date.getTime() - (current_day * DAY));
         const max = new Date(current_date.getTime() + ((7-current_day) * DAY));
 
-        min.setHours(0, 0, 0);
+        min.setHours(0, 0, 0, 0);
         max.setHours(23, 59, 59);
 
         setDateRange({min, max});
