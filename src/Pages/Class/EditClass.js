@@ -208,8 +208,10 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
 
     const cancelLessons = () => {
         cancelled_dates.push(...selectedLessons);
+        const new_custom_dates = custom_dates.map((cd) => selectedLessons.some((sl) => is_same_lesson(sl, cd))?{...cd, cancelled: true}:cd);
 
         edit_class_value(["cancelled_dates"], [...cancelled_dates]);
+        edit_class_value(["custom_dates"], new_custom_dates);
         setSelectedlessons([]);
     }
 

@@ -189,3 +189,17 @@ module.exports.ranges_overlaps = (r1, r2) => {
 module.exports.sanitize_statement_descriptor = (s) => {
     return s.replace(/['"]/ig, " ")
 }
+
+module.exports.is_same_day = function(...dates){
+    return dates.reduce((prev, curr, i, arr) => {
+        if((arr.length - i) > 1){
+			const currDate = new Date(curr);
+           	const nextDate = new Date(arr[i+1]);
+          
+          	const same_day = (currDate.getDate() === nextDate.getDate()) && (Math.abs(currDate.getTime() - nextDate.getTime()) < (24 * 60 * 60 * 1000));
+        	return prev && same_day;
+        }
+      
+      	return prev && true;
+    }, true);
+}
