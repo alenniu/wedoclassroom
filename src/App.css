@@ -499,7 +499,7 @@ thead.sticky{
 }
 
 table th{
-  padding: 20px 0;
+  padding: 20px;
   text-align: left;
   border-bottom: var(--table-row-border, 1px solid #efefef);
 }
@@ -514,7 +514,7 @@ table th:last-of-type, table tbody td:last-of-type{
 
 table tbody td{
   border-bottom: var(--table-row-border, 1px solid #efefef);
-  padding: 20px 0;
+  padding: 20px;
 }
 
 table tbody tr:last-of-type td{

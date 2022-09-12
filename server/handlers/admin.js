@@ -1,6 +1,7 @@
 import {Request, Response, NextFunction} from "express";
 import { get_account, get_accounts, get_admins, get_students, get_teachers } from "../functions/admin";
 import { add_teacher_to_class, get_classes } from "../functions/class";
+import { get_requests } from "../functions/request";
 
 const { create_user, update_user } = require("../functions/user");
 
@@ -184,6 +185,28 @@ export const admin_search_handler = async (req: Request, res: Response, next: Ne
             res.json({classes, teachers, students, success: true});
         }else{
             return res.status(401).json({success: false, msg: "Only admins or sales can search"});
+        }
+    }catch(e){
+        res.status(400).json({success: false, msg: e.message});
+    }
+}
+
+export const admin_get_requests_handler = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {user} = req;
+        let {limit=20, offset=0, sort="{}", filters="{}"} = req.query;
+        
+        sort = JSON.parse(sort);
+        limit = Number(limit) || 20;
+        offset = Number(offset) || 0;
+        filters = JSON.parse(filters);
+
+        if((user.type === "admin") || (user.type === "sales")){
+            const {requests, total} = await get_requests(limit, offset, sort, filters, user);
+
+            res.json({success: true, requests, total});
+        }else{
+            return res.status(401).json({success: false, msg: "Only admins or sales view requests"});
         }
     }catch(e){
         res.status(400).json({success: false, msg: e.message});

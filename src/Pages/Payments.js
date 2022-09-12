@@ -14,8 +14,8 @@ import "./Payments.css";
 const tabs = [{label: "Overview", id: "overview", Component: ClassOverView}, {label: "Teachers", id: "teachers", Component: TeachersSection}, {label: "Students", id: "students", Component: StudentsSection}];
 
 
-const Payments = ({}) => {
-    const [currentTab, setCurrentTab] = useState(tabs[0]);
+const Payments = ({is_admin, is_teacher}) => {
+    const [currentTab, setCurrentTab] = useState(is_teacher?tabs[1]:tabs[2]);
 
     const TabComponent = currentTab.Component;
 
@@ -26,7 +26,7 @@ const Payments = ({}) => {
     return (
         <div className='page payments'>
             <div className='main-col fullwidth'>
-                <Tabs tabs={tabs} index={tabIndex!==-1?tabIndex:0} current_id={currentTab}  onPressTab={(e, tab, i) => {setCurrentTab(tab)}} />
+                {!is_teacher && <Tabs tabs={tabs} index={tabIndex!==-1?tabIndex:0} current_id={currentTab}  onPressTab={(e, tab, i) => {setCurrentTab(tab)}} />}
 
                 <TabComponent />
             </div>

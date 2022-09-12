@@ -1,0 +1,22 @@
+.page .schedule-date-range{
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    text-transform: capitalize;
+    position: relative;
+    margin-bottom: 0px;
+}
+
+.page .schedule-date-range .schedule-range-arrow{
+    position: relative;
+    top: 2px;
+}
+
+.schedule-date-range .schedule-range-arrow.next{
+    margin-left: 8px;
+}
+
+.schedule-date-range svg{
+    margin-right: 10px;
+}

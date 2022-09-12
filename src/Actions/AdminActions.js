@@ -1,7 +1,7 @@
 import { validate_email, validate_password } from "../Utils";
 import { api } from "../Utils/api";
 import { set_config } from "./AppActions";
-import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_INIT_CONFIG, UPDATE_CONFIG, SET_EDIT_ACCOUNT_ERROR, ADMIN_SEARCH, UPDATE_CLASS_RESCHEDULE } from "./types";
+import { SET_ACCOUNTS, SET_ADMINS, SET_STUDENTS, SET_TEACHERS, SET_CREATE_ACCOUNT_ERROR, EDIT_NEW_ACCOUNT, CREATE_ACCOUNT, INIT_EDIT_ACCOUNT, CANCEL_ACCOUNT_EDIT, EDIT_ACCOUNT, SET_SESSIONS, EDIT_EXISTING_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_INIT_CONFIG, UPDATE_CONFIG, SET_EDIT_ACCOUNT_ERROR, ADMIN_SEARCH, UPDATE_CLASS_RESCHEDULE, ADMIN_SET_REQUESTS } from "./types";
 
 export const set_admins = (admins=[], total=0) => {
     return {type: SET_ADMINS, payload: {admins, total: total || admins.length}};
@@ -13,6 +13,10 @@ export const set_teachers = (teachers=[], total=0) => {
 
 export const set_sessions = (sessions=[], total=0) => {
     return {type: SET_SESSIONS, payload: {sessions, total: total || sessions.length}};
+}
+
+export const admin_set_requests = ({requests=[], total=0}) => {
+    return {type: ADMIN_SET_REQUESTS, payload: {requests, total: total || requests.length}};
 }
 
 export const set_students = (students=[], total=0) => {
@@ -319,6 +323,26 @@ export const admin_search = (search) => async (dispatch) => {
             }
 
             console.error(msg);
+        }else{
+            console.error(res?.message || res);
+        }
+    }catch(e){
+        console.error(e);
+    }
+}
+
+export const admin_get_requests = (limit=20, offset=0, sort="{}", filters="{}") => async (dispatch) => {
+    try{
+        const res = await api("get", "/api/admin/requests", {params: {limit, offset, sort, filters}});
+
+        if(res && res.data){
+            const {success, msg, requests=[], total=0} = res.data;
+
+            if(success){
+                dispatch(admin_set_requests({requests, total}))
+
+                return res.data;
+            }
         }else{
             console.error(res?.message || res);
         }

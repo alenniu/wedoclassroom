@@ -1,9 +1,9 @@
-import { ADMIN_SEARCH, CANCEL_ACCOUNT_EDIT, CREATE_ACCOUNT, EDIT_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_EXISTING_ACCOUNT, EDIT_INIT_CONFIG, EDIT_NEW_ACCOUNT, INIT_EDIT_ACCOUNT, SET_ACCOUNTS, SET_ADMINS, SET_CREATE_ACCOUNT_ERROR, SET_EDIT_ACCOUNT_ERROR, SET_SESSIONS, SET_STUDENTS, SET_TEACHERS, UPDATE_CONFIG } from "../Actions/types";
+import { ADMIN_SEARCH, ADMIN_SET_REQUESTS, CANCEL_ACCOUNT_EDIT, CREATE_ACCOUNT, EDIT_ACCOUNT, EDIT_CONFIG_VALUE, EDIT_EXISTING_ACCOUNT, EDIT_INIT_CONFIG, EDIT_NEW_ACCOUNT, INIT_EDIT_ACCOUNT, SET_ACCOUNTS, SET_ADMINS, SET_CREATE_ACCOUNT_ERROR, SET_EDIT_ACCOUNT_ERROR, SET_SESSIONS, SET_STUDENTS, SET_TEACHERS, UPDATE_CONFIG } from "../Actions/types";
 import { update_object } from "../Utils";
 
 const NEW_ACCOUNT_PROPS = {name: {first: "", last: ""}, email: "", phone: "", type: ""}
 
-const INITIAL_STATE = {accounts: [], total_accounts: 0, search: {students: [], teachers: [], classes: []}, sessions: [], total_sessions: 0, teachers: [], total_teachers: 0, students: [], total_students: 0, admins: [], total_admins: 0, edit_account: {error: ""}, editing_account: false, new_account: {error: ""}, edit_config: {error: ""}};
+const INITIAL_STATE = {accounts: [], total_accounts: 0, search: {students: [], teachers: [], classes: []}, sessions: [], total_sessions: 0, requests: [], total_requests: 0, teachers: [], total_teachers: 0, students: [], total_students: 0, admins: [], total_admins: 0, edit_account: {error: ""}, editing_account: false, new_account: {error: ""}, edit_config: {error: ""}};
 
 export default (state=INITIAL_STATE, action) => {
     const {type, payload} = action;
@@ -35,6 +35,11 @@ export default (state=INITIAL_STATE, action) => {
         case SET_ACCOUNTS:
             new_state.accounts = payload.accounts;
             new_state.total_accounts = payload.total;
+        break;
+
+        case ADMIN_SET_REQUESTS:
+            new_state.requests = payload.requests;
+            new_state.total_requests = payload.total;
         break;
 
         case ADMIN_SEARCH:{
