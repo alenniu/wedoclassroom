@@ -19,7 +19,7 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
 
     const navigate = useNavigate();
 
-    const {name={}, email="", phone="", type="", credits="", gender, school, grade, date_enrolled=new Date(), emergency_contact={}, archived=false, error} = new_account
+    const {name={}, email="", phone="", type="", credits="", gender, school, grade, date_enrolled=new Date(), emergency_contact={}, archived=false, hourly_rate_1_3, hourly_rate_4_8, error} = new_account
     const {name:emergency_name="", email:emergency_email="", phone:emergency_phone="", relation=""} = emergency_contact;
     const {first="", last=""} = name;
     const is_admin_account = type === "admin";
@@ -70,7 +70,7 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
     const onPressCreateAccount = async () => {
         set_loading(true);
         if(validate_fields()){
-            if(await create_account({name, email, phone, type, password, gender, school, grade, date_enrolled, credits: credits || 0, archived, emergency_contact: {name: emergency_name, email: emergency_email, phone: emergency_phone, relation}})){
+            if(await create_account({name, email, phone, type, password, gender, school, grade, date_enrolled, credits: credits || 0, archived, emergency_contact: {name: emergency_name, email: emergency_email, phone: emergency_phone, relation, hourly_rate_1_3: hourly_rate_1_3 || 0, hourly_rate_4_8: hourly_rate_4_8 || 0}})){
                 setPassword("");
             }
         }
@@ -148,6 +148,28 @@ const NewAccount = ({new_account, is_admin, create_account, edit_new_account, se
                             renderInput={(params) => <TextField {...params} />}
                         />
                         </LocalizationProvider>
+                    </div>
+                    </>
+                )}
+
+                {is_teacher_account && (
+                    <>
+                    <div className='input-container'>
+                        <input type="text" value={hourly_rate_1_3} onChange={onChangeValueEvent(["hourly_rate_1_3"])} placeholder='Hourly Rate (1 - 3)' style={{paddingLeft: "50px"}} />
+                        {errors["hourly_rate_1_3"] && <p className='error'>{errors["hourly_rate_1_3"]}</p>}
+
+                        <div className='input-adornment start' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}>
+                            <BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} />
+                        </div>
+                    </div>
+
+                    <div className='input-container'>
+                        <input type="text" value={hourly_rate_4_8} onChange={onChangeValueEvent(["hourly_rate_4_8"])} placeholder='Hourly Rate (4 - 8+)' style={{paddingLeft: "50px"}} />
+                        {errors["hourly_rate_4_8"] && <p className='error'>{errors["hourly_rate_4_8"]}</p>}
+
+                        <div className='input-adornment start' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}>
+                            <BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} />
+                        </div>
                     </div>
                     </>
                 )}

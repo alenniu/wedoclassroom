@@ -156,7 +156,7 @@ const ClassOverView = ({sessions=[], total_sessions=0, requests=[], total_reques
                                 const startTime = new Date(start_time);
                                 const endTime = end_time?new Date(end_time):new Date();
 
-                                return prev + ((endTime.getTime() - startTime.getTime())/60);
+                                return prev + ((endTime.getTime() - startTime.getTime())/HOUR);
                             }, 0);
 
                             const total_salary = total_hours * hourly_rate;

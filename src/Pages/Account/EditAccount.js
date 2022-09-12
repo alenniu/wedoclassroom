@@ -18,7 +18,7 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [errors, setErrors] = useState({});
     
-    const {_id, name={}, email="", phone="", type="", credits=0, gender, school, grade, date_enrolled=new Date(), emergency_contact={}, archived=false, error} = edit_account;
+    const {_id, name={}, email="", phone="", type="", credits=0, gender, school, grade, date_enrolled=new Date(), emergency_contact={}, archived=false, hourly_rate_1_3=0, hourly_rate_4_8=0, error} = edit_account;
     const {name:emergency_name="", email:emergency_email="", phone:emergency_phone="", relation=""} = emergency_contact;
     const {first="", last=""} = name;
     const is_admin_account = type === "admin";
@@ -83,7 +83,7 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
     const onPressEditAccount = async () => {
         set_loading(true);
         if(validate_fields()){
-            if(await update_account({...edit_account, archived: archived, credits: credits || 0, password: password || undefined})){
+            if(await update_account({...edit_account, archived: archived, credits: credits || 0, password: password || undefined, hourly_rate_1_3: hourly_rate_1_3 || 0, hourly_rate_4_8: hourly_rate_4_8 || 0})){
                 setPassword("");
             }
         }
@@ -161,6 +161,20 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
                             renderInput={(params) => <TextField {...params} />}
                         />
                         </LocalizationProvider>
+                    </div>
+                    </>
+                )}
+
+                {is_teacher_account && (
+                    <>
+                    <div className='input-container'>
+                        <input type="text" value={hourly_rate_1_3} onChange={onChangeValueEvent(["hourly_rate_1_3"])} placeholder='Hourly Rate (1 - 3)' />
+                        {errors["hourly_rate_1_3"] && <p className='error'>{errors["hourly_rate_1_3"]}</p>}
+                    </div>
+
+                    <div className='input-container'>
+                        <input type="text" value={hourly_rate_4_8} onChange={onChangeValueEvent(["hourly_rate_4_8"])} placeholder='Hourly Rate (4 - 8+)' />
+                        {errors["hourly_rate_4_8"] && <p className='error'>{errors["hourly_rate_4_8"]}</p>}
                     </div>
                     </>
                 )}
