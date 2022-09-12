@@ -68,6 +68,7 @@ nav.admin-nav{
 
 .admin-nav.closed .nav-wrapper .nav-links{
     padding-bottom: 0;
+    padding: 20px 0;
 }
 
 .nav-links .nav-link a.button{
@@ -87,12 +88,28 @@ nav.admin-nav{
     margin-right: 10px;
 }
 
+.admin-nav.closed .nav-links .nav-link a{
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    border-radius: 0;
+    font-weight: 400;
+}
+
 .admin-nav.closed .nav-links .nav-link .link-icon{
+    position: relative;
+    top: -5px;
     font-size: 20px;
-    width: 30px;
-    min-width: 30px;
-    height: 30px;
-    margin-right: 10px;
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    margin-right: 0px;
+}
+
+.admin-nav.closed .nav-links .nav-link .link-label{
+    position: absolute;
+    font-size: 10px;
+    bottom: 5px;
 }
 
 .nav-links .nav-link a{
