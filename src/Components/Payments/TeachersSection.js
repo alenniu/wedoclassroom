@@ -56,7 +56,7 @@ const TeachersSection = ({sessions=[], total_sessions=0, requests=[], total_requ
 
     const can_go_back = !is_teacher;
 
-    const can_go_forward = !is_teacher && (min.getFullYear() <= current_date.getFullYear()) && (min.getMonth() < current_date.getMonth());
+    const can_go_forward = !is_teacher && (min.getFullYear() <= current_date.getFullYear()) && (min.getMonth() < current_date.getMonth()) || ((current_date.getDate() > 15) && (minDate < 15));
 
     const onClickNextRange = (e) => {
         can_go_forward && setDateRange(({min, max}) => {

@@ -8,7 +8,7 @@ async function get_sessions(limit=20, offset=0, sort={}, filters={}, user){
         let total = 0;
         let sessions = [];
 
-        if((user.type !== "admin") || (user.type !== "sales")){
+        if((user.type !== "admin") && (user.type !== "sales")){
             filters.teacher = user._id
         }
         
