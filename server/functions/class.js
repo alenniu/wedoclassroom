@@ -280,7 +280,7 @@ async function fake_class_requests({student_ids=[], _class}, user){
 async function request_class({_class, student}){
     try{
         if(_class && student){
-            const new_request = await ((new Request({_class: _class._id, class_price_at_time: _class.price, student: student._id})).save());
+            const new_request = await ((new Request({_class: _class._id, teacher: _class.teacher._id, class_price_at_time: _class.price, student: student._id})).save());
 
             await new_request.populate({path: "student", select: "-password"});
 

@@ -15,7 +15,7 @@ const tabs = [{label: "Overview", id: "overview", Component: ClassOverView}, {la
 
 
 const Payments = ({is_admin, is_teacher}) => {
-    const [currentTab, setCurrentTab] = useState(is_teacher?tabs[1]:tabs[2]);
+    const [currentTab, setCurrentTab] = useState(is_teacher?tabs[1]:tabs[0]);
 
     const TabComponent = currentTab.Component;
 

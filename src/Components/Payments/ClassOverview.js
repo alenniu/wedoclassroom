@@ -8,12 +8,26 @@ import { debounce, get_full_image_url, ordinal_suffix, toMoneyString } from '../
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { RiArrowLeftSLine, RiArrowRightSLine, RiCalendarLine } from 'react-icons/ri';
 import { get_months, HOUR, MONTHS } from '../../Data';
+import { Link } from 'react-router-dom';
+import { api } from '../../Utils/api';
 
 const RenderTeacherOption = ({label, value, teacher}) => {
     return (
         <div style={{display: "flex", alignItems: "center"}}>
-            <div className='teacher-image-container' style={{height: "30px", width: "30px", overflow: 'hidden', backgroundColor: "black", borderRadius: "50%", marginRight: "10px"}}>
+            <div className='teacher-image-container' style={{height: "30px", width: "30px", overflow: 'hidden', backgroundColor: "black", borderRadius: "50%", marginRight: "10px", flexShrink: 0}}>
                 <img src={get_full_image_url(teacher.photo_url || '/Assets/Images/AuthBackground.png')} style={{height: "100%", width: "100%", objectFit: "cover"}} />
+            </div>
+
+            <span>{label}</span>
+        </div>
+    )
+}
+
+const RenderClassOption = ({label, value, _class}) => {
+    return (
+        <div style={{display: "flex", alignItems: "center"}}>
+            <div className='teacher-image-container' style={{height: "30px", width: "30px", overflow: 'hidden', backgroundColor: "black", borderRadius: "50%", marginRight: "10px", flexShrink: 0}}>
+                <span style={{display: "inline-block", height: "100%", width: "100%", backgroundClip: _class.bg_color}} />
             </div>
 
             <span>{label}</span>
@@ -30,8 +44,15 @@ const ClassOverView = ({sessions=[], total_sessions=0, requests=[], total_reques
     const tableContainerRef = useRef(null);
     const [maxTableHeight, setMaxTableHeight] = useState(0);
 
+    const [classSearch, setClassSearch] = useState("");
+    const [selectedClass, setSelectedClass] = useState(null);
+
     const [teacherSearch, setTeacherSearch] = useState("");
     const [selectedTeacher, setSelectedTeacher] = useState(null);
+
+    const [selectTeachers, setSelectTeachers] = useState([]);
+    const [SelectStudents, setSelectStudents] = useState([]);
+    const [selectClasses, setSelectClasses] = useState([]);
 
     const [page, setPage] = useState(0);
     const [pageCount, setPageCount] = useState(0);
@@ -51,10 +72,19 @@ const ClassOverView = ({sessions=[], total_sessions=0, requests=[], total_reques
     const onTypeTeacherSelect = (e, value) => {
         setTeacherSearch(value);
     };
+
+    const onTypeClassSelect = (e, value) => {
+        setClassSearch(value);
+    };
     
     const onSelectTeacher = (value) => {
         setSelectedTeacher(value);
         setFilters((f) => ({...f, teacher: value || undefined}));
+    }
+
+    const onSelectClass = (value) => {
+        setSelectedClass(value);
+        setFilters((f) => ({...f, _class: value || undefined}));
     }
 
     const onClickNextRange = (e) => {
@@ -77,9 +107,23 @@ const ClassOverView = ({sessions=[], total_sessions=0, requests=[], total_reques
         });
     }
 
-    const searchTeachers = useCallback(debounce((s) => {
-        get_teachers(20, 0, s);
-    }), []);
+    const getStudents = useCallback(debounce(async (search) => {
+        const res = await api("get", "/api/admin/accounts", {params: {search, limit: 20, offset: 0, filters: JSON.stringify({type: "student"})}});
+    
+        setSelectStudents(res?.data?.accounts || []);
+    }, 300), []);
+    
+    const getTeachers = useCallback(debounce(async (search) => {
+        const res = await api("get", "/api/admin/accounts", {params: {search, limit: 20, offset: 0, filters: JSON.stringify({type: "teacher"})}});
+    
+        return setSelectTeachers(res?.data?.accounts || []);
+    }, 300), []);
+    
+    const getClasses = useCallback(debounce(async (search) => {
+        const res = await api("get", "/api/admin/classes", {params: {search, limit: 20, offset: 0}});
+    
+        return setSelectClasses(res?.data?.classes || []);
+    }, 300), []);
 
     const onSize = () => {
         const {innerWidth, innerHeight, scrollY, scrollX} = window;
@@ -101,7 +145,8 @@ const ClassOverView = ({sessions=[], total_sessions=0, requests=[], total_reques
     useEffect(() => {
         const init = async () => {
             set_loading(true);
-            await admin_get_requests(pageCount, page*pageCount, JSON.stringify({date_handled: "desc"}), JSON.stringify({accepted: true, date_handled: {$gte: min, $lte: max}}));
+            await admin_get_requests(pageCount, page*pageCount, JSON.stringify({date_handled: "desc"}), JSON.stringify({...filters, accepted: true, date_handled: {$gte: min, $lte: max}}));
+            
             await get_sessions(pageCount, page*pageCount, JSON.stringify(sort), JSON.stringify({...filters, start_time: {$gte: min, $lte: max}}));
             set_loading(false);
         }
@@ -109,21 +154,35 @@ const ClassOverView = ({sessions=[], total_sessions=0, requests=[], total_reques
         init();
     }, [page, pageCount, sort, filters, dateRange])
 
-    // useEffect(() => {
-    //     if(is_admin){
-    //         searchTeachers(teacherSearch);
-    //     }
-    // }, [teacherSearch, is_admin]);
+    useEffect(() => {
+        if(is_admin){
+            getTeachers(teacherSearch);
+        }
+    }, [teacherSearch, is_admin]);
+
+    useEffect(() => {
+        if(is_admin){
+            getClasses(classSearch);
+        }
+    }, [classSearch, is_admin]);
 
     return (
         <div className='teachers-section'>
             <div className='filters-search-container'>
                 <div className='filters-container'>
-                <p style={{marginBottom: 10}} className='schedule-date-range'>
-                    <span onClick={onClickPrevRange} className='schedule-range-arrow prev clickable'><RiArrowLeftSLine color='#99C183' size={24} /></span>
-                    <RiCalendarLine color='#99C183' size={24} /> {minMonth.short} {ordinal_suffix(minDate)} - {(maxMonth.short !== minMonth.short)?maxMonth.long+" ":""}{ordinal_suffix(maxDate)}, {min.getFullYear()}
-                    <span onClick={onClickNextRange} className={`schedule-range-arrow next ${can_go_forward?"clickable":""}`}><RiArrowRightSLine color={can_go_forward?'#99C183':"#AAA"} size={24} /></span>
-                </p>
+                    <p style={{marginBottom: 10}} className='schedule-date-range'>
+                        <span onClick={onClickPrevRange} className='schedule-range-arrow prev clickable'><RiArrowLeftSLine color='#99C183' size={24} /></span>
+                        <RiCalendarLine color='#99C183' size={24} /> {minMonth.short} {ordinal_suffix(minDate)} - {(maxMonth.short !== minMonth.short)?maxMonth.long+" ":""}{ordinal_suffix(maxDate)}, {min.getFullYear()}
+                        <span onClick={onClickNextRange} className={`schedule-range-arrow next ${can_go_forward?"clickable":""}`}><RiArrowRightSLine color={can_go_forward?'#99C183':"#AAA"} size={24} /></span>
+                    </p>
+
+                    {!is_teacher && <div className='input-container select class'>
+                        <TypeSelect disabled={is_teacher} options={selectClasses.map((c) => ({label: `${c.title}`, value: c._id, _class: c}))} placeholder="Select Class" onChangeText={onTypeClassSelect} textValue={classSearch} placeholderAsOption renderOption={RenderClassOption} renderSelected={RenderClassOption} onChange={onSelectClass} value={selectedClass} />
+                    </div>}
+                    
+                    {!is_teacher && <div className='input-container select teacher'>
+                        <TypeSelect disabled={is_teacher} options={selectTeachers.map((t) => ({label: `${t.name.first} ${t.name.last}${is_teacher?" (You)":""}`, value: t._id, teacher: t}))} placeholder="Select Teacher" onChangeText={onTypeTeacherSelect} textValue={teacherSearch} placeholderAsOption renderOption={RenderTeacherOption} renderSelected={RenderTeacherOption} onChange={onSelectTeacher} value={selectedTeacher} />
+                    </div>}
                 </div>
             </div>
 
@@ -204,11 +263,11 @@ const ClassOverView = ({sessions=[], total_sessions=0, requests=[], total_reques
                             return (
                                 <tr key={_id}>
                                     <td>{handled_by.name.first} {handled_by.name.last}</td>
-                                    <td>{student.name.first} {student.name.last}</td>
-                                    <td>{teacher.name.first} {teacher.name.last}</td>
+                                    <td><Link to={`/dashboard/accounts/edit/${student._id}`}>{student.name.first} {student.name.last}</Link></td>
+                                    <td><Link to={`/dashboard/accounts/edit/${teacher._id}`}>{teacher.name.first} {teacher.name.last}</Link></td>
                                     <td>{student.grade}</td>
                                     <td>{form_type || "Unknown"}</td>
-                                    <td>{title}</td>
+                                    <td><Link to={`/dashboard/class/edit/${_id}`}>{title}</Link></td>
                                     <td>{type}</td>
                                     <td>{toMoneyString(hourly_rate)}</td>
                                     <td>{toMoneyString(total_salary)}</td>

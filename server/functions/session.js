@@ -3,10 +3,14 @@ const mongoose = require("mongoose");
 const Sessions = mongoose.model("class_session");
 const Session = Sessions;
 
-async function get_sessions(limit=20, offset=0, sort={}, filters={}){
+async function get_sessions(limit=20, offset=0, sort={}, filters={}, user){
     try{
         let total = 0;
         let sessions = [];
+
+        if((user.type !== "admin") || (user.type !== "sales")){
+            filters.teacher = user._id
+        }
         
         total = await Session.count({...filters});
         if(total){

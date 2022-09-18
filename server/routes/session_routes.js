@@ -6,7 +6,7 @@ const verify_user = require("../middleware/verify_user");
 const router = require("express").Router();
 
 module.exports = (app) => {
-    router.route("/").get(verify_admin, get_sessions_handler);
+    router.route("/").get(verify_user, get_sessions_handler);
     
     router.route("/:class_id").get(verify_user, get_class_sessions_handler);
     

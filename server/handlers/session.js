@@ -11,7 +11,7 @@ export const get_sessions_handler = async (req: Request, res: Response, next: Ne
         sort = JSON.parse(sort);
         filters = JSON.parse(filters);
 
-        const {total, sessions} = await get_sessions(limit, offset, sort, filters);
+        const {total, sessions} = await get_sessions(limit, offset, sort, filters, user);
 
         res.json({success: true, total, sessions});
     }catch(e){
