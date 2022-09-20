@@ -196,7 +196,7 @@ export const create_account = ({name, photo_url, email, phone, gender, school, g
 
 export const update_account = (account) => async (dispatch) => {
     try{
-        if(account.name && account.name.first && account.name.last && validate_email(account.email) && (!account.password || validate_password(account.password)) && account.type){
+        if(account._id){
             const res = await api("put", "/api/admin/accounts", {account});
 
             if(res.data){
@@ -214,7 +214,7 @@ export const update_account = (account) => async (dispatch) => {
                 dispatch(set_edit_account_error(res?.message || res));
             }
         }else{
-            throw new Error("name (first and last), valid email, valid password and account type must be provided");
+            throw new Error("account._id is required");
         }
     }catch(e){
         console.error(e);

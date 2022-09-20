@@ -30,10 +30,12 @@ async function user_exists(prop="email", value, projection={password: 0}){
 async function create_user({name, email, phone, password, gender, school, grade, date_enrolled=new Date(), birth=Date.now(), type, role="", emergency_contact, credits=0}, admin_user=null){
     try{
         if((type !== "student") || (admin_user && mongoose.isValidObjectId(admin_user._id))){
+            const current_date = new Date();
+
             if(validate_email(email) && validate_password(password) && birth && type && name.first && name.last){
                 const hashed_password = hash_password(password);
                 
-                const new_user = await (new User({name, email, phone, password: hashed_password, gender, school, grade, date_enrolled: date_enrolled?new Date(date_enrolled):null, birth: new Date(birth), type, emergency_contact, activated: false, role, created_by: admin_user, credits})).save();
+                const new_user = await (new User({name, email, phone, password: hashed_password, gender, school, grade, date_enrolled: date_enrolled?new Date(date_enrolled):null, birth: new Date(birth), type, emergency_contact, activated: false, role, created_by: admin_user, credits, credit_logs: [{previous_amount: 0, new_amount: credits, difference: credits, date: current_date, note: "Initial Credits"}]})).save();
                 
                 return new_user;
             }else{

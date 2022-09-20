@@ -3,10 +3,12 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import React, { useEffect, useState } from 'react';
 import { BsCurrencyDollar, BsEye, BsEyeSlash } from 'react-icons/bs';
+import { RiEditLine } from 'react-icons/ri';
 import { connect } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { update_account, edit_existing_account, init_edit_account, set_loading, cancel_account_edit, get_account } from '../../Actions';
 import { INIT_EDIT_ACCOUNT } from '../../Actions/types';
+import CreditEditModal from '../../Components/Account/CreditEditModal';
 import { password_requirements, validate_email, validate_name, validate_password } from '../../Utils';
 
 import "./Account.css";
@@ -18,7 +20,17 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [errors, setErrors] = useState({});
     
-    const {_id, name={}, email="", phone="", type="", credits=0, gender, school, grade, date_enrolled=new Date(), emergency_contact={}, archived=false, hourly_rate_1_3=0, hourly_rate_4_8=0, error} = edit_account;
+    const [editCredits, setEditCredits] = useState(false);
+
+    const openCreditsModal = () => {
+        setEditCredits(true);
+    }
+
+    const closeCreditsModal = () => {
+        setEditCredits(false);
+    }
+
+    const {_id, name={}, email="", phone="", type="", credits=0, credit_logs=[], gender, school, grade, date_enrolled=new Date(), emergency_contact={}, archived=false, hourly_rate_1_3=0, hourly_rate_4_8=0, error} = edit_account;
     const {name:emergency_name="", email:emergency_email="", phone:emergency_phone="", relation=""} = emergency_contact;
     const {first="", last=""} = name;
     const is_admin_account = type === "admin";
@@ -80,13 +92,23 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
         setPasswordVisible((v) => !v);
     }
 
-    const onPressEditAccount = async () => {
+    const onClickUpdateAccount = async () => {
         set_loading(true);
         if(validate_fields()){
             if(await update_account({...edit_account, archived: archived, credits: credits || 0, password: password || undefined, hourly_rate_1_3: hourly_rate_1_3 || 0, hourly_rate_4_8: hourly_rate_4_8 || 0})){
                 setPassword("");
             }
         }
+        set_loading(false);
+    }
+
+    const onClickUpdateCredits = async ({credits, previous_amount, difference, note=""}) => {
+        set_loading(true);
+        // if(validate_fields()){
+            if(await update_account({_id: edit_account._id, credits: credits || 0, credit_logs: [{previous_amount, new_amount: credits, difference, date: new Date(), note}, ...credit_logs]})){
+                closeCreditsModal();
+            }
+        // }
         set_loading(false);
     }
 
@@ -204,9 +226,16 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
                 </div>
 
                 {is_student_account && <div className='input-container'>
-                    <input type="number" value={credits} onChange={onChangeValueEvent(["credits"])} placeholder='Credits' style={{paddingLeft: "50px"}} />
+                    <input type="text" disabled value={credits} onChange={onChangeValueEvent(["credits"])} placeholder='Credits' style={{paddingLeft: "50px"}} />
+
                     <div className='input-adornment start' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}>
                         <BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} />
+                    </div>
+
+                    <div className='input-adornment end' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}>
+                        <span className='edit-credit clickable' onClick={openCreditsModal}>
+                            <RiEditLine color='rgba(0,0,0,0.3)' size={"20px"} />
+                        </span>
                     </div>
                 </div>}
 
@@ -220,8 +249,10 @@ const EditAccount = ({edit_account, is_admin, get_account, update_account, edit_
                 </div>
 
                 <button style={{marginBottom: 20}} className='button error fullwidth' onClick={() => {cancel_account_edit(); navigate("/dashboard/accounts")}}>Cancel Edit</button>
-                <button className='button primary fullwidth' onClick={onPressEditAccount}>Edit Account</button>
+                <button className='button primary fullwidth' onClick={onClickUpdateAccount}>Update Account</button>
                 {error && <p className='error'>{error}</p>}
+
+                <CreditEditModal show={editCredits} credits={credits} credit_logs={credit_logs} onClose={closeCreditsModal} onUpdateCredits={onClickUpdateCredits} />
             </div>
         </div>
     );

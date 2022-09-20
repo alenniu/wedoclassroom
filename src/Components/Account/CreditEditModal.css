@@ -1,0 +1,19 @@
+.restore-point{
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid #ECECEC;
+    margin-bottom: 20px;
+}
+
+.restore-point .restore-amount{
+    color: #99C183;
+    margin-right: 20px;
+}
+
+.restore-point.selected{
+    border-color: #99C183;
+}
+
+.restore-point .restore-date{
+    text-align: center;
+}

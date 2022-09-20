@@ -135,10 +135,10 @@ async function set_meeting_link({_class, meeting_link}, user){
     }
 }
 
-async function start_class({_class, meeting_link=""}, user){
+async function start_class({_class, duration_hours=1, meeting_link=""}, user){
     try{
         if(!_class.current_session){
-            const new_session = await create_session({_class: _class, meeting_link}, user);
+            const new_session = await create_session({_class: _class, duration_hours, meeting_link}, user);
 
             const updated_class = await Classes.findOneAndUpdate({_id: _class._id}, {$set: {current_session: new_session._id, meeting_link}, $push: {sessions: {$each: [new_session._id], $position: 0}}}, {new: true, upsert: false}).populate({path: "teacher", select: "-password" }).populate({path: "students", select: "-password"});
 

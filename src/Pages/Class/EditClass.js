@@ -626,7 +626,7 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
 
                     <div className='table-container' style={{marginBlock: 20}}>
                         <table>
-                            <TableHead headers={[{label: "Student", id: "student", sortable: false}, {label: "Price Paid", id: "price_paid", sortable: false}, {label: "Date Joined", id: "date_joined", sortable: false}, {label: "Form Type", id: "form_type", sortable: false}]} />
+                            <TableHead headers={[{label: "Student", id: "student", sortable: false}, {label: "Price Paid", id: "price_paid", sortable: false}, {label: "Date Joined", id: "date_joined", sortable: false}, {label: "Form Type", id: "form_type", sortable: false}, {label: "Note", id: "note", sortable: false}]} />
 
                             <tbody>
                             {students.map((s, i) => {
@@ -643,11 +643,11 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                                 }
 
                                 const student_info = students_info[student_info_index] || {};
-                                const {price_paid=0, date_joined=new Date(), form_type=""} = student_info;
+                                const {price_paid=0, date_joined=new Date(), form_type="", note=""} = student_info;
 
                                 return (
                                     <tr key={_id}>
-                                        <td><button className='button error' onClick={() => {onRemoveStudent(i, s)}}><RiCloseLine /></button> {name.first} {name.last}</td>
+                                        <td style={{whiteSpace: "nowrap"}}><button className='button error' onClick={() => {onRemoveStudent(i, s)}}><RiCloseLine /></button> {name.first} {name.last}</td>
 
                                         <td><div className='input-container' style={{margin: 0, width: "unset", "--input-height": "40px"}}><input type="number" min="" placeholder="Price Paid" style={{paddingLeft: 50}} onChange={onChangeValueEvent(["students_info", student_info_index, "price_paid"])} value={price_paid} /><div className='input-adornment start' style={{backgroundColor: "transparent", borderRight: "2px solid rgba(0,0,0,0.1)"}}><BsCurrencyDollar color='rgba(0,0,0,0.3)' size={"20px"} /></div></div></td>
                                         
@@ -659,6 +659,8 @@ const EditClass = ({user, teachers=[], total_teachers=0, edit_class={}, app_conf
                                             <MenuItem value="new" id="new">New</MenuItem>
                                             <MenuItem value="credits" id="credits">Credits</MenuItem>
                                         </Select></div></td>
+
+                                        <td><div className='input-container' style={{margin: 0, width: "100%"}}><textarea onChange={onChangeValueEvent(["students_info", student_info_index, "note"])} style={{height: 60, resize: "none"}} value={note} placeholder="Note" /></div></td>
                                     </tr>
                                 )
                             })}

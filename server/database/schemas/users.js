@@ -65,6 +65,23 @@ const user_schema = new schema({
         type: Number,
         default: 0
     },
+    credit_logs: [{
+        previous_amount: {
+            type: Number,
+        },
+        new_amount: {
+            type: Number,
+        },
+        difference: { //could be calculated but i'll just store it
+            type: Number
+        },
+        date: {
+            type: Date,
+        },
+        note: {
+            type: String
+        }
+    }],
     stripe_customer_id: {
         type: String,
         required: false,

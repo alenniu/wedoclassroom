@@ -41,6 +41,9 @@ const class_schema = new schema({
         form_type: {
             type: String,
             enum: ["trial", "addition", "new", "credits"]
+        },
+        note: {
+            type: String
         }
     }],
     tags: [String],

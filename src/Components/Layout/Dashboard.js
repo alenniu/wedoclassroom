@@ -110,7 +110,7 @@ const DashboardLayout = ({user, is_admin, is_teacher, notifications=[], notifica
             window.removeEventListener("click", onClickOutsiteNotifications);
             window.removeEventListener("click", onClickOutsiteSearch);
         }
-    }, [notifications_open]);
+    }, [notifications_open, showSearch]);
 
     useEffect(() => {
         let timeout;

@@ -14,6 +14,9 @@ const session_schema = new schema({
         type: Date,
         default: null
     },
+    scheduled_duration_hrs: {
+        type: Number
+    },
     active: {
         type: Boolean,
         default: true
@@ -25,6 +28,29 @@ const session_schema = new schema({
     students: [{
         type: schema.Types.ObjectId,
         ref: "user"
+    }],
+    students_session_info: [{
+        student: {
+            type: schema.Types.ObjectId,
+            ref: "user"
+        },
+        credit_log: {
+            previous_amount: {
+                type: Number,
+            },
+            new_amount: {
+                type: Number,
+            },
+            difference: { //could be calculated but i'll just store it
+                type: Number
+            },
+            date: {
+                type: Date,
+            },
+            note: {
+                type: String
+            }
+        }
     }],
     meeting_link: {
         type: String

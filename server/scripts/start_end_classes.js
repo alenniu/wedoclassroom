@@ -71,9 +71,14 @@ async function start_classes(page=0, limit=100, app_config={}){
 
         const matching_schedule = schedules.find((s) => s.days.includes(current_day) && (s.daily_start_time <= current_hours_time) && (s.daily_end_time >= current_hours_time));
 
+        let duration_hours = 0;
+
         if(matching_schedule){
             cancelled = cancelled_dates.some((cd) => is_same_lesson({date: current_date, start_time: matching_schedule.daily_start_time, end_time: matching_schedule}, cd));
 
+            if(!cancelled){
+                duration_hours = (matching_schedule.daily_end_time - matching_schedule.daily_start_time)/HOUR;
+            }
         }else{
             console.log(`No matching schedule found for ${title}. Checking Custom Dates!!!`);
             
@@ -82,6 +87,8 @@ async function start_classes(page=0, limit=100, app_config={}){
             if(matching_custom_date){
                 console.log(`Matching Custom Date Found for ${title}!!!`);
 
+                duration = (new Date(matching_custom_date.end_time).getTime() - new Date(matching_custom_date.start_time).getTime())/HOUR;
+                
                 cancelled = false;
             }else{
                 console.log(`No matching custom date found for ${title}. How tf did this pass the filter???`);
@@ -90,7 +97,7 @@ async function start_classes(page=0, limit=100, app_config={}){
         }
 
         if(!cancelled){
-            await start_class({_class, meeting_link: ""}, _class.teacher);
+            await start_class({_class, meeting_link: "", duration_hours: Number(duration_hours.toPrecision(2))}, _class.teacher);
         }else{
             console.log(`${title} was cancelled`)
         }
