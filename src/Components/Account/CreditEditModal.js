@@ -60,7 +60,7 @@ const CreditEditModal = ({show=false, onClose, credits=0, credit_logs=[], onUpda
     }
 
     const onClickRestorePoint = (cl, index) => {
-        const difference = credits - cl.new_amount;
+        const difference = cl.new_amount - credits;
 
         setRestoreIndex(index);
         setAmount(difference);
@@ -139,19 +139,19 @@ const CreditEditModal = ({show=false, onClose, credits=0, credit_logs=[], onUpda
                         </span>
 
                         <div style={{marginTop: "50px"}}>
-                            <p style={{marginBottom: 20, paddingInline: 20}}>
+                            <p style={{marginBottom: 20, color: "black", paddingInline: 20}}>
                                 Old Value: {toMoneyString(credits)}
                             </p>
 
-                            <p style={{marginBottom: 20, paddingInline: 20}}>
+                            <p style={{marginBottom: 20, color: "black", paddingInline: 20}}>
                                 Amount: {toMoneyString(amount * operation_multiplier)}
                             </p>
 
-                            <p style={{marginBottom: 20, paddingInline: 20}}>
+                            <p style={{marginBottom: 20, color: "black", paddingInline: 20}}>
                                 New Value: {toMoneyString(credits + (amount * operation_multiplier))}
                             </p>
 
-                            <p style={{marginBottom: 20, paddingInline: 20}}>
+                            <p style={{marginBottom: 20, color: "black", paddingInline: 20}}>
                                 Note: "{note}"
                             </p>
                         </div>

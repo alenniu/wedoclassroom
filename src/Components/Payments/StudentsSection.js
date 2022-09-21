@@ -4,7 +4,7 @@ import { TableHead } from '../Common/TableHead';
 
 import {get_sessions, set_loading, get_students} from "../../Actions";
 import { TypeSelect } from '../Common/TypeSelect';
-import { debounce, get_full_image_url, toMoneyString } from '../../Utils';
+import { debounce, get_full_image_url, is_same_day, toMoneyString } from '../../Utils';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { api } from '../../Utils/api';
 import Pagination from '../Common/Pagination';
@@ -42,7 +42,7 @@ const StudentsSections = ({sessions=[], total_sessions=0, students=[], total_stu
     };
     
     const onSelectStudent = (value) => {
-        setSelectedStudent(value);
+        setSelectedStudent(selectStudents.find((s) => s._id === value));
         setFilters((f) => ({...f, students: value || undefined}));
     }
 
@@ -89,7 +89,7 @@ const StudentsSections = ({sessions=[], total_sessions=0, students=[], total_stu
             <div className='filters-search-container'>
                 <div className='filters-container'>
                     <div className='input-container select student'>
-                        <TypeSelect options={selectStudents.map((s) => ({label: `${s.name.first} ${s.name.last}`, value: s._id, student: s}))} placeholder="Select Student" onChangeText={onTypeStudentSelect} textValue={studentSearch} renderOption={RenderStudentOption} renderSelected={RenderStudentOption} onChange={onSelectStudent} placeholderAsOption value={selectedStudent} />
+                        <TypeSelect options={selectStudents.map((s) => ({label: `${s.name.first} ${s.name.last}`, value: s._id, student: s}))} placeholder="Select Student" onChangeText={onTypeStudentSelect} textValue={studentSearch} renderOption={RenderStudentOption} renderSelected={RenderStudentOption} onChange={onSelectStudent} placeholderAsOption value={selectedStudent?._id} />
                     </div>
                 </div>
             </div>
@@ -101,14 +101,19 @@ const StudentsSections = ({sessions=[], total_sessions=0, students=[], total_stu
 
                         <tbody>
                             {selectedStudent?sessions.map((s, i) => {
-                                const {_id, _class, teacher, students, start_time, end_time, active, meeting_link, scheduled_duration_hrs=0, students_session_info=[]} = s;
+                                const {_id, _class, teacher, students=[], start_time, end_time, active, meeting_link, scheduled_duration_hrs=0, students_session_info=[]} = s;
                                 const {students_info=[]} = _class;
-                                const student_info = students_info.find((si) => si.student === selectedStudent);
-                                const session_info = students_session_info.find((ssi) => ssi.student === selectedStudent);
-                                const {credit_log={}} = session_info || {};
 
+                                const student_info = students_info.find((si) => si.student === selectedStudent._id);
+                                const session_info = students_session_info.find((ssi) => ssi.student === selectedStudent._id);
+                                
+                                const {credit_logs=[]} = selectedStudent;
+                                const {credit_log={}} = session_info || {};
+                                
                                 const startTime = new Date(start_time);
                                 const endTime = end_time && new Date(end_time);
+
+                                const payment = credit_logs.find((cl) => is_same_day(startTime, cl.date) && startTime.getTime() && (cl.new_amount > cl.previous_amount))
 
                                 const duration = endTime && endTime.getTime() && intervalToDuration({start: startTime, end: endTime});
 
@@ -126,10 +131,10 @@ const StudentsSections = ({sessions=[], total_sessions=0, students=[], total_stu
                                         <td>{duration_hrs || "Ongoing"}</td>
                                         <td>{toMoneyString(hourly_rate)}</td>
                                         <td>{toMoneyString(Math.abs(total_rate))}</td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>{payment && (new Date(payment.date).toLocaleDateString())}</td>
+                                        <td>{payment && toMoneyString(payment.difference)}</td>
                                         <td style={{textAlign: "end"}}>{toMoneyString(credit_log.new_amount || 0)}</td>
-                                        <td></td>
+                                        <td>{payment?.note}</td>
                                     </tr>
                                 )
                             }):students.map((s) => {

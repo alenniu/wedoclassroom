@@ -200,8 +200,6 @@ const TeachersSection = ({sessions=[], total_sessions=0, requests=[], total_requ
         return selectedTeacher?[{label: "Teacher", id: "teacher", sortable: false}, {label: "Class", id: "_class", sortable: false}, {label: "Date", id: "start_time", sortable: true}, {label: "Duration", id: "d", sortable: false}, {label: "Price", id: "price", sortable: false}, {label: "No. of Students", id: "students", sortable: false}, {label: "Total", id: "total", sortable: false}]:[{label: "Teacher", id: "teacher", sortable: false}, {label: "Total", id: "total", sortable: false}];
     }, [selectedTeacher]);
 
-    console.log({teacherSummaries});
-
     return (
         <div className='teachers-section'>
             <div className='filters-search-container'>

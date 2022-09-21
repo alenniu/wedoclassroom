@@ -3,6 +3,11 @@
     border-radius: 5px;
     border: 2px solid #ECECEC;
     margin-bottom: 20px;
+    color: black!important;
+}
+
+.restore-point *{
+    color: black!important;
 }
 
 .restore-point .restore-amount{
