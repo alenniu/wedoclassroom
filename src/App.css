@@ -5,7 +5,7 @@
   --nav-border: 1px solid rgb(63, 63, 68, 0.1);
   --dashboard-header-height: 90px;
   --dashboard-opened-nav-width: 280px;
-  --dashboard-closed-nav-width: 60px;
+  --dashboard-closed-nav-width: 80px;
   --dashboard-nav-icon-size: 30px;
   --class-bg-color: white;
   --class-border: none;
@@ -47,7 +47,7 @@
   --table-box-shadow: 1px 1px 5px #bfbfbf;
   --scollbar-track-color: #efefef;
   --scollbar-thumb-color: #bfbfbf;
-  --schedule-event-hover-box-shadow: 0px 0px 20px grey;
+  --schedule-event-hover-box-shadow: 0px 0px 5px rgba(0,0,0,0.8);
   background-color: var(--bg-color, white);
 }
 
@@ -73,7 +73,7 @@
     --table-border: 2px solid #3f3f43;
     --table-box-shadow: none;
     --table-row-border: 2px solid #3f3f43;
-    --schedule-event-hover-box-shadow: 0px 0px 20px white;
+    /* --schedule-event-hover-box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5); */
     background-color: var(--bg-color, black);
   }
   

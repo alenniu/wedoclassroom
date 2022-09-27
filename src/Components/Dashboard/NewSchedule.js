@@ -168,26 +168,40 @@ const NewSchedule = ({lessons=[], reschedules=[], date_range={}, onClickNextDate
 
                     const currentDate = new Date(min.getTime() + (d * DAY));
 
-                    const overlapping_items_before = arr.filter((s, si) => {
+                    const overlapping_items_before_lt_30_mins = arr.filter((s, si) => {
 
                         const sStartDayTime = s.start_time.getHours() + (s.start_time.getMinutes()/60);
                         const sEndDayTime = s.end_time.getHours() + (s.end_time.getMinutes()/60);
-                        
-                        return si < i && (is_same_day(date, s.date) && ranges_overlaps({min: startDayTime, max: endDayTime}, {min: sStartDayTime, max: sEndDayTime}))
+
+
+                        return si < i && (is_same_day(date, s.date) && (Math.abs(sStartDayTime - startDayTime) < 0.5) && ranges_overlaps({min: startDayTime, max: endDayTime}, {min: sStartDayTime, max: sEndDayTime+0.6}))
                     });
 
-                    // console.log("overlapping_items_before", overlapping_items_before);
+                    const overlapping_items_before_gt_30_mins = arr.filter((s, si) => {
+
+                        const sStartDayTime = s.start_time.getHours() + (s.start_time.getMinutes()/60);
+                        const sEndDayTime = s.end_time.getHours() + (s.end_time.getMinutes()/60);
+
+
+                        return si < i && (is_same_day(date, s.date) && (Math.abs(sStartDayTime - startDayTime) >= 0.5) && ranges_overlaps({min: startDayTime, max: endDayTime}, {min: sStartDayTime, max: sEndDayTime+0.6}))
+                    });
+
 
                     const top = HOUR_SECTION_HEIGHT * startDayTime;
-                    let leftOffset = (overlapping_items_before.length * 50) + (5 * overlapping_items_before.length);
+                    
+                    const timeLeftOffset = is_webkit?65:70;
+
+                    let leftOffset = (overlapping_items_before_lt_30_mins.length * 50) + (5 * overlapping_items_before_lt_30_mins.length);
+
+                    leftOffset += (overlapping_items_before_gt_30_mins.length * 8);
 
                     const height = HOUR_SECTION_HEIGHT * (endDayTime - startDayTime);
 
                     return (
-                        <div key={_id+d+time_range} title={`${title} | ${time_range} ${cancelled?"(rescheduled)":is_custom_date?"(New Date)":""}`} className={`schedule-event clickable ${cancelled?"rescheduled":is_custom_date?"custom":""}`} onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${is_webkit?65:70}px)/7) * ${d}) + ${leftOffset}px)`, top: `${top}px`, height: `${height}px`, backgroundColor: bg_color, color: text_color, zIndex: Math.ceil(top)}}>
+                        <div key={_id+d+time_range} title={`${title} | ${time_range} ${cancelled?"(rescheduled)":is_custom_date?"(New Date)":""}`} className={`schedule-event clickable ${cancelled?"rescheduled":is_custom_date?"custom":""}`} onClick={() => {(is_admin || is_sales || is_teacher) && navigate(`/dashboard/class/edit/${_id}`)}} style={{left: `calc(75px + (((100% - ${timeLeftOffset}px)/7) * ${d}) + ${leftOffset}px)`, top: `${top}px`, height: `${height}px`, maxWidth: `calc(((100% - ${timeLeftOffset}px) / 7) - ${leftOffset}px)`, backgroundColor: bg_color, color: text_color, zIndex: Math.ceil(top)}}>
+                            <p><b>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</b></p>
                             <p>{title}</p>
-                            <p>{startTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})} - {endTime.toLocaleTimeString(undefined, {hour12: true, hour: "numeric", minute: "2-digit"})}</p>
-                            <p>{DAYS[d].short}</p>
+                            {/* <p>{DAYS[d].short}</p> */}
                         </div>
                     )
                 })}
